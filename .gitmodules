@@ -1,0 +1,3 @@
+[submodule "remote-config"]
+	path = remote-config
+	url = git@github.com:ThePotatoDev/remote-config.git

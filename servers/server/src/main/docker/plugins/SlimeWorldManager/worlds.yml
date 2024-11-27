@@ -1,0 +1,12 @@
+worlds:
+  island_world:
+    source: file
+    loadOnStartup: true
+    readOnly: true
+    spawn: 0, 101, 0
+    allowMonsters: false
+    allowAnimals: false
+    difficulty: peaceful
+    pvp: false
+    environment: NORMAL
+    worldType: default

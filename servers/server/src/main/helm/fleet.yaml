@@ -1,0 +1,70 @@
+apiVersion: agones.dev/v1
+kind: Fleet
+metadata:
+  name: server
+spec:
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      health:
+        disabled: false
+        initialDelaySeconds: 30
+        periodSeconds: 60
+      sdkServer:
+        logLevel: Info
+        grpcPort: 9357
+        httpPort: 9358
+      ports:
+        - name: default
+          protocol: TCP
+          containerPort: 25566
+      template:
+        metadata:
+          labels:
+            app: server
+        spec:
+          containers:
+            - name: server
+              image: server:latest
+              imagePullPolicy: IfNotPresent
+              resources:
+                requests:
+                  cpu: "500m"
+                  memory: "1G"
+                limits:
+                  cpu: "1"
+---
+apiVersion: "autoscaling.agones.dev/v1"
+kind: FleetAutoscaler
+# FleetAutoscaler Metadata
+# https://v1-30.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.30/#objectmeta-v1-meta
+metadata:
+  name: server-fleet-autoscaler
+spec:
+  # The name of the fleet to attach to and control. Must be an existing Fleet in the same namespace
+  # as this FleetAutoscaler
+  fleetName: server
+  # The autoscaling policy
+  policy:
+    # type of the policy. for now, only Buffer is available
+    type: Buffer
+    # parameters of the buffer policy
+    buffer:
+      # Size of a buffer of "ready" game server instances
+      # The FleetAutoscaler will scale the fleet up and down trying to maintain this buffer,
+      # as instances are being allocated or terminated
+      # it can be specified either in absolute (i.e. 5) or percentage format (i.e. 5%)
+      bufferSize: 2
+      # maximum fleet size that can be set by this FleetAutoscaler
+      # required
+      maxReplicas: 5
+  # The autoscaling sync strategy
+  sync:
+    # type of the sync. for now, only FixedInterval is available
+    type: FixedInterval
+    # parameters of the fixedInterval sync
+    fixedInterval:
+      # the time in seconds between each auto scaling
+      seconds: 30

@@ -1,0 +1,34 @@
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃      Velocitab TabGroups     ┃
+# ┃    Developed by William278   ┃
+# ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+# ┣╸ Information: https://william278.net/project/velocitab
+# ┗╸ Documentation: https://william278.net/docs/velocitab
+
+groups:
+- name: default
+  headers:
+    - |
+      \n&x&B&B&C&F&0&0&lꜱ&x&B&C&C&C&0&0&lᴇ&x&B&D&C&9&0&0&lʀ&x&B&E&C&6&0&0&lᴠ&x&B&F&C&3&0&0&lᴇ&x&C&1&C&0&0&0&lʀ &x&C&3&B&9&0&0&lɴ&x&C&4&B&6&0&0&lᴀ&x&C&5&B&3&0&0&lᴍ&x&C&6&B&0&0&0&lᴇ
+  footers:
+    - |
+      
+      &fᴘɪɴɢ: %ping%   ┃   &fᴏɴʟɪɴᴇ: %players_online%
+      
+      &fVote and earn rewards! &x&B&B&C&F&0&0&l/&x&B&E&C&7&0&0&lᴠ&x&C&1&C&0&0&0&lᴏ&x&C&3&B&8&0&0&lᴛ&x&C&6&B&0&0&0&lᴇ
+      &fNeed help? Create a ticket on our discord server! &x&B&B&C&F&0&0&l/&x&B&D&C&B&0&0&lᴅ&x&B&E&C&6&0&0&lɪ&x&C&0&C&2&0&0&lꜱ&x&C&1&B&D&0&0&lᴄ&x&C&3&B&9&0&0&lᴏ&x&C&4&B&4&0&0&lʀ&x&C&6&B&0&0&0&lᴅ
+
+  format: '%prefix%%username%'
+  nametag:
+    prefix: '%prefix%'
+    suffix: '%suffix%'
+  servers:
+    - ^spawn-\d+$
+    - ^server-\d+$
+  sorting_placeholders:
+  - '%role_weight%'
+  - '%username_lower%'
+  collisions: false
+  header_footer_update_rate: 1000
+  placeholder_update_rate: 1000
+  only_list_players_in_same_server: false
