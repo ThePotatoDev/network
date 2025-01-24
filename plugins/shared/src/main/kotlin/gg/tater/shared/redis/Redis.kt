@@ -128,8 +128,13 @@ class Redis(credential: Credential) {
     init {
         val config = Config()
         val instance = Codec()
-        config.useSingleServer().address =
-            "redis://${credential.username}:${credential.password}@${credential.address}:${credential.port}"
+        config.useSingleServer()
+            .apply {
+                this.address = "redis://${credential.address}:${credential.port}"
+                this.password = credential.password
+                this.username = credential.username
+            }
+
         config.codec = instance
 
         this.codec = instance
@@ -203,7 +208,7 @@ class Redis(credential: Credential) {
     }
 
     fun getReadyServer(type: ServerType): ServerDataModel {
-        return servers().values.filter { it.type == type && it.state == ServerState.READY }
+        return servers().values.filter { it.type == type && (it.state == ServerState.READY || it.state == ServerState.ALLOCATED) }
             .minByOrNull { it.usedMemory }
             ?: throw IllegalStateException("No servers available for type $type")
     }
@@ -225,6 +230,7 @@ class Redis(credential: Credential) {
     }
 
     private fun query(type: ServerType): ServerDataModel? {
+
         var allocated = servers().values.filter { it.type == type && it.state == ServerState.ALLOCATED }
             .minByOrNull { it.usedMemory }
 

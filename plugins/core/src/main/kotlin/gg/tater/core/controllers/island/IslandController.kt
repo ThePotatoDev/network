@@ -89,7 +89,7 @@ class IslandController(
 
         this.api = AdvancedSlimePaperAPI.instance()
         val loader =
-            RedisLoader("redis://${credential.username}:${credential.password}@${credential.address}:${credential.port}")
+            RedisLoader("redis://:${credential.password}@${credential.address}:${credential.port}")
         val template = api.readWorld(loader, "island_world_template", false, PROPERTIES)
 
         consumer.bindModule(IslandPlacementRequestListener(redis, server, api, loader, template))

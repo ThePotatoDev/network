@@ -40,6 +40,8 @@ import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 
 class PlayerController(
     private val plugin: CorePlugin,
@@ -50,7 +52,7 @@ class PlayerController(
     TerminableModule {
 
     private val handlers: MutableMap<PlayerPositionResolver.Type, PlayerPositionResolver> = mutableMapOf()
-    private val sidebars: MutableMap<UUID, Pair<Sidebar, ComponentSidebarLayout>> = WeakHashMap()
+    private val sidebars: MutableMap<UUID, Pair<Sidebar, ComponentSidebarLayout>> = ConcurrentHashMap(WeakHashMap())
 
     private lateinit var animation: SidebarAnimation<Component>
     private lateinit var scoreboardLibrary: ScoreboardLibrary
@@ -157,7 +159,7 @@ class PlayerController(
             .bindWith(consumer)
 
         this.animation =
-            createGradientAnimation(Component.text("ꜱᴋʏʙʟᴏᴄᴋ", Style.style(TextDecoration.BOLD)))
+            createGradientAnimation(Component.text("ꜱᴋʏʟᴀɴᴅꜱ", Style.style(TextDecoration.BOLD)))
 
         Schedulers.async().runRepeating(Runnable {
             for (data in sidebars.values) {
@@ -188,7 +190,7 @@ class PlayerController(
                     .append(Component.text(0, NamedTextColor.WHITE))
             }
             .addBlankLine()
-            .addStaticLine(Component.text("www.skyblock.com", NamedTextColor.GOLD))
+            .addStaticLine(Component.text("ᴡᴡᴡ.ꜱᴋʏʟᴀɴᴅꜱ.ᴄᴏᴍ", NamedTextColor.GOLD))
             .build()
 
         val layout = ComponentSidebarLayout(title, lines)
