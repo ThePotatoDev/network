@@ -14,7 +14,6 @@ import gg.tater.shared.player.auction.AuctionHouseItem
 import gg.tater.shared.player.economy.PlayerEconomyModel
 import gg.tater.shared.player.kit.KitPlayerDataModel
 import gg.tater.shared.player.playershop.PlayerShopDataModel
-import gg.tater.shared.player.progression.PlayerProgressDataModel
 import gg.tater.shared.player.vault.VaultDataModel
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
@@ -171,10 +170,6 @@ class Redis(credential: Credential) {
 
     fun invites(): RListMultimapCache<UUID, UUID> {
         return client.getListMultimapCache(INVITES_FOR_MAP_NAME)
-    }
-
-    fun progressions(): RMap<UUID, PlayerProgressDataModel> {
-        return client.getMap(PROGRESSIONS_DATA_MODEL)
     }
 
     fun players(): RMap<UUID, PlayerDataModel> {

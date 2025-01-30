@@ -16,10 +16,9 @@ import gg.tater.shared.player.economy.PlayerEconomyModel
 import gg.tater.shared.player.kit.KitPlayerDataModel
 import gg.tater.shared.player.message.PlayerPrivateMessageRequest
 import gg.tater.shared.player.message.PlayerPrivateMessageResponse
-import gg.tater.shared.player.progression.PlayerProgressDataModel
-import gg.tater.shared.player.vault.VaultDataModel
 import gg.tater.shared.player.playershop.PlayerShopDataModel
 import gg.tater.shared.player.position.WrappedPosition
+import gg.tater.shared.player.vault.VaultDataModel
 
 private val BUILDER: GsonBuilder = GsonBuilder()
     .registerTypeAdapter(Island::class.java, Island.Adapter())
@@ -35,7 +34,6 @@ private val BUILDER: GsonBuilder = GsonBuilder()
     .registerTypeAdapter(ChatMessageRequest::class.java, ChatMessageRequest.Adapter())
     .registerTypeAdapter(WrappedPosition::class.java, WrappedPosition.Adapter())
     .registerTypeAdapter(PlayerEconomyModel::class.java, PlayerEconomyModel.Adapter())
-    .registerTypeAdapter(PlayerProgressDataModel::class.java, PlayerProgressDataModel.Adapter())
     .registerTypeAdapter(KitPlayerDataModel::class.java, KitPlayerDataModel.Adapter())
     .registerTypeAdapter(AuctionHouseItem::class.java, AuctionHouseItem.Adapter())
     .registerTypeAdapter(VaultDataModel::class.java, VaultDataModel.Adapter())
