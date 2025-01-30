@@ -11,11 +11,11 @@ import gg.tater.core.controllers.player.playershop.PlayerShopController
 import gg.tater.core.controllers.player.vault.PlayerVaultController
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.MINI_MESSAGE
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.getFormattedDate
 import gg.tater.shared.player.economy.EconomyType
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.player.position.resolver.*
+import gg.tater.shared.redis.Redis
 import me.lucko.helper.Commands
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
@@ -41,7 +41,6 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 
 class PlayerController(
     private val plugin: CorePlugin,
@@ -67,7 +66,6 @@ class PlayerController(
 
         consumer.bindModule(PlayerMessageController(redis))
         consumer.bindModule(PlayerChatController(redis))
-        consumer.bindModule(ProgressionController(redis))
         consumer.bindModule(KitController(redis))
         consumer.bindModule(AuctionHouseController(redis))
         consumer.bindModule(EconomyController(redis))
