@@ -231,7 +231,7 @@ class Redis(credential: Credential) {
     /**
      * Attempt to query a server that is already in the ALLOCATED stage or
      * query a READY state server if the specified memory usage threshold
-     * has been reached
+     * has been reached or one is not available.
      *
      * @see ServerDataModel.MAX_MEMORY_THRESHOLD_PERCENTAGE
      */
