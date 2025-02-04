@@ -1,8 +1,8 @@
 package gg.tater.core.controllers
 
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.network.Agones
 import gg.tater.shared.network.model.ServerState
+import gg.tater.shared.redis.Redis
 import me.lucko.helper.Schedulers
 import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule
@@ -13,6 +13,8 @@ class ServerStatusController(private val id: String, private val actions: Agones
 
     override fun setup(consumer: TerminableConsumer) {
         Schedulers.sync().runRepeating(Runnable {
+            val runtime = Runtime.getRuntime()
+
             if (Bukkit.getOnlinePlayers().isEmpty()) {
                 actions.ready()
             }
@@ -27,7 +29,8 @@ class ServerStatusController(private val id: String, private val actions: Agones
                 server.state = ServerState.ALLOCATED
             }
 
-            server.usedMemory = getUsedMemory()
+            server.maxMemory = runtime.maxMemory()
+            server.freeMemory = runtime.freeMemory()
             server.players = Bukkit.getOnlinePlayers().size
             redis.servers()[id] = server
         }, 20L, 20L).bindWith(consumer)
@@ -35,11 +38,5 @@ class ServerStatusController(private val id: String, private val actions: Agones
         consumer.bind(AutoCloseable {
             actions.shutdown()
         })
-    }
-
-    private fun getUsedMemory(): Long {
-        val runtime = Runtime.getRuntime()
-        val usedMemory = runtime.totalMemory() - runtime.freeMemory()
-        return usedMemory / (1024 * 1024) // Convert bytes to MB
     }
 }
