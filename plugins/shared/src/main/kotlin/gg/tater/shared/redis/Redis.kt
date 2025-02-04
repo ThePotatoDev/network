@@ -244,7 +244,7 @@ class Redis(credential: Credential) {
             return servers().values.firstOrNull { it.type == type && it.state == ServerState.READY }
         }
 
-        val usedMemory = allocated.maxMemory - allocated.freeMemory
+        val usedMemory = allocated.getUsedMemory()
         val maxMemory = allocated.maxMemory
         val memoryUsagePercentage = (usedMemory.toDouble() / maxMemory) * 100
 
