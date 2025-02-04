@@ -78,7 +78,7 @@ class IslandPlacementRequestListener(
                         spawn.yaw,
                         spawn.pitch
                     )
-                ).thenRun { redis.semaphores(server).release(semaphoreId) }
+                )
             }
         }
     }
