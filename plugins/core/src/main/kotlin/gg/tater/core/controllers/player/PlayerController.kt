@@ -6,13 +6,12 @@ import gg.tater.core.controllers.player.auction.AuctionHouseController
 import gg.tater.core.controllers.player.chat.PlayerChatController
 import gg.tater.core.controllers.player.economy.EconomyController
 import gg.tater.core.controllers.player.kit.KitController
-import gg.tater.core.controllers.player.pm.PlayerPrivateMessageController
 import gg.tater.core.controllers.player.playershop.PlayerShopController
+import gg.tater.core.controllers.player.pm.PlayerPrivateMessageController
 import gg.tater.core.controllers.player.vault.PlayerVaultController
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.getFormattedDate
-import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.player.economy.EconomyType
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.player.position.resolver.*
@@ -124,11 +123,6 @@ class PlayerController(
 
                     Schedulers.sync().runLater({
                         it.player.teleportAsync(location)
-                            .thenRun {
-                                if (handler is IslandHomePositionResolver) {
-                                    redis.islandSemaphore().release()
-                                }
-                            }
                         player.apply(it.player)
                     }, 2L)
 

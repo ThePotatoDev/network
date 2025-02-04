@@ -13,8 +13,8 @@ import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import java.time.Duration
 import java.time.Instant
+import java.util.concurrent.TimeUnit
 
 class IslandPlacementRequestListener(
     private val redis: Redis,
@@ -29,7 +29,13 @@ class IslandPlacementRequestListener(
             // Make sure the server name matches, ignore it otherwise
             if (it.server != server) return@listen
 
-            if (redis.islandSemaphore().tryAcquire(Duration.ofSeconds(10L))) {
+            /**
+             * Acquire a semaphore for this server with a
+             * lease of 3 seconds and waits up to 3 seconds
+             */
+            val semaphoreId = redis.semaphores(server).tryAcquire(3L, 3L, TimeUnit.SECONDS)
+
+            if (semaphoreId != null) {
                 val id = it.islandId
                 val worldName = id.toString()
                 val exists = loader.worldExists(worldName)
@@ -72,7 +78,7 @@ class IslandPlacementRequestListener(
                         spawn.yaw,
                         spawn.pitch
                     )
-                ).thenRun { redis.islandSemaphore().release() }
+                ).thenRun { redis.semaphores(server).release(semaphoreId) }
             }
         }
     }

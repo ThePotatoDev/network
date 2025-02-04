@@ -118,7 +118,6 @@ class Redis(credential: Credential) {
         const val VAULT_MAP_NAME = "vaults"
         const val PROFILES_MAP_NAME = "profiles"
         const val PLAYER_SHOP_MAP_NAME = "player_shops"
-        const val ISLAND_SEMAPHORE_NAME = "ISLAND_LOGIC_SEMAPHORE"
     }
 
     val client: RedissonClient
@@ -139,8 +138,8 @@ class Redis(credential: Credential) {
         this.client = Redisson.create(config)
     }
 
-    fun islandSemaphore(): RSemaphore {
-        return client.getSemaphore(ISLAND_SEMAPHORE_NAME).apply {
+    fun semaphores(id: String): RPermitExpirableSemaphore {
+        return client.getPermitExpirableSemaphore(id).apply {
             this.trySetPermits(1)
         }
     }
