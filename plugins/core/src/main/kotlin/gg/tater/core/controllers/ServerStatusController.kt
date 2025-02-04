@@ -37,6 +37,7 @@ class ServerStatusController(private val id: String, private val actions: Agones
 
         consumer.bind(AutoCloseable {
             actions.shutdown()
+            redis.semaphores(id).delete()
         })
     }
 }
