@@ -208,7 +208,7 @@ class Redis(credential: Credential) {
 
     fun getReadyServer(type: ServerType): ServerDataModel {
         return servers().values.filter { it.type == type && (it.state == ServerState.READY || it.state == ServerState.ALLOCATED) }
-            .minByOrNull { it.usedMemory }
+            .minByOrNull { it.getUsedMemory() }
             ?: throw IllegalStateException("No servers available for type $type")
     }
 
@@ -228,24 +228,29 @@ class Redis(credential: Credential) {
         client.getTopic(meta.channel).publishAsync(message)
     }
 
+    /**
+     * Attempt to query a server that is already in the ALLOCATED stage or
+     * query a READY state server if the specified memory usage threshold
+     * has been reached
+     *
+     * @see ServerDataModel.MAX_MEMORY_THRESHOLD_PERCENTAGE
+     */
     private fun query(type: ServerType): ServerDataModel? {
-
         var allocated = servers().values.filter { it.type == type && it.state == ServerState.ALLOCATED }
-            .minByOrNull { it.usedMemory }
+            .minByOrNull { it.getUsedMemory() }
 
         // If there's no servers that are allocated, find a regular ready server
         if (allocated == null) {
             return servers().values.firstOrNull { it.type == type && it.state == ServerState.READY }
         }
 
-        val usedMemory = allocated.usedMemory
+        val usedMemory = allocated.maxMemory - allocated.freeMemory
+        val maxMemory = allocated.maxMemory
+        val memoryUsagePercentage = (usedMemory.toDouble() / maxMemory) * 100
 
-        // If the server memory will be maxed out or near maxed out, we want to find a server that is ready
-        if (usedMemory + ServerDataModel.SERVER_MEMORY_PER_WORLD > ServerDataModel.MAX_SERVER_MEMORY ||
-            usedMemory + ServerDataModel.SERVER_MEMORY_PER_WORLD >= ServerDataModel.MAX_SERVER_MEMORY - 50
-        ) {
+        if (memoryUsagePercentage >= ServerDataModel.MAX_MEMORY_THRESHOLD_PERCENTAGE) {
             allocated = servers().values.filter { it.type == type && it.state == ServerState.READY }
-                .minByOrNull { it.usedMemory }
+                .minByOrNull { it.getUsedMemory() }
         }
 
         return allocated
