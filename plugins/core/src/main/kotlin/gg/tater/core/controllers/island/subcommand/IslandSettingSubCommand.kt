@@ -14,8 +14,8 @@ class IslandSettingSubCommand(val redis: Redis) : IslandSubCommand {
     override fun handle(context: CommandContext<Player>) {
         val sender = context.sender()
 
-        redis.players().getAsync(sender.uniqueId).thenAcceptAsync { data ->
-            val island = data.islandId?.let { redis.islands()[it] }
+        redis.players().getAsync(sender.uniqueId).thenAcceptAsync { player ->
+            val island = player.islandId?.let { redis.islands()[it] }
             if (island == null) {
                 context.reply("&cYou do not have an island.")
                 return@thenAcceptAsync

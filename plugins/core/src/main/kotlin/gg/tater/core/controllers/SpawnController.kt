@@ -1,9 +1,9 @@
 package gg.tater.core.controllers
 
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.network.model.ServerType
 import gg.tater.shared.player.PlayerRedirectRequest
 import gg.tater.shared.player.position.PlayerPositionResolver
+import gg.tater.shared.redis.Redis
 import me.lucko.helper.Commands
 import me.lucko.helper.Events
 import me.lucko.helper.event.filter.EventFilters
@@ -27,28 +27,34 @@ class SpawnController(private val redis: Redis, private val id: String) : Termin
         Commands.create()
             .assertPlayer()
             .handler {
-                val player = it.sender()
-                val uuid = player.uniqueId
-
-                redis.players().getAsync(uuid).thenAcceptAsync { data ->
-                    if (data == null) {
+                redis.players().getAsync(it.sender().uniqueId).thenAcceptAsync { player ->
+                    if (player == null) {
                         it.reply("&cError fetching your data.")
                         return@thenAcceptAsync
                     }
 
                     it.reply("&a&oTeleporting you to spawn...")
-                    data.setDefaultSpawn(ServerType.SPAWN)
-                    data.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_SPAWN)
+                    player.setDefaultSpawn(ServerType.SPAWN)
+                    player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_SPAWN)
                     val spawn = ServerType.SPAWN.spawn
 
                     // If they are already on a spawn server, just teleport them to location
                     if (id.contains("spawn")) {
-                        player.teleportAsync(Location(player.world, spawn.x, spawn.y, spawn.z, spawn.yaw, spawn.pitch))
+                        it.sender().teleportAsync(
+                            Location(
+                                it.sender().world,
+                                spawn.x,
+                                spawn.y,
+                                spawn.z,
+                                spawn.yaw,
+                                spawn.pitch
+                            )
+                        )
                         return@thenAcceptAsync
                     }
 
-                    redis.players().fastPut(uuid, data)
-                    val request = PlayerRedirectRequest(uuid, ServerType.SPAWN)
+                    redis.players().fastPut(player.uuid, player)
+                    val request = PlayerRedirectRequest(player.uuid, ServerType.SPAWN)
                     redis.publish(request)
                 }
             }

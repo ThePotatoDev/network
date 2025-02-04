@@ -22,8 +22,8 @@ class IslandAddWarpSubCommand(private val redis: Redis) : IslandSubCommand {
         val sender = context.sender()
         val uuid = sender.uniqueId
 
-        redis.players().getAsync(uuid).thenAcceptAsync { data ->
-            val island = data.islandId?.let { redis.islands()[it] }
+        redis.players().getAsync(uuid).thenAcceptAsync { player ->
+            val island = player.islandId?.let { redis.islands()[it] }
             if (island == null) {
                 context.reply("&cYou do not have an island.")
                 return@thenAcceptAsync

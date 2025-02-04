@@ -99,7 +99,7 @@ class PlayerChatController(private val redis: Redis) : TerminableModule {
             .handler {
                 val sender = it.sender()
                 redis.players().getAsync(sender.uniqueId)
-                    .thenAccept { data -> ChatColorGui(sender, data, redis).open() }
+                    .thenAccept { player -> ChatColorGui(sender, player, redis).open() }
             }
             .registerAndBind(consumer, "chatcolor", "cc")
 

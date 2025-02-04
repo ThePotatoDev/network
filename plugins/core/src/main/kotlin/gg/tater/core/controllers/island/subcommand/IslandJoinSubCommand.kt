@@ -17,8 +17,8 @@ class IslandJoinSubCommand(private val redis: Redis) : IslandSubCommand {
         val sender = context.sender()
         val senderId = sender.uniqueId
 
-        redis.players().getAsync(sender.uniqueId).thenAcceptAsync { data ->
-            val island = data.islandId?.let { redis.islands()[it] }
+        redis.players().getAsync(sender.uniqueId).thenAcceptAsync { player ->
+            val island = player.islandId?.let { redis.islands()[it] }
             if (island != null) {
                 context.reply("&cYou already have an island.")
                 return@thenAcceptAsync
@@ -45,10 +45,10 @@ class IslandJoinSubCommand(private val redis: Redis) : IslandSubCommand {
             }
 
             targetIsland.setRoleFor(senderId, Island.Role.MEMBER)
-            data.islandId = targetIsland.id
+            player.islandId = targetIsland.id
 
-            redis.players()[senderId] = data
-            redis.islands()[targetIsland.id] = targetIsland
+            redis.players().fastPut(senderId, player)
+            redis.islands().fastPut(targetIsland.id, targetIsland)
 
             context.reply("&aYou have joined ${targetIsland.ownerName}'s island!")
         }

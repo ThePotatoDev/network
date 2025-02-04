@@ -1,11 +1,11 @@
 package gg.tater.core.controllers
 
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.network.model.ServerType
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.PlayerRedirectRequest
 import gg.tater.shared.player.position.PlayerPositionResolver
+import gg.tater.shared.redis.Redis
 import io.papermc.paper.event.player.AsyncChatEvent
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
@@ -65,26 +65,25 @@ class LimboController(private val redis: Redis) : TerminableModule {
             .bindWith(consumer)
 
         Schedulers.sync().runRepeating(Runnable {
-            for (player in Bukkit.getOnlinePlayers()) {
-                if (retries.contains(player.uniqueId)) continue
-                retries.add(player.uniqueId)
+            for (online in Bukkit.getOnlinePlayers()) {
+                if (retries.contains(online.uniqueId)) continue
+                retries.add(online.uniqueId)
+                online.teleportAsync(location)
 
-                val uuid = player.uniqueId
-                val name = player.name
-
-                player.teleportAsync(location)
-
-                redis.players().getAsync(uuid).thenAcceptAsync { data ->
-                    val lastServerType = data.lastServerType
+                redis.players().getAsync(online.uniqueId).thenAcceptAsync { player ->
+                    val lastServerType = player.lastServerType
                     val lastServer = redis.getServer(lastServerType) ?: return@thenAcceptAsync
-                    val island = data.islandId?.let { redis.islands()[it] }
+                    val island = player.islandId?.let { redis.islands()[it] }
 
                     if (lastServerType == ServerType.SERVER && island != null) {
                         redis.players()
-                            .fastPut(uuid, data.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME))
-                        redis.publish(IslandPlacementRequest(lastServer.id, uuid, island.id, name, true))
+                            .fastPut(
+                                player.uuid,
+                                player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME)
+                            )
+                        redis.publish(IslandPlacementRequest(lastServer.id, player.uuid, island.id, player.name, true))
                     } else {
-                        redis.publish(PlayerRedirectRequest(uuid, ServerType.SPAWN))
+                        redis.publish(PlayerRedirectRequest(player.uuid, ServerType.SPAWN))
                     }
                 }
             }

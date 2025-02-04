@@ -2,10 +2,10 @@ package gg.tater.shared.player.playershop
 
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.DECIMAL_FORMAT
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.network.model.ServerType
 import gg.tater.shared.player.position.PlayerPositionResolver
+import gg.tater.shared.redis.Redis
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.paginated.PageInfo
 import me.lucko.helper.menu.paginated.PaginatedGui
@@ -20,7 +20,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 
 class PlayerShopGui(
-    player: Player,
+    opener: Player,
     private val shops: Collection<PlayerShopDataModel>,
     private val redis: Redis,
     private val server: String
@@ -36,7 +36,7 @@ class PlayerShopGui(
                             .getAsync(shop.islandId)
                             .thenAcceptAsync { island ->
                                 if (island == null) {
-                                    player.sendMessage(
+                                    opener.sendMessage(
                                         Component.text(
                                             "That island no longer exists where the warp was present.",
                                             NamedTextColor.RED
@@ -46,7 +46,7 @@ class PlayerShopGui(
                                 }
 
                                 if (!shop.open) {
-                                    player.sendMessage(
+                                    opener.sendMessage(
                                         Component.text(
                                             "That warp is not open currently.",
                                             NamedTextColor.RED
@@ -58,7 +58,7 @@ class PlayerShopGui(
                                 val currentServerId = island.currentServerId
                                 val position = shop.position
 
-                                player.sendMessage(
+                                opener.sendMessage(
                                     Component.text(
                                         "Warping you to the ${shop.name} shop...",
                                         NamedTextColor.GREEN
@@ -67,7 +67,7 @@ class PlayerShopGui(
 
                                 // If the player is on the same server as the warp
                                 if (currentServerId != null && currentServerId == server) {
-                                    player.teleportAsync(
+                                    opener.teleportAsync(
                                         Location(
                                             Bukkit.getWorld(island.id.toString()),
                                             position.x,
@@ -80,21 +80,21 @@ class PlayerShopGui(
                                     return@thenAcceptAsync
                                 }
 
-                                redis.players().getAsync(player.uniqueId).thenAcceptAsync { data ->
-                                    data.setSpawn(ServerType.SERVER, position)
+                                redis.players().getAsync(opener.uniqueId).thenAcceptAsync { player ->
+                                    player.setSpawn(ServerType.SERVER, position)
                                     redis.players().fastPut(
-                                        player.uniqueId,
-                                        data.setPositionResolver(
+                                        opener.uniqueId,
+                                        player.setPositionResolver(
                                             PlayerPositionResolver.Type.TELEPORT_PLAYER_SHOP,
                                             shop.islandId.toString()
                                         )
                                     )
-                                    IslandPlacementRequest.directToActive(redis, player, island)
+                                    IslandPlacementRequest.directToActive(redis, opener, island)
                                 }
                             }
                     }
             }
-        }, player,
+        }, opener,
         BUILDER
     ) {
 

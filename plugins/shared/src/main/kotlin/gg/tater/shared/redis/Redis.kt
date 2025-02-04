@@ -112,13 +112,13 @@ class Redis(credential: Credential) {
         const val MESSAGE_TARGET_MAP_NAME = "message_targets"
         const val ISLAND_MAP_NAME = "islands"
         const val INVITES_FOR_MAP_NAME = "invites_for"
-        const val PROGRESSIONS_DATA_MODEL = "progressions"
         const val KIT_PLAYER_DATA_MODEL = "kit_players"
         const val AUCTIONS_SET_NAME = "auctions"
         const val EXPIRED_AUCTIONS_SET_NAME = "expired_auctions"
         const val VAULT_MAP_NAME = "vaults"
         const val PROFILES_MAP_NAME = "profiles"
         const val PLAYER_SHOP_MAP_NAME = "player_shops"
+        const val ISLAND_SEMAPHORE_NAME = "ISLAND_LOGIC_SEMAPHORE"
     }
 
     val client: RedissonClient
@@ -135,9 +135,14 @@ class Redis(credential: Credential) {
             }
 
         config.codec = instance
-
         this.codec = instance
         this.client = Redisson.create(config)
+    }
+
+    fun islandSemaphore(): RSemaphore {
+        return client.getSemaphore(ISLAND_SEMAPHORE_NAME).apply {
+            this.trySetPermits(1)
+        }
     }
 
     fun playerShops(): RMap<UUID, PlayerShopDataModel> {

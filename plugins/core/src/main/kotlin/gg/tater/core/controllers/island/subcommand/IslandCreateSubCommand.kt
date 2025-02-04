@@ -19,8 +19,8 @@ class IslandCreateSubCommand(private val redis: Redis) : IslandSubCommand {
         val sender = context.sender()
         val uuid = sender.uniqueId
 
-        redis.players().getAsync(uuid).thenAcceptAsync { data ->
-            val island = data.islandId?.let { redis.islands()[it] }
+        redis.players().getAsync(uuid).thenAcceptAsync { player ->
+            val island = player.islandId?.let { redis.islands()[it] }
             if (island != null) {
                 context.reply("&cYou already have an island.")
                 return@thenAcceptAsync
@@ -38,11 +38,11 @@ class IslandCreateSubCommand(private val redis: Redis) : IslandSubCommand {
             newIsland.currentServerId = server.id
             redis.islands()[newIsland.id] = newIsland
 
-            data.islandId = newIsland.id
-            data.setDefaultSpawn(ServerType.SERVER)
+            player.islandId = newIsland.id
+            player.setDefaultSpawn(ServerType.SERVER)
 
             redis.players()[uuid] =
-                data.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME)
+                player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME)
             redis.publish(
                 IslandPlacementRequest(
                     server.id,

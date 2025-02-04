@@ -3,6 +3,7 @@ package gg.tater.core.controllers.island
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI
+import com.infernalsuite.aswm.api.world.SlimeWorld
 import com.infernalsuite.aswm.api.world.properties.SlimeProperties
 import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap
 import com.infernalsuite.aswm.loaders.redis.RedisLoader
@@ -127,7 +128,7 @@ class IslandController(
                     val sender = it.sender()
                     redis.players()
                         .getAsync(sender.uniqueId)
-                        .thenApplyAsync { data -> data.islandId?.let { id -> redis.islands()[id] } }
+                        .thenApplyAsync { player -> player.islandId?.let { id -> redis.islands()[id] } }
                         .thenAccept { island ->
                             IslandControlGui(sender, island, redis, server).open()
                         }
@@ -145,6 +146,15 @@ class IslandController(
                 command.handle(it)
             }
             .registerAndBind(consumer, "is", "island")
+
+        Commands.create()
+            .assertPlayer()
+            .handler {
+                for (player in Bukkit.getOnlinePlayers()) {
+                    player.performCommand("is create")
+                }
+            }
+            .registerAndBind(consumer, "debugis")
 
         Services.provide(IslandService::class.java, this)
     }

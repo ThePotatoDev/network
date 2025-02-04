@@ -6,12 +6,13 @@ import gg.tater.core.controllers.player.auction.AuctionHouseController
 import gg.tater.core.controllers.player.chat.PlayerChatController
 import gg.tater.core.controllers.player.economy.EconomyController
 import gg.tater.core.controllers.player.kit.KitController
-import gg.tater.core.controllers.player.message.PlayerMessageController
+import gg.tater.core.controllers.player.pm.PlayerPrivateMessageController
 import gg.tater.core.controllers.player.playershop.PlayerShopController
 import gg.tater.core.controllers.player.vault.PlayerVaultController
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.getFormattedDate
+import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.player.economy.EconomyType
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.player.position.resolver.*
@@ -64,7 +65,7 @@ class PlayerController(
             NoopScoreboardLibrary()
         }
 
-        consumer.bindModule(PlayerMessageController(redis))
+        consumer.bindModule(PlayerPrivateMessageController(redis))
         consumer.bindModule(PlayerChatController(redis))
         consumer.bindModule(KitController(redis))
         consumer.bindModule(AuctionHouseController(redis))
@@ -112,25 +113,27 @@ class PlayerController(
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
                 it.joinMessage(null)
-
-                val player = it.player
-                val uuid = player.uniqueId
                 val currentServer = redis.servers()[server] ?: return@handler
 
-                display(player)
+                display(it.player)
 
-                redis.players().getAsync(uuid).thenAcceptAsync { data ->
-                    val resolver = data.resolver!!
+                redis.players().getAsync(it.player.uniqueId).thenAcceptAsync { player ->
+                    val resolver = player.resolver!!
                     val handler = handlers[resolver.first] ?: return@thenAcceptAsync
-                    val location = handler.getLocation(data, currentServer.type).join() ?: return@thenAcceptAsync
+                    val location = handler.getLocation(player, currentServer.type).join() ?: return@thenAcceptAsync
 
                     Schedulers.sync().runLater({
-                        player.teleportAsync(location)
-                        data.apply(player)
+                        it.player.teleportAsync(location)
+                            .thenRun {
+                                if (handler is IslandHomePositionResolver) {
+                                    redis.islandSemaphore().release()
+                                }
+                            }
+                        player.apply(it.player)
                     }, 2L)
 
-                    data.online = true
-                    redis.players().fastPut(uuid, data.setPositionResolver(PlayerPositionResolver.Type.NONE))
+                    player.online = true
+                    redis.players().fastPut(player.uuid, player.setPositionResolver(PlayerPositionResolver.Type.NONE))
                 }
             }
             .bindWith(consumer)
@@ -138,14 +141,12 @@ class PlayerController(
         Events.subscribe(PlayerQuitEvent::class.java)
             .handler {
                 it.quitMessage(null)
-
-                val player = it.player
-                val uuid = player.uniqueId
+                val uuid = it.player.uniqueId
                 sidebars.remove(uuid)
 
-                redis.players().getAsync(uuid).thenAcceptAsync { data ->
+                redis.players().getAsync(uuid).thenAcceptAsync { player ->
                     val server = redis.servers()[server] ?: return@thenAcceptAsync
-                    redis.players().fastPut(uuid, data.update(player, server.type))
+                    redis.players().fastPut(uuid, player.update(it.player, server.type))
                 }
             }
             .bindWith(consumer)

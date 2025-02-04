@@ -35,7 +35,7 @@ class KitController(private val redis: Redis) : TerminableModule {
             .handler {
                 val sender = it.sender()
                 redis.kits().computeIfAbsentAsync(sender.uniqueId) { KitPlayerDataModel() }
-                    .thenAccept { data -> KitGui(sender, KITS, data, redis).open() }
+                    .thenAccept { player -> KitGui(sender, KITS, player, redis).open() }
             }
             .registerAndBind(consumer, "kits")
     }

@@ -20,11 +20,11 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-class IslandWarpGui(player: Player, private val island: Island, private val redis: Redis, private val server: String) :
+class IslandWarpGui(opener: Player, private val island: Island, private val redis: Redis, private val server: String) :
     PaginatedGui(
         {
-            getItems(it, player, island, redis, server)
-        }, player,
+            getItems(it, opener, island, redis, server)
+        }, opener,
         BUILDER
     ) {
 
@@ -66,7 +66,7 @@ class IslandWarpGui(player: Player, private val island: Island, private val redi
 
         private fun getItems(
             gui: PaginatedGui,
-            player: Player,
+            opener: Player,
             island: Island,
             redis: Redis,
             server: String
@@ -87,11 +87,11 @@ class IslandWarpGui(player: Player, private val island: Island, private val redi
                         val warp = it.value
                         val currentServerId = island.currentServerId
 
-                        player.sendMessage(Component.text("Warping you to $name...", NamedTextColor.GREEN))
+                        opener.sendMessage(Component.text("Warping you to $name...", NamedTextColor.GREEN))
 
                         // If the player is on the same server as the warp
                         if (currentServerId != null && currentServerId == server) {
-                            player.teleportAsync(
+                            opener.teleportAsync(
                                 Location(
                                     Bukkit.getWorld(island.id.toString()),
                                     warp.x,
@@ -104,16 +104,16 @@ class IslandWarpGui(player: Player, private val island: Island, private val redi
                             return@build
                         }
 
-                        val uuid = player.uniqueId
+                        val uuid = opener.uniqueId
 
-                        redis.players().getAsync(uuid).thenAcceptAsync { data ->
-                            data.setSpawn(ServerType.SERVER, warp)
+                        redis.players().getAsync(uuid).thenAcceptAsync { player ->
+                            player.setSpawn(ServerType.SERVER, warp)
                             redis.players()
                                 .fastPut(
                                     uuid,
-                                    data.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_WARP)
+                                    player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_WARP)
                                 )
-                            IslandPlacementRequest.directToActive(redis, player, island)
+                            IslandPlacementRequest.directToActive(redis, opener, island)
                         }
                     }
             }

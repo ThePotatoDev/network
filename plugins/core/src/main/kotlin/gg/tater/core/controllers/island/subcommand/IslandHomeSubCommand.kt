@@ -19,8 +19,8 @@ class IslandHomeSubCommand(private val redis: Redis, private val server: String)
         val sender = context.sender()
         val uuid = sender.uniqueId
 
-        redis.players().getAsync(sender.uniqueId).thenAcceptAsync { data ->
-            val island = data.islandId?.let { redis.islands()[it] }
+        redis.players().getAsync(sender.uniqueId).thenAcceptAsync { player ->
+            val island = player.islandId?.let { redis.islands()[it] }
             if (island == null) {
                 context.reply("&cYou do not have an island.")
                 return@thenAcceptAsync
@@ -45,8 +45,8 @@ class IslandHomeSubCommand(private val redis: Redis, private val server: String)
                 return@thenAcceptAsync
             }
 
-            data.setSpawn(ServerType.SERVER, island.spawn)
-            redis.players().fastPut(uuid, data.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME))
+            player.setSpawn(ServerType.SERVER, island.spawn)
+            redis.players().fastPut(uuid, player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME))
             IslandPlacementRequest.directToActive(redis, sender, island)
         }
     }
