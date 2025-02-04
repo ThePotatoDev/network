@@ -32,6 +32,21 @@ import kotlin.reflect.KClass
 
 class Redis(credential: Credential) {
 
+    private companion object {
+        const val PLAYER_MAP_NAME = "players"
+        const val SERVER_MAP_NAME = "servers"
+        const val ECONOMY_MAP_NAME = "economy"
+        const val MESSAGE_TARGET_MAP_NAME = "message_targets"
+        const val ISLAND_MAP_NAME = "islands"
+        const val INVITES_FOR_MAP_NAME = "invites_for"
+        const val KIT_PLAYER_DATA_MODEL = "kit_players"
+        const val AUCTIONS_SET_NAME = "auctions"
+        const val EXPIRED_AUCTIONS_SET_NAME = "expired_auctions"
+        const val VAULT_MAP_NAME = "vaults"
+        const val PROFILES_MAP_NAME = "profiles"
+        const val PLAYER_SHOP_MAP_NAME = "player_shops"
+    }
+
     @Target(AnnotationTarget.CLASS)
     @Retention(AnnotationRetention.RUNTIME)
     annotation class ReqRes(val channel: String)
@@ -105,21 +120,6 @@ class Redis(credential: Credential) {
         override fun getValueEncoder() = encoder
     }
 
-    companion object {
-        const val PLAYER_MAP_NAME = "players"
-        const val SERVER_MAP_NAME = "servers"
-        const val ECONOMY_MAP_NAME = "economy"
-        const val MESSAGE_TARGET_MAP_NAME = "message_targets"
-        const val ISLAND_MAP_NAME = "islands"
-        const val INVITES_FOR_MAP_NAME = "invites_for"
-        const val KIT_PLAYER_DATA_MODEL = "kit_players"
-        const val AUCTIONS_SET_NAME = "auctions"
-        const val EXPIRED_AUCTIONS_SET_NAME = "expired_auctions"
-        const val VAULT_MAP_NAME = "vaults"
-        const val PROFILES_MAP_NAME = "profiles"
-        const val PLAYER_SHOP_MAP_NAME = "player_shops"
-    }
-
     val client: RedissonClient
     private val codec: Codec
 
@@ -136,6 +136,97 @@ class Redis(credential: Credential) {
         config.codec = instance
         this.codec = instance
         this.client = Redisson.create(config)
+    }
+
+    /**
+     * Delete a server by its island object.
+     *
+     * @param island The island object to delete.
+     */
+    fun deleteIsland(island: Island): RFuture<Island> {
+        // Remove the island for all the members
+        return islands().removeAsync(island.id)
+    }
+
+    /**
+     * Query a server by an id asynchronously.
+     *
+     * @param id The server id to query.
+     */
+    fun getServer(id: String): RFuture<ServerDataModel?> {
+        return servers().getAsync(id)
+    }
+
+    /**
+     * Query a server entity that is prepared to be used that
+     * is in the READY or ALLOCATED state.
+     *
+     * @param type The server type to query.
+     */
+    fun getReadyServer(type: ServerType): ServerDataModel {
+        return servers().values.filter { it.type == type && (it.state == ServerState.READY || it.state == ServerState.ALLOCATED) }
+            .minByOrNull { it.getUsedMemory() }
+            ?: throw IllegalStateException("No servers available for type $type")
+    }
+
+    /**
+     * Subscribe to a message payload for its respective channel. The inline type
+     * must be annotated with the @ReqRes annotation to decipher which
+     * channel to listen from.
+     *
+     * @param consumer The payload to handle.
+     * @see ReqRes The annotation that specifies the channel id.
+     */
+    inline fun <reified T : Any> listen(noinline consumer: (T) -> Unit) {
+        val meta = T::class.annotations.find { it is ReqRes } as? ReqRes
+            ?: throw IllegalArgumentException("Class ${T::class} must have @ReqRes annotation")
+
+        client.getTopic(meta.channel).addListenerAsync(T::class.java) { _, message ->
+            consumer(message)
+        }
+    }
+
+    /**
+     * Publish a message object to its respective channel. The message
+     * object's class must be annotated with a ReqRes annotation to
+     * specify which channel to publish into.
+     *
+     * @param message The message object to publish.
+     * @see ReqRes The annotation that specifies the channel id.
+     */
+    inline fun <reified T : Any> publish(message: T) {
+        val meta = T::class.annotations.find { it is ReqRes } as? ReqRes
+            ?: throw IllegalArgumentException("Class ${T::class} must have @ReqRes annotation")
+
+        client.getTopic(meta.channel).publishAsync(message)
+    }
+
+    /**
+     * Attempt to query a server that is already in the ALLOCATED stage or
+     * query a READY state server if the specified memory usage threshold
+     * has been reached or one is not available.
+     *
+     * @see ServerDataModel.MAX_MEMORY_THRESHOLD_PERCENTAGE
+     */
+    fun getServer(type: ServerType): ServerDataModel? {
+        var allocated = servers().values.filter { it.type == type && it.state == ServerState.ALLOCATED }
+            .minByOrNull { it.getUsedMemory() }
+
+        // If there's no servers that are allocated, find a regular ready server
+        if (allocated == null) {
+            return servers().values.firstOrNull { it.type == type && it.state == ServerState.READY }
+        }
+
+        val usedMemory = allocated.getUsedMemory()
+        val maxMemory = allocated.maxMemory
+        val memoryUsagePercentage = (usedMemory.toDouble() / maxMemory) * 100
+
+        if (memoryUsagePercentage >= ServerDataModel.MAX_MEMORY_THRESHOLD_PERCENTAGE) {
+            allocated = servers().values.filter { it.type == type && it.state == ServerState.READY }
+                .minByOrNull { it.getUsedMemory() }
+        }
+
+        return allocated
     }
 
     fun semaphores(id: String): RPermitExpirableSemaphore {
@@ -190,69 +281,5 @@ class Redis(credential: Credential) {
 
     fun islands(): RMap<UUID, Island> {
         return client.getMap(ISLAND_MAP_NAME)
-    }
-
-    fun deleteIsland(island: Island): RFuture<Island> {
-        // Remove the island for all the members
-        return islands().removeAsync(island.id)
-    }
-
-    fun getServer(id: String): RFuture<ServerDataModel?> {
-        return servers().getAsync(id)
-    }
-
-    // Primary function to get a server of a specific type that's already allocated or ready to be allocated
-    fun getServer(type: ServerType): ServerDataModel? {
-        return query(type)
-    }
-
-    fun getReadyServer(type: ServerType): ServerDataModel {
-        return servers().values.filter { it.type == type && (it.state == ServerState.READY || it.state == ServerState.ALLOCATED) }
-            .minByOrNull { it.getUsedMemory() }
-            ?: throw IllegalStateException("No servers available for type $type")
-    }
-
-    inline fun <reified T : Any> listen(noinline consumer: (T) -> Unit) {
-        val meta = T::class.annotations.find { it is ReqRes } as? ReqRes
-            ?: throw IllegalArgumentException("Class ${T::class} must have @ReqRes annotation")
-
-        client.getTopic(meta.channel).addListenerAsync(T::class.java) { _, message ->
-            consumer(message)
-        }
-    }
-
-    inline fun <reified T : Any> publish(message: T) {
-        val meta = T::class.annotations.find { it is ReqRes } as? ReqRes
-            ?: throw IllegalArgumentException("Class ${T::class} must have @ReqRes annotation")
-
-        client.getTopic(meta.channel).publishAsync(message)
-    }
-
-    /**
-     * Attempt to query a server that is already in the ALLOCATED stage or
-     * query a READY state server if the specified memory usage threshold
-     * has been reached or one is not available.
-     *
-     * @see ServerDataModel.MAX_MEMORY_THRESHOLD_PERCENTAGE
-     */
-    private fun query(type: ServerType): ServerDataModel? {
-        var allocated = servers().values.filter { it.type == type && it.state == ServerState.ALLOCATED }
-            .minByOrNull { it.getUsedMemory() }
-
-        // If there's no servers that are allocated, find a regular ready server
-        if (allocated == null) {
-            return servers().values.firstOrNull { it.type == type && it.state == ServerState.READY }
-        }
-
-        val usedMemory = allocated.getUsedMemory()
-        val maxMemory = allocated.maxMemory
-        val memoryUsagePercentage = (usedMemory.toDouble() / maxMemory) * 100
-
-        if (memoryUsagePercentage >= ServerDataModel.MAX_MEMORY_THRESHOLD_PERCENTAGE) {
-            allocated = servers().values.filter { it.type == type && it.state == ServerState.READY }
-                .minByOrNull { it.getUsedMemory() }
-        }
-
-        return allocated
     }
 }
