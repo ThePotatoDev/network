@@ -8,7 +8,7 @@ spec:
     rollingUpdate:
       maxSurge: 25%
       maxUnavailable: 25%
-  replicas: 2  # Ensures at least one active server and one buffer server
+  replicas: 1  # Ensures at least one active server and one buffer server
   template:
     metadata:
       labels:
@@ -60,4 +60,4 @@ spec:
   sync:
     type: FixedInterval
     fixedInterval:
-      seconds: 60  # Scaling check every 60 seconds
+      seconds: 5  # Scaling check every 60 seconds
