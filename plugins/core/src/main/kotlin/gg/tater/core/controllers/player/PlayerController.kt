@@ -34,6 +34,7 @@ import net.megavex.scoreboardlibrary.api.sidebar.component.ComponentSidebarLayou
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import net.megavex.scoreboardlibrary.api.sidebar.component.animation.CollectionSidebarAnimation
 import net.megavex.scoreboardlibrary.api.sidebar.component.animation.SidebarAnimation
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
@@ -114,9 +115,9 @@ class PlayerController(
                 it.joinMessage(null)
                 val currentServer = redis.servers()[server] ?: return@handler
 
-                display(it.player)
-
                 redis.players().getAsync(it.player.uniqueId).thenAcceptAsync { player ->
+                    display(it.player)
+
                     val resolver = player.resolver!!
                     val handler = handlers[resolver.first] ?: return@thenAcceptAsync
                     val location = handler.getLocation(player, currentServer.type).join() ?: return@thenAcceptAsync
@@ -164,6 +165,7 @@ class PlayerController(
 
     private fun display(player: Player) {
         val sidebar: Sidebar = scoreboardLibrary.createSidebar()
+        val data = redis.proxy().get()
 
         val title = SidebarComponent.animatedLine(animation)
         val lines = SidebarComponent.builder()
@@ -180,7 +182,7 @@ class PlayerController(
             }
             .addDynamicLine {
                 Component.text("• ᴏɴʟɪɴᴇ: ", NamedTextColor.GRAY)
-                    .append(Component.text(0, NamedTextColor.WHITE))
+                    .append(Component.text(data.players, NamedTextColor.WHITE))
             }
             .addBlankLine()
             .addStaticLine(Component.text("ᴡᴡᴡ.ꜱᴋʏʟᴀɴᴅꜱ.ᴄᴏᴍ", NamedTextColor.GOLD))

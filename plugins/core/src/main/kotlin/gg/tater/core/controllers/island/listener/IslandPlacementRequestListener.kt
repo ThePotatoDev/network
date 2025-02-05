@@ -6,7 +6,7 @@ import com.infernalsuite.aswm.api.world.SlimeWorld
 import gg.tater.core.controllers.island.IslandController.Companion.PROPERTIES
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.island.message.placement.IslandPlacementResponse
-import gg.tater.shared.network.model.ServerType
+import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Schedulers
 import me.lucko.helper.terminable.TerminableConsumer

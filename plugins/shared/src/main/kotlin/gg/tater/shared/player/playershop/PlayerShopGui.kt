@@ -3,7 +3,7 @@ package gg.tater.shared.player.playershop
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
-import gg.tater.shared.network.model.ServerType
+import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.item.ItemStackBuilder

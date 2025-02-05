@@ -6,7 +6,7 @@ import gg.tater.shared.redis.Redis
 import gg.tater.shared.player.position.WrappedPosition
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.setting.model.IslandSettingType
-import gg.tater.shared.network.model.ServerType
+import gg.tater.shared.network.model.server.ServerType
 import java.lang.reflect.Type
 import java.time.Instant
 import java.util.*

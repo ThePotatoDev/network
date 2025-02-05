@@ -1,7 +1,7 @@
 package gg.tater.shared.player.position
 
 import gg.tater.shared.redis.Redis
-import gg.tater.shared.network.model.ServerType
+import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.PlayerDataModel
 import org.bukkit.Location
 import java.util.concurrent.CompletableFuture

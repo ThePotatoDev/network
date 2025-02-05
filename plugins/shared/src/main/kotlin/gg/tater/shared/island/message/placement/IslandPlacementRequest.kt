@@ -3,8 +3,8 @@ package gg.tater.shared.island.message.placement
 import com.google.gson.*
 import gg.tater.shared.island.Island
 import gg.tater.shared.redis.Redis
-import gg.tater.shared.network.model.ServerDataModel
-import gg.tater.shared.network.model.ServerType
+import gg.tater.shared.network.model.server.ServerDataModel
+import gg.tater.shared.network.model.server.ServerType
 import me.lucko.helper.promise.ThreadContext
 import org.bukkit.entity.Player
 import java.lang.reflect.Type

@@ -1,7 +1,7 @@
 package gg.tater.core.controllers
 
 import gg.tater.shared.network.Agones
-import gg.tater.shared.network.model.ServerState
+import gg.tater.shared.network.model.server.ServerState
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Schedulers
 import me.lucko.helper.terminable.TerminableConsumer

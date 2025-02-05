@@ -7,7 +7,8 @@ import gg.tater.shared.island.message.IslandDeleteRequest
 import gg.tater.shared.island.message.IslandUpdateRequest
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.island.message.placement.IslandPlacementResponse
-import gg.tater.shared.network.model.ServerDataModel
+import gg.tater.shared.network.model.ProxyDataModel
+import gg.tater.shared.network.model.server.ServerDataModel
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.PlayerRedirectRequest
 import gg.tater.shared.player.auction.AuctionHouseItem
@@ -38,5 +39,6 @@ private val BUILDER: GsonBuilder = GsonBuilder()
     .registerTypeAdapter(AuctionHouseItem::class.java, AuctionHouseItem.Adapter())
     .registerTypeAdapter(VaultDataModel::class.java, VaultDataModel.Adapter())
     .registerTypeAdapter(PlayerShopDataModel::class.java, PlayerShopDataModel.Adapter())
+    .registerTypeAdapter(ProxyDataModel::class.java, ProxyDataModel.Adapter())
 
 val JSON: Gson = BUILDER.create()

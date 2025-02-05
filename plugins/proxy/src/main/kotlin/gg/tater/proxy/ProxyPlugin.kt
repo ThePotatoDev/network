@@ -9,12 +9,13 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import com.velocitypowered.api.proxy.server.RegisteredServer
 import com.velocitypowered.api.proxy.server.ServerInfo
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.island.message.placement.IslandPlacementResponse
 import gg.tater.shared.network.Agones
-import gg.tater.shared.network.model.ServerDataModel
-import gg.tater.shared.network.model.ServerType
+import gg.tater.shared.network.model.ProxyDataModel
+import gg.tater.shared.network.model.server.ServerDataModel
+import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.PlayerRedirectRequest
+import gg.tater.shared.redis.Redis
 import io.github.cdimascio.dotenv.Dotenv
 import io.kubernetes.client.openapi.ApiClient
 import io.kubernetes.client.openapi.Configuration
@@ -32,7 +33,7 @@ import java.util.concurrent.TimeUnit
 
 @Plugin(id = "velocity", version = "1.0")
 class ProxyPlugin @Inject constructor(
-    private val network: ProxyServer,
+    private val proxy: ProxyServer,
     private val logger: Logger,
     @DataDirectory private val dir: Path
 ) {
@@ -56,6 +57,7 @@ class ProxyPlugin @Inject constructor(
     @Subscribe
     private fun onProxyInit(event: ProxyInitializeEvent) {
         val actions = Agones(OkHttpClient())
+        val data = ProxyDataModel()
 
         val env = Dotenv.load()
         val credential = Redis.Credential(
@@ -73,16 +75,16 @@ class ProxyPlugin @Inject constructor(
         val api = CustomObjectsApi()
 
         redis.listen<PlayerRedirectRequest> {
-            val player = network.getPlayer(it.uuid).orElse(null) ?: return@listen
+            val player = proxy.getPlayer(it.uuid).orElse(null) ?: return@listen
             val target: RegisteredServer?
 
             // If the direct server exists, move them there instead
             val serverId = it.server
             if (serverId != null) {
-                target = network.getServer(serverId).orElse(null)
+                target = proxy.getServer(serverId).orElse(null)
             } else {
                 val id = redis.getReadyServer(it.type).id
-                target = network.getServer(id).orElse(null)
+                target = proxy.getServer(id).orElse(null)
             }
 
             if (target == null) return@listen
@@ -91,18 +93,21 @@ class ProxyPlugin @Inject constructor(
 
         // When their island is ready, redirect them to the server
         redis.listen<IslandPlacementResponse> {
-            val player = network.getPlayer(it.playerId).orElse(null) ?: return@listen
-            val server = network.getServer(it.server).orElse(null) ?: return@listen
+            val player = proxy.getPlayer(it.playerId).orElse(null) ?: return@listen
+            val server = proxy.getServer(it.server).orElse(null) ?: return@listen
             if (it.internal) {
                 player.createConnectionRequest(server).fireAndForget()
             }
         }
 
-        network.scheduler.buildTask(this, Runnable {
+        proxy.scheduler.buildTask(this, Runnable {
             actions.health()
 
+            data.players = proxy.playerCount
+            redis.proxy().set(data)
+
             // Agones status handling
-            if (network.playerCount > 0) {
+            if (proxy.playerCount > 0) {
                 actions.allocate()
             } else {
                 actions.ready()
@@ -138,7 +143,7 @@ class ProxyPlugin @Inject constructor(
                 // Do not register proxy servers
                 if (name.contains("proxy")) continue
 
-                if (state == "Ready" && network.getServer(name).isEmpty && !removals.contains(name)) {
+                if (state == "Ready" && proxy.getServer(name).isEmpty && !removals.contains(name)) {
                     val info = ServerInfo(
                         name, InetSocketAddress(
                             address, ports.firstOrNull()?.get("port")
@@ -148,7 +153,7 @@ class ProxyPlugin @Inject constructor(
                         )
                     )
 
-                    network.registerServer(info)
+                    proxy.registerServer(info)
                     logger.info("Registered $name")
 
                     val type = ServerType.valueOf(name.split("-")[0].uppercase())
@@ -157,7 +162,7 @@ class ProxyPlugin @Inject constructor(
                 }
             }
 
-            for (server in network.allServers) {
+            for (server in proxy.allServers) {
                 server.ping().whenComplete { _, throwable ->
                     // Server is alive
                     if (throwable == null) {
@@ -167,7 +172,7 @@ class ProxyPlugin @Inject constructor(
                     val info = server.serverInfo
                     val name = info.name
 
-                    network.unregisterServer(info)
+                    proxy.unregisterServer(info)
                     removals.add(name)
                     redis.servers().removeAsync(name)
 
@@ -180,7 +185,7 @@ class ProxyPlugin @Inject constructor(
     @Subscribe
     private fun onServerConnect(event: PlayerChooseInitialServerEvent) {
         val server = redis.getReadyServer(ServerType.LIMBO)
-        val info = network.getServer(server.id).orElse(null)
+        val info = proxy.getServer(server.id).orElse(null)
         event.setInitialServer(info)
     }
 }

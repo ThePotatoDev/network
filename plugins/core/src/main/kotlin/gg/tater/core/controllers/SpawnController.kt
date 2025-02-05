@@ -1,6 +1,6 @@
 package gg.tater.core.controllers
 
-import gg.tater.shared.network.model.ServerType
+import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.PlayerRedirectRequest
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis

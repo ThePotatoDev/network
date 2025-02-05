@@ -2,7 +2,7 @@ package gg.tater.core.controllers.island.subcommand
 
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
-import gg.tater.shared.network.model.ServerType
+import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.position.PlayerPositionResolver
 import me.lucko.helper.command.context.CommandContext
 import org.bukkit.Bukkit

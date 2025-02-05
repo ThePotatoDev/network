@@ -6,9 +6,10 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import gg.tater.shared.JSON
 import gg.tater.shared.island.Island
-import gg.tater.shared.network.model.ServerDataModel
-import gg.tater.shared.network.model.ServerState
-import gg.tater.shared.network.model.ServerType
+import gg.tater.shared.network.model.ProxyDataModel
+import gg.tater.shared.network.model.server.ServerDataModel
+import gg.tater.shared.network.model.server.ServerState
+import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.auction.AuctionHouseItem
 import gg.tater.shared.player.economy.PlayerEconomyModel
@@ -45,6 +46,7 @@ class Redis(credential: Credential) {
         const val VAULT_MAP_NAME = "vaults"
         const val PROFILES_MAP_NAME = "profiles"
         const val PLAYER_SHOP_MAP_NAME = "player_shops"
+        const val PROXY_DATA_BUCKET_NAME = "proxy_data"
     }
 
     @Target(AnnotationTarget.CLASS)
@@ -227,6 +229,10 @@ class Redis(credential: Credential) {
         }
 
         return allocated
+    }
+
+    fun proxy(): RBucket<ProxyDataModel> {
+        return client.getBucket(PROXY_DATA_BUCKET_NAME)
     }
 
     fun semaphores(id: String): RPermitExpirableSemaphore {

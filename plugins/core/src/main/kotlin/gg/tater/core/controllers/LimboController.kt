@@ -1,7 +1,7 @@
 package gg.tater.core.controllers
 
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
-import gg.tater.shared.network.model.ServerType
+import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.PlayerRedirectRequest
 import gg.tater.shared.player.position.PlayerPositionResolver

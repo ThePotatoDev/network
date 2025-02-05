@@ -1,7 +1,7 @@
 package gg.tater.shared.player.position.resolver
 
 import gg.tater.shared.redis.Redis
-import gg.tater.shared.network.model.ServerType
+import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.position.PlayerPositionResolver
 import org.bukkit.Bukkit

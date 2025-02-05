@@ -4,7 +4,7 @@ import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
-import gg.tater.shared.network.model.ServerType
+import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.position.PlayerPositionResolver
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Item
