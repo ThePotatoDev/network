@@ -1,0 +1,39 @@
+apiVersion: agones.dev/v1
+kind: Fleet
+metadata:
+  name: spawn
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: spawn
+    spec:
+      health:
+        disabled: false
+        initialDelaySeconds: 30
+        periodSeconds: 60
+      sdkServer:
+        logLevel: Info
+        grpcPort: 9357
+        httpPort: 9358
+      ports:
+        - name: default
+          protocol: TCP
+          containerPort: 25567
+      template:
+        metadata:
+          labels:
+            app: spawn
+        spec:
+          containers:
+            - name: spawn
+              image: ghcr.io/thepotatodev/spawn:latest
+              imagePullPolicy: Always
+              resources:
+                requests:
+                  cpu: "500m"
+                  memory: "1G"
+                limits:
+                  cpu: "1"
+
