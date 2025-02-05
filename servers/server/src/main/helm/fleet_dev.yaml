@@ -25,6 +25,8 @@ spec:
           labels:
             app: server
         spec:
+          nodeSelector:
+            server-only: "true"
           containers:
             - name: server
               image: ghcr.io/thepotatodev/server:latest

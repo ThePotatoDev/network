@@ -8,7 +8,7 @@ plugins {
 }
 
 tasks.register<Exec>("runShellScript") {
-    commandLine("sh", "${project.rootDir}/scripts/deploy_dev.sh", "${project.rootDir}")
+    commandLine("sh", "${project.rootDir}/scripts/deploy_local.sh", "${project.rootDir}")
 }
 
 allprojects {

@@ -26,6 +26,8 @@ spec:
           labels:
             app: spawn
         spec:
+          nodeSelector:
+            limbo-spawn-only: "true"
           containers:
             - name: spawn
               image: ghcr.io/thepotatodev/spawn:latest

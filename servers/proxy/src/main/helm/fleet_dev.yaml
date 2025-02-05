@@ -1,13 +1,13 @@
 apiVersion: agones.dev/v1
 kind: Fleet
 metadata:
-  name: limbo
+  name: proxy
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: limbo
+        app: proxy
     spec:
       health:
         disabled: false
@@ -20,15 +20,17 @@ spec:
       ports:
         - name: default
           protocol: TCP
-          containerPort: 25568
+          containerPort: 25565
       template:
         metadata:
           labels:
-            app: limbo
+            app: proxy
         spec:
+          nodeSelector:
+            proxy-only: "true"  # Ensures the fleet spawns only on labeled nodes
           containers:
-            - name: limbo
-              image: ghcr.io/thepotatodev/limbo:latest
+            - name: proxy
+              image: ghcr.io/thepotatodev/proxy:latest
               imagePullPolicy: Always
               resources:
                 requests:
@@ -38,3 +40,15 @@ spec:
                   cpu: "1"
           imagePullSecrets:
             - name: drs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy-load-balancer
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 25565
+      targetPort: 25565
+  selector:
+    app: proxy
