@@ -70,7 +70,8 @@ class ProxyPlugin @Inject constructor(
         this.redis = Redis(credential)
         redis.servers().clear()
 
-        val client: ApiClient = Config.fromConfig("$dir/config")
+        val client: ApiClient =
+            Config.fromConfig(if (env.get("ENV").equals("dev")) "$dir/config_dev" else "$dir/config_local")
         Configuration.setDefaultApiClient(client)
         val api = CustomObjectsApi()
 
