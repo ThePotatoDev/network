@@ -8,7 +8,6 @@ spec:
     rollingUpdate:
       maxSurge: 25%
       maxUnavailable: 25%
-  replicas: 1  # Ensures at least one active server and one buffer server
   template:
     metadata:
       labels:
@@ -32,7 +31,7 @@ spec:
             app: server
         spec:
           nodeSelector:
-            server-only: "true"  # Ensures servers only spawn on specific nodes
+            oneblock-server: "true"  # Ensures servers only spawn on specific nodes
           containers:
             - name: server
               image: ghcr.io/thepotatodev/server:latest
@@ -60,4 +59,4 @@ spec:
   sync:
     type: FixedInterval
     fixedInterval:
-      seconds: 5  # Scaling check every 60 seconds
+      seconds: 60  # Scaling check every 60 seconds

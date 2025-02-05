@@ -27,7 +27,7 @@ spec:
             app: proxy
         spec:
           nodeSelector:
-            proxy-only: "true"  # Ensures the fleet spawns only on labeled nodes
+            regular-server: "true"  # Ensures the fleet spawns only on labeled nodes
           containers:
             - name: proxy
               image: ghcr.io/thepotatodev/proxy:latest

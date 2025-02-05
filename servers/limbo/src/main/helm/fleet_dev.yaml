@@ -27,7 +27,7 @@ spec:
             app: limbo
         spec:
           nodeSelector:
-            limbo-spawn-only: "true"  # Ensures the fleet spawns only on labeled nodes
+            regular-server: "true"  # Ensures the fleet spawns only on labeled nodes
           containers:
             - name: limbo
               image: ghcr.io/thepotatodev/limbo:latest
