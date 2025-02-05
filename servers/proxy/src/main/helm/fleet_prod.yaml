@@ -36,6 +36,8 @@ spec:
                   memory: "512Mi"
                 limits:
                   cpu: "1"
+          imagePullSecrets:
+            - name: drs
 ---
 apiVersion: v1
 kind: Service

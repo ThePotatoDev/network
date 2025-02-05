@@ -35,6 +35,8 @@ spec:
                   memory: "1G"
                 limits:
                   cpu: "1"
+          imagePullSecrets:
+            - name: drs
 ---
 apiVersion: "autoscaling.agones.dev/v1"
 kind: FleetAutoscaler
