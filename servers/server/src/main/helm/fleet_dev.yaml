@@ -3,6 +3,12 @@ kind: Fleet
 metadata:
   name: server
 spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  replicas: 2  # Ensures at least one active server and one buffer server
   template:
     metadata:
       labels:
@@ -26,7 +32,7 @@ spec:
             app: server
         spec:
           nodeSelector:
-            server-only: "true"
+            server-only: "true"  # Ensures servers only spawn on specific nodes
           containers:
             - name: server
               image: ghcr.io/thepotatodev/server:latest
@@ -42,33 +48,16 @@ spec:
 ---
 apiVersion: "autoscaling.agones.dev/v1"
 kind: FleetAutoscaler
-# FleetAutoscaler Metadata
-# https://v1-30.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.30/#objectmeta-v1-meta
 metadata:
   name: server-fleet-autoscaler
 spec:
-  # The name of the fleet to attach to and control. Must be an existing Fleet in the same namespace
-  # as this FleetAutoscaler
   fleetName: server
-  # The autoscaling policy
   policy:
-    # type of the policy. for now, only Buffer is available
     type: Buffer
-    # parameters of the buffer policy
     buffer:
-      # Size of a buffer of "ready" game server instances
-      # The FleetAutoscaler will scale the fleet up and down trying to maintain this buffer,
-      # as instances are being allocated or terminated
-      # it can be specified either in absolute (i.e. 5) or percentage format (i.e. 5%)
-      bufferSize: 3
-      # maximum fleet size that can be set by this FleetAutoscaler
-      # required
-      maxReplicas: 5
-  # The autoscaling sync strategy
+      bufferSize: 1  # Ensures one extra server is always ready
+      maxReplicas: 5  # Maximum scaling limit
   sync:
-    # type of the sync. for now, only FixedInterval is available
     type: FixedInterval
-    # parameters of the fixedInterval sync
     fixedInterval:
-      # the time in seconds between each auto scaling
-      seconds: 30
+      seconds: 60  # Scaling check every 60 seconds
