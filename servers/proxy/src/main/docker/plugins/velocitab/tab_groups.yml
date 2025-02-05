@@ -9,14 +9,14 @@ groups:
 - name: default
   headers:
     - |
-      \n&x&B&B&C&F&0&0&lꜱ&x&B&C&C&C&0&0&lᴇ&x&B&D&C&9&0&0&lʀ&x&B&E&C&6&0&0&lᴠ&x&B&F&C&3&0&0&lᴇ&x&C&1&C&0&0&0&lʀ &x&C&3&B&9&0&0&lɴ&x&C&4&B&6&0&0&lᴀ&x&C&5&B&3&0&0&lᴍ&x&C&6&B&0&0&0&lᴇ
+      \n&#5E18BF&lᴏ&#6419B9&lɴ&#691AB3&lᴇ&#6F1BAD&lʙ&#751DA8&lʟ&#7B1EA2&lᴏ&#801F9C&lᴄ&#862096&lᴋ
   footers:
     - |
       
       &fᴘɪɴɢ: %ping%   ┃   &fᴏɴʟɪɴᴇ: %players_online%
       
-      &fVote and earn rewards! &x&B&B&C&F&0&0&l/&x&B&E&C&7&0&0&lᴠ&x&C&1&C&0&0&0&lᴏ&x&C&3&B&8&0&0&lᴛ&x&C&6&B&0&0&0&lᴇ
-      &fNeed help? Create a ticket on our discord server! &x&B&B&C&F&0&0&l/&x&B&D&C&B&0&0&lᴅ&x&B&E&C&6&0&0&lɪ&x&C&0&C&2&0&0&lꜱ&x&C&1&B&D&0&0&lᴄ&x&C&3&B&9&0&0&lᴏ&x&C&4&B&4&0&0&lʀ&x&C&6&B&0&0&0&lᴅ
+      &fVote for rewards! &#5E18BF&l/&#681AB5&lᴠ&#721CAB&lᴏ&#7C1EA0&lᴛ&#862096&lᴇ
+      &fJoin our discord server! &#5E18BF&l/&#6419B9&lᴅ&#691AB3&lɪ&#6F1BAD&lꜱ&#751DA8&lᴄ&#7B1EA2&lᴏ&#801F9C&lʀ&#862096&lᴅ
 
   format: '%prefix%%username%'
   nametag:
