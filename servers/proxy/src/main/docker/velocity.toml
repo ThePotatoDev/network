@@ -100,7 +100,7 @@ read-timeout = 30000
 
 # Enables compatibility with HAProxy's PROXY protocol. If you don't know what this is for, then
 # don't enable it.
-haproxy-protocol = true
+haproxy-protocol = false
 
 # Enables TCP fast open support on the proxy. Requires the proxy to run on Linux.
 tcp-fast-open = true

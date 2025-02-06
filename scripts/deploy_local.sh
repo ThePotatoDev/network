@@ -20,13 +20,13 @@ docker build -t limbo:latest "$PROJECT_ROOT/servers/limbo/src/main/docker"
 
 # Apply Kubernetes configurations
 cd "$PROJECT_ROOT/servers/server/src/main/helm"
-kubectl apply -f fleet.yaml
+kubectl apply -f fleet_local.yaml
 
 cd "$PROJECT_ROOT/servers/proxy/src/main/helm"
-kubectl apply -f fleet.yaml
+kubectl apply -f fleet_local.yaml
 
 cd "$PROJECT_ROOT/servers/spawn/src/main/helm"
-kubectl apply -f fleet.yaml
+kubectl apply -f fleet_local.yaml
 
 cd "$PROJECT_ROOT/servers/limbo/src/main/helm"
-kubectl apply -f fleet.yaml
+kubectl apply -f fleet_local.yaml
