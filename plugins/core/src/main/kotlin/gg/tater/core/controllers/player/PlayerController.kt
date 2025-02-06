@@ -135,6 +135,7 @@ class PlayerController(
                         player.apply(it.player)
                     }, 2L)
 
+                    player.currentServerId = server
                     player.online = true
                     redis.players().fastPut(player.uuid, player.setPositionResolver(PlayerPositionResolver.Type.NONE))
                 }

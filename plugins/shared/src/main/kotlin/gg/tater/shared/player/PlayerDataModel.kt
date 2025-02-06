@@ -1,11 +1,11 @@
 package gg.tater.shared.player
 
 import com.google.gson.*
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.chat.color.ChatColor
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.player.position.WrappedPosition
+import gg.tater.shared.redis.Redis
 import me.lucko.helper.serialize.Serializers
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -16,6 +16,7 @@ import java.util.*
 data class PlayerDataModel(
     val uuid: UUID,
     var name: String,
+    var currentServerId: String,
     var lastServerType: ServerType,
     var lastPositionMap: MutableMap<ServerType, WrappedPosition> = mutableMapOf(),
     var inventoryMap: MutableMap<InventoryType, Array<out ItemStack?>> = mutableMapOf(),
@@ -45,6 +46,7 @@ data class PlayerDataModel(
         const val ACTION_FIELD = "action"
         const val CHAT_COLOR_FIELD = "chat_color"
         const val ISLAND_ID_FIELD = "island_id"
+        const val CURRENT_SERVER_ID_FIELD = ""
     }
 
     override fun equals(other: Any?): Boolean {
@@ -204,6 +206,7 @@ data class PlayerDataModel(
                 return PlayerDataModel(
                     UUID.fromString(get(UUID_FIELD).asString),
                     get(NAME_FIELD).asString,
+                    get(CURRENT_SERVER_ID_FIELD).asString,
                     ServerType.valueOf(get(LAST_SERVER_TYPE_FIELD).asString),
                     lastPositionMap,
                     lastInventoryMap,
