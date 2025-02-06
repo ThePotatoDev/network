@@ -4,6 +4,7 @@ import gg.tater.core.controllers.LimboController
 import gg.tater.core.controllers.ServerStatusController
 import gg.tater.core.controllers.SpawnController
 import gg.tater.core.controllers.island.IslandController
+import gg.tater.core.controllers.leaderboard.LeaderboardController
 import gg.tater.core.controllers.player.PlayerController
 import gg.tater.shared.network.Agones
 import gg.tater.shared.redis.Redis
@@ -49,5 +50,6 @@ class CorePlugin : ExtendedJavaPlugin() {
         bindModule(SpawnController(redis, id))
         val islands = bindModule(IslandController(redis, id, credential))
         bindModule(PlayerController(this, redis, id, islands))
+        bindModule(LeaderboardController())
     }
 }
