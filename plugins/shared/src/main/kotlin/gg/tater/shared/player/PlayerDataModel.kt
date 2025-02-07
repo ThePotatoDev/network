@@ -16,8 +16,8 @@ import java.util.*
 data class PlayerDataModel(
     val uuid: UUID,
     var name: String,
-    var currentServerId: String,
     var lastServerType: ServerType,
+    var currentServerId: String? = null,
     var lastPositionMap: MutableMap<ServerType, WrappedPosition> = mutableMapOf(),
     var inventoryMap: MutableMap<InventoryType, Array<out ItemStack?>> = mutableMapOf(),
     var health: Double = 20.0,
@@ -165,6 +165,10 @@ data class PlayerDataModel(
                         })
                     }
 
+                    model.currentServerId?.let {
+                        addProperty(CURRENT_SERVER_ID_FIELD, model.currentServerId)
+                    }
+
                     model.chatColor?.let {
                         addProperty(CHAT_COLOR_FIELD, it.name)
                     }
@@ -206,8 +210,8 @@ data class PlayerDataModel(
                 return PlayerDataModel(
                     UUID.fromString(get(UUID_FIELD).asString),
                     get(NAME_FIELD).asString,
-                    get(CURRENT_SERVER_ID_FIELD).asString,
                     ServerType.valueOf(get(LAST_SERVER_TYPE_FIELD).asString),
+                    get(CURRENT_SERVER_ID_FIELD)?.asString,
                     lastPositionMap,
                     lastInventoryMap,
                     get(HEALTH_FIELD).asDouble,

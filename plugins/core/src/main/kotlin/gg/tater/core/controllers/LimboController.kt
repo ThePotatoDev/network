@@ -55,7 +55,7 @@ class LimboController(private val redis: Redis) : TerminableModule {
                     PlayerDataModel(
                         uuid,
                         name,
-                        ServerType.SPAWN
+                        ServerType.SPAWN,
                     ).setPositionResolver(PlayerPositionResolver.Type.TELEPORT_SPAWN)
                 }
 
