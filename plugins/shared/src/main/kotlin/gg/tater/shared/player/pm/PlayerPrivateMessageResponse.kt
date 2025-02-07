@@ -1,6 +1,7 @@
-package gg.tater.shared.player.message
+package gg.tater.shared.player.pm
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 import java.util.*
@@ -31,6 +32,7 @@ class PlayerPrivateMessageResponse(
         request.message
     )
 
+    @JsonAdapter(PlayerPrivateMessageResponse::class)
     class Adapter : JsonSerializer<PlayerPrivateMessageResponse>, JsonDeserializer<PlayerPrivateMessageResponse> {
         override fun serialize(
             model: PlayerPrivateMessageResponse,

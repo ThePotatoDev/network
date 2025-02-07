@@ -1,6 +1,7 @@
 package gg.tater.shared.player
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.network.model.server.ServerType
 import java.lang.reflect.Type
@@ -16,6 +17,7 @@ data class PlayerRedirectRequest(val uuid: UUID, val type: ServerType, var serve
         const val SERVER_FIELD = "server"
     }
 
+    @JsonAdapter(PlayerRedirectRequest::class)
     class Adapter : JsonSerializer<PlayerRedirectRequest>, JsonDeserializer<PlayerRedirectRequest> {
         override fun serialize(
             model: PlayerRedirectRequest,

@@ -1,6 +1,7 @@
 package gg.tater.shared.island.message.placement
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 import java.util.*
@@ -16,6 +17,7 @@ class IslandPlacementResponse(val server: String, val playerId: UUID, val name: 
         const val INTERNAL_FIELD = "internal"
     }
 
+    @JsonAdapter(IslandPlacementResponse::class)
     class Adapter : JsonSerializer<IslandPlacementResponse>, JsonDeserializer<IslandPlacementResponse> {
         override fun serialize(
             model: IslandPlacementResponse,

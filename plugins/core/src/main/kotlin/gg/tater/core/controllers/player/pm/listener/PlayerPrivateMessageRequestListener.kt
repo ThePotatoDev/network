@@ -1,7 +1,7 @@
 package gg.tater.core.controllers.player.pm.listener
 
-import gg.tater.shared.player.message.PlayerPrivateMessageRequest
-import gg.tater.shared.player.message.PlayerPrivateMessageResponse
+import gg.tater.shared.player.pm.PlayerPrivateMessageRequest
+import gg.tater.shared.player.pm.PlayerPrivateMessageResponse
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule

@@ -1,6 +1,7 @@
 package gg.tater.shared.network.model
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import java.lang.reflect.Type
 
 data class ProxyDataModel(var players: Int = 0) {
@@ -9,6 +10,7 @@ data class ProxyDataModel(var players: Int = 0) {
         const val PLAYERS_FIELD = "players"
     }
 
+    @JsonAdapter(ProxyDataModel::class)
     class Adapter : JsonSerializer<ProxyDataModel>, JsonDeserializer<ProxyDataModel> {
         override fun serialize(data: ProxyDataModel, type: Type, context: JsonSerializationContext): JsonElement {
             return JsonObject().apply {

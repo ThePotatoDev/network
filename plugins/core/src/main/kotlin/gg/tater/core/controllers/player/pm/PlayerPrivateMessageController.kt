@@ -2,7 +2,7 @@ package gg.tater.core.controllers.player.pm
 
 import gg.tater.core.controllers.player.pm.listener.PlayerPrivateMessageRequestListener
 import gg.tater.core.controllers.player.pm.listener.PlayerPrivateMessageResponseListener
-import gg.tater.shared.player.message.PlayerPrivateMessageRequest
+import gg.tater.shared.player.pm.PlayerPrivateMessageRequest
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Commands
 import me.lucko.helper.terminable.TerminableConsumer

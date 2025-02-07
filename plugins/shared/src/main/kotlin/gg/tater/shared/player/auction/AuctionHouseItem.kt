@@ -1,6 +1,7 @@
 package gg.tater.shared.player.auction
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import me.lucko.helper.serialize.Serializers
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -39,6 +40,7 @@ class AuctionHouseItem(
         return other is AuctionHouseItem && other.id == this.id
     }
 
+    @JsonAdapter(AuctionHouseItem::class)
     class Adapter : JsonSerializer<AuctionHouseItem>, JsonDeserializer<AuctionHouseItem> {
         override fun serialize(item: AuctionHouseItem, type: Type, context: JsonSerializationContext): JsonElement {
             return JsonObject().apply {

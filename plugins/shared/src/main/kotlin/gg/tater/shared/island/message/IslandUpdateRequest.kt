@@ -1,6 +1,7 @@
 package gg.tater.shared.island.message
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import gg.tater.shared.island.Island
 import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
@@ -17,6 +18,7 @@ class IslandUpdateRequest(val islandId: UUID, var server: String?) {
 
     constructor(island: Island) : this(island.id, island.currentServerId)
 
+    @JsonAdapter(IslandUpdateRequest::class)
     class Adapter : JsonSerializer<IslandUpdateRequest>, JsonDeserializer<IslandUpdateRequest> {
         override fun serialize(
             model: IslandUpdateRequest,

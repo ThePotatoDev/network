@@ -12,6 +12,7 @@ import gg.tater.core.controllers.player.warp.WarpController
 import gg.tater.shared.network.Agones
 import gg.tater.shared.redis.Redis
 import io.github.cdimascio.dotenv.Dotenv
+import me.lucko.helper.Helper
 import me.lucko.helper.Services
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import okhttp3.OkHttpClient
@@ -57,7 +58,10 @@ class CorePlugin : ExtendedJavaPlugin() {
 
         val islands = bindModule(IslandController(redis, id, credential))
 
-        bindModule(CombatController(redis))
+        if (Helper.plugins().isPluginEnabled("FancyNpcs")) {
+            bindModule(CombatController(redis))
+        }
+
         bindModule(SpawnController(redis, id))
         bindModule(PlayerController(this, redis, id, islands))
         bindModule(LeaderboardController())

@@ -1,6 +1,7 @@
 package gg.tater.shared.player.economy
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import java.lang.reflect.Type
 import java.util.*
 
@@ -41,6 +42,7 @@ data class PlayerEconomyModel(val uuid: UUID, val balance: MutableMap<EconomyTyp
         balance[type] = amount
     }
 
+    @JsonAdapter(PlayerEconomyModel::class)
     class Adapter : JsonSerializer<PlayerEconomyModel>, JsonDeserializer<PlayerEconomyModel> {
         override fun serialize(
             model: PlayerEconomyModel,

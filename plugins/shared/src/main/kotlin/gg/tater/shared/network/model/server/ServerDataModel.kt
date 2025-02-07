@@ -1,6 +1,7 @@
 package gg.tater.shared.network.model.server
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 
@@ -29,6 +30,7 @@ data class ServerDataModel(
         return maxMemory - freeMemory
     }
 
+    @JsonAdapter(ServerDataModel::class)
     class Adapter : JsonSerializer<ServerDataModel>, JsonDeserializer<ServerDataModel> {
         override fun serialize(model: ServerDataModel, type: Type, context: JsonSerializationContext): JsonElement {
             val json = JsonObject()

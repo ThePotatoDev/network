@@ -72,7 +72,7 @@ class IslandPlacementRequestListener(
                 player.teleportAsync(
                     Location(
                         Bukkit.getWorld(worldName),
-                        spawn.x,
+                        spawn!!.x,
                         spawn.y,
                         spawn.z,
                         spawn.yaw,

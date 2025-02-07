@@ -1,6 +1,7 @@
 package gg.tater.shared.player.kit
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import java.lang.reflect.Type
 import java.time.Instant
 
@@ -10,6 +11,7 @@ class KitPlayerDataModel(private val lastUsed: MutableMap<String, Long> = mutabl
         const val LAST_USED_FIELD = "last_used"
     }
 
+    @JsonAdapter(KitPlayerDataModel::class)
     class Adapter : JsonSerializer<KitPlayerDataModel>, JsonDeserializer<KitPlayerDataModel> {
         override fun serialize(data: KitPlayerDataModel, type: Type, context: JsonSerializationContext): JsonElement {
             return JsonObject().apply {

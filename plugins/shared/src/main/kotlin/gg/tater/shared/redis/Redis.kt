@@ -4,7 +4,8 @@ import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import gg.tater.shared.JSON
+import gg.tater.shared.Json
+import gg.tater.shared.findAnnotatedClasses
 import gg.tater.shared.island.Island
 import gg.tater.shared.network.model.ProxyDataModel
 import gg.tater.shared.network.model.server.ServerDataModel
@@ -25,7 +26,6 @@ import org.redisson.client.handler.State
 import org.redisson.client.protocol.Decoder
 import org.redisson.client.protocol.Encoder
 import org.redisson.config.Config
-import org.reflections.Reflections
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -80,8 +80,7 @@ class Redis(credential: Credential) {
          * If a mapping does not exist for an object, the class name will be used as the mapping. (This is not recommended but required for classes such as string, int, etc.)
          */
         init {
-            val reflections = Reflections("gg.tater.shared")
-            for (clazz in reflections.getTypesAnnotatedWith(Mapping::class.java)) {
+            for (clazz in findAnnotatedClasses(Mapping::class.java)) {
                 val mapping = clazz.getAnnotation(Mapping::class.java)
                 mappings[clazz.kotlin] = mapping.id
             }
@@ -95,7 +94,7 @@ class Redis(credential: Credential) {
 
                 Unpooled.wrappedBuffer(JsonObject().apply {
                     addProperty(MAPPING_FIELD, mapping)
-                    addProperty(DATA_FIELD, JSON.toJson(obj))
+                    addProperty(DATA_FIELD, Json.INSTANCE.toJson(obj))
                 }.toString().toByteArray(StandardCharsets.UTF_8))
             } catch (e: Exception) {
                 throw IOException("Error encoding object to JSON", e)
@@ -109,7 +108,7 @@ class Redis(credential: Credential) {
                 val data = json.get(DATA_FIELD).asString
                 val clazz =
                     mappings.inverse()[mapping] ?: Class.forName(mapping).kotlin
-                JSON.fromJson(data, clazz.java)
+                Json.INSTANCE.fromJson(data, clazz.java)
             } catch (e: Exception) {
                 throw IOException("Error decoding JSON to object", e)
             }

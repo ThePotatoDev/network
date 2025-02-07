@@ -1,6 +1,7 @@
 package gg.tater.shared.player
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.chat.color.ChatColor
 import gg.tater.shared.player.position.PlayerPositionResolver
@@ -60,7 +61,7 @@ data class PlayerDataModel(
     }
 
     fun setDefaultSpawn(type: ServerType) {
-        lastPositionMap[type] = type.spawn
+        lastPositionMap[type] = type.spawn!!
     }
 
     fun setSpawn(type: ServerType, position: WrappedPosition) {
@@ -68,7 +69,7 @@ data class PlayerDataModel(
     }
 
     fun getSpawn(type: ServerType): WrappedPosition {
-        return lastPositionMap.getOrDefault(type, type.spawn)
+        return lastPositionMap.getOrDefault(type, type.spawn!!)
     }
 
     fun setPositionResolver(type: PlayerPositionResolver.Type): PlayerDataModel {
@@ -124,6 +125,7 @@ data class PlayerDataModel(
         return this
     }
 
+    @JsonAdapter(PlayerDataModel::class)
     class Adapter : JsonSerializer<PlayerDataModel>, JsonDeserializer<PlayerDataModel> {
         override fun serialize(model: PlayerDataModel, type: Type, context: JsonSerializationContext): JsonElement {
             return JsonObject()

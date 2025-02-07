@@ -76,5 +76,10 @@ paper {
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
             required = false
         }
+
+        register("FancyNpcs") {
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+            required = false
+        }
     }
 }

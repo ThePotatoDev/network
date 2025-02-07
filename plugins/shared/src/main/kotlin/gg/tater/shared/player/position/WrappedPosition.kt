@@ -1,6 +1,7 @@
 package gg.tater.shared.player.position
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import gg.tater.shared.redis.Redis
 import org.bukkit.Location
 import java.lang.reflect.Type
@@ -24,6 +25,7 @@ data class WrappedPosition(
         position.pitch
     )
 
+    @JsonAdapter(WrappedPosition::class)
     class Adapter : JsonSerializer<WrappedPosition>, JsonDeserializer<WrappedPosition> {
         override fun serialize(
             src: WrappedPosition,

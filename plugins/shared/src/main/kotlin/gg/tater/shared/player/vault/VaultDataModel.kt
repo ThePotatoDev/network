@@ -1,6 +1,7 @@
 package gg.tater.shared.player.vault
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import me.lucko.helper.serialize.Serializers
 import org.bukkit.inventory.ItemStack
 import java.lang.reflect.Type
@@ -35,6 +36,7 @@ data class VaultDataModel(
         amount = count
     }
 
+    @JsonAdapter(VaultDataModel::class)
     class Adapter : JsonSerializer<VaultDataModel>, JsonDeserializer<VaultDataModel> {
         override fun serialize(model: VaultDataModel, type: Type, context: JsonSerializationContext): JsonElement {
             return JsonObject().apply {

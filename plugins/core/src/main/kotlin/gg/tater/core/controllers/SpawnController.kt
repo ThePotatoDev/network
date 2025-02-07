@@ -43,7 +43,7 @@ class SpawnController(private val redis: Redis, private val id: String) : Termin
                         it.sender().teleportAsync(
                             Location(
                                 it.sender().world,
-                                spawn.x,
+                                spawn!!.x,
                                 spawn.y,
                                 spawn.z,
                                 spawn.yaw,

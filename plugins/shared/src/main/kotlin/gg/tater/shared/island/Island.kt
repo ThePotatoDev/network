@@ -1,12 +1,13 @@
 package gg.tater.shared.island
 
 import com.google.gson.*
-import gg.tater.shared.JSON
-import gg.tater.shared.redis.Redis
-import gg.tater.shared.player.position.WrappedPosition
+import gg.tater.shared.Json
+import gg.tater.shared.JsonAdapter
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.setting.model.IslandSettingType
 import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.player.position.WrappedPosition
+import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 import java.time.Instant
 import java.util.*
@@ -22,7 +23,7 @@ class Island(
     var warps: MutableMap<String, WrappedPosition> = mutableMapOf(),
     var currentServerId: String? = null,
     var lastActivity: Instant = Instant.now(),
-    var spawn: WrappedPosition = WrappedPosition(ServerType.SERVER.spawn)
+    var spawn: WrappedPosition = WrappedPosition(ServerType.SERVER.spawn!!)
 ) {
 
     companion object {
@@ -93,6 +94,7 @@ class Island(
         return id == (other as Island).id
     }
 
+    @JsonAdapter(Island::class)
     class Adapter : JsonSerializer<Island>, JsonDeserializer<Island> {
         override fun serialize(
             model: Island,
@@ -105,7 +107,7 @@ class Island(
                 addProperty(OWNER_UUID_FIELD, model.ownerId.toString())
                 addProperty(OWNER_NAME_FIELD, model.ownerName)
                 addProperty(LAST_ACTIVITY_FIELD, model.lastActivity.toEpochMilli())
-                addProperty(SPAWN_FIELD, JSON.toJson(model.spawn))
+                addProperty(SPAWN_FIELD, Json.INSTANCE.toJson(model.spawn))
 
                 model.currentServerId?.let { addProperty(CURRENT_SERVER_ID_FIELD, it) }
 
@@ -122,7 +124,7 @@ class Island(
                     model.warps.forEach { (name, pos) ->
                         add(JsonObject().apply {
                             addProperty("name", name)
-                            addProperty("pos", JSON.toJson(pos))
+                            addProperty("pos", Json.INSTANCE.toJson(pos))
                         })
                     }
                 })
@@ -157,7 +159,7 @@ class Island(
                 val ownerId = UUID.fromString(get(OWNER_UUID_FIELD).asString)
                 val ownerName = get(OWNER_NAME_FIELD).asString
                 val lastActivity = Instant.ofEpochMilli(get(LAST_ACTIVITY_FIELD).asLong)
-                val spawn = JSON.fromJson(get(SPAWN_FIELD).asString, WrappedPosition::class.java)
+                val spawn = Json.INSTANCE.fromJson(get(SPAWN_FIELD).asString, WrappedPosition::class.java)
                 val currentServer = get(CURRENT_SERVER_ID_FIELD)?.asString
 
                 val members = mutableMapOf<UUID, Role>()
@@ -189,7 +191,7 @@ class Island(
                 get(WARPS_FIELD).asJsonArray.forEach {
                     val obj = it.asJsonObject
                     val name = obj.get("name").asString
-                    val pos = JSON.fromJson(obj.get("pos").asString, WrappedPosition::class.java)
+                    val pos = Json.INSTANCE.fromJson(obj.get("pos").asString, WrappedPosition::class.java)
                     warps[name] = pos
                 }
 

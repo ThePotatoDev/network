@@ -1,6 +1,7 @@
 package gg.tater.shared.island.message
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 import java.util.*
@@ -17,6 +18,7 @@ class IslandDeleteRequest(
         const val ISLAND_ID_FIELD = "island_id"
     }
 
+    @JsonAdapter(IslandDeleteRequest::class)
     class Adapter : JsonSerializer<IslandDeleteRequest>, JsonDeserializer<IslandDeleteRequest> {
         override fun serialize(
             model: IslandDeleteRequest,

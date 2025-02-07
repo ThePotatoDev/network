@@ -1,6 +1,7 @@
 package gg.tater.shared.player.chat.message
 
 import com.google.gson.*
+import gg.tater.shared.JsonAdapter
 import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 import java.util.*
@@ -31,6 +32,7 @@ class ChatMessageRequest(
         parts[part] = value
     }
 
+    @JsonAdapter(ChatMessageRequest::class)
     class Adapter : JsonSerializer<ChatMessageRequest>, JsonDeserializer<ChatMessageRequest> {
         override fun serialize(
             model: ChatMessageRequest,
