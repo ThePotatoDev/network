@@ -15,6 +15,7 @@ dependencies {
     compileOnly("me.lucko:helper:5.6.14")
     compileOnly("net.luckperms:api:5.4")
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+    compileOnly("de.oliver:FancyNpcs:2.4.2")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.redisson:redisson:3.36.0")
     implementation("io.github.cdimascio:dotenv-java:3.0.0")

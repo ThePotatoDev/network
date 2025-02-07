@@ -1,14 +1,15 @@
 package gg.tater.shared.player.combat
 
+import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.entity.Player
 import java.util.*
 
-interface CombatService {
+interface CombatService: TerminableModule {
 
     fun isInCombat(uuid: UUID): Boolean
 
     fun setInCombat(uuid: UUID): Boolean
 
-    fun spawnCombatNPC(player: Player)
+    fun spawnCombatNPC(player: Player):
 
 }

@@ -47,6 +47,7 @@ class Redis(credential: Credential) {
         const val PROFILES_MAP_NAME = "profiles"
         const val PLAYER_SHOP_MAP_NAME = "player_shops"
         const val PROXY_DATA_BUCKET_NAME = "proxy_data"
+        const val COMBAT_MAP_NAME = "combat"
     }
 
     @Target(AnnotationTarget.CLASS)
