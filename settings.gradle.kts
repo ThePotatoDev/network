@@ -16,3 +16,5 @@ include("servers:spawn")
 include("servers:limbo")
 include("servers:proxy")
 include("servers")
+include("servers:duel")
+findProject(":servers:duel")?.name = "duel"

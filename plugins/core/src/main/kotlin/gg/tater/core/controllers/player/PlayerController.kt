@@ -65,14 +65,6 @@ class PlayerController(
             NoopScoreboardLibrary()
         }
 
-        Commands.create()
-            .assertPlayer()
-            .handler {
-                val player = it.sender()
-                it.reply("TEST #2!!!!!!!!")
-            }
-            .registerAndBind(consumer, "rollover")
-
         consumer.bindModule(PlayerPrivateMessageController(redis))
         consumer.bindModule(PlayerChatController(redis))
         consumer.bindModule(KitController(redis))

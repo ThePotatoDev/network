@@ -6,6 +6,7 @@ import gg.tater.core.controllers.SpawnController
 import gg.tater.core.controllers.island.IslandController
 import gg.tater.core.controllers.leaderboard.LeaderboardController
 import gg.tater.core.controllers.player.PlayerController
+import gg.tater.core.controllers.player.duel.DuelController
 import gg.tater.core.controllers.player.warp.WarpController
 import gg.tater.shared.network.Agones
 import gg.tater.shared.redis.Redis
@@ -45,6 +46,11 @@ class CorePlugin : ExtendedJavaPlugin() {
 
         if (id.contains("limbo")) {
             bindModule(LimboController(redis))
+            return
+        }
+
+        if (id.contains("duel")) {
+            bindModule(DuelController(redis, credential))
             return
         }
 

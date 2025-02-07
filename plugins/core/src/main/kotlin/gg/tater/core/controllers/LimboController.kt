@@ -32,7 +32,7 @@ class LimboController(private val redis: Redis) : TerminableModule {
     )
 
     override fun setup(consumer: TerminableConsumer) {
-        val spawn = ServerType.LIMBO.spawn
+        val spawn = ServerType.LIMBO.spawn!!
         val location = Location(Bukkit.getWorld("world")!!, spawn.x, spawn.y, spawn.z, spawn.yaw, spawn.pitch)
 
         Events.subscribe(PlayerJoinEvent::class.java)
