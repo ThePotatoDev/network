@@ -53,9 +53,13 @@ class SpawnController(private val redis: Redis, private val id: String) : Termin
                         return@thenAcceptAsync
                     }
 
-                    redis.players().fastPut(player.uuid, player)
-                    val request = PlayerRedirectRequest(player.uuid, ServerType.SPAWN)
-                    redis.publish(request)
+                    redis.execute(
+                        Redis.PLAYER_MAP_NAME,
+                        { map -> map[player.uuid] = player },
+                        onSuccess = {
+                            val request = PlayerRedirectRequest(player.uuid, ServerType.SPAWN)
+                            redis.publish(request)
+                        })
                 }
             }
             .registerAndBind(consumer, "spawn")

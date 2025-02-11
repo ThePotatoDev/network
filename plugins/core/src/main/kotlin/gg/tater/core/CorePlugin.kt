@@ -1,6 +1,5 @@
 package gg.tater.core
 
-import gg.tater.core.controllers.LimboController
 import gg.tater.core.controllers.ServerStatusController
 import gg.tater.core.controllers.SpawnController
 import gg.tater.core.controllers.island.IslandController
@@ -45,11 +44,6 @@ class CorePlugin : ExtendedJavaPlugin() {
         bind(AutoCloseable {
             redis.servers().remove(id)
         })
-
-        if (id.contains("limbo")) {
-            bindModule(LimboController(redis))
-            return
-        }
 
         if (id.contains("duel")) {
             bindModule(DuelController(redis, credential))

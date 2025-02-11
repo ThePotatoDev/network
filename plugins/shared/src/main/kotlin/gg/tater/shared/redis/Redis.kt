@@ -33,7 +33,7 @@ import kotlin.reflect.KClass
 
 class Redis(credential: Credential) {
 
-    private companion object {
+    companion object {
         const val PLAYER_MAP_NAME = "players"
         const val SERVER_MAP_NAME = "servers"
         const val ECONOMY_MAP_NAME = "economy"
@@ -143,6 +143,30 @@ class Redis(credential: Credential) {
         this.codec = instance
         this.client = Redisson.create(config)
     }
+
+    /**
+     *
+     */
+    fun <K, V> execute(
+        mapName: String,
+        operation: (RMap<K, V>) -> Unit,
+        onSuccess: () -> Unit = {},
+        onFailure: (Exception) -> Unit = {}
+    ) {
+        val transaction = client.createTransaction(TransactionOptions.defaults())
+        val map = transaction.getMap<K, V>(mapName)
+
+        try {
+            operation(map) // Execute the custom operation (put, remove, etc.)
+            transaction.commit()
+            onSuccess()
+        } catch (e: Exception) {
+            transaction.rollback()
+            println("Transaction failed: ${e.message}")
+            onFailure(e)
+        }
+    }
+
 
     /**
      * Delete a server by its island object.
