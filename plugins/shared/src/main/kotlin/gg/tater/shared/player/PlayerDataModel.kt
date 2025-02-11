@@ -64,12 +64,20 @@ data class PlayerDataModel(
         lastPositionMap[type] = type.spawn!!
     }
 
+    fun getSetDefaultSpawn(type: ServerType): WrappedPosition? {
+        return lastPositionMap[type]
+    }
+
     fun setSpawn(type: ServerType, position: WrappedPosition) {
         lastPositionMap[type] = position
     }
 
     fun getSpawn(type: ServerType): WrappedPosition {
         return lastPositionMap.getOrDefault(type, type.spawn!!)
+    }
+
+    fun getCurrentPositionResolver(): PlayerPositionResolver.Type? {
+        return this.resolver?.first
     }
 
     fun setPositionResolver(type: PlayerPositionResolver.Type): PlayerDataModel {

@@ -5,6 +5,7 @@ import gg.tater.shared.island.Island
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.message.IslandUpdateRequest
 import gg.tater.shared.redis.Redis
+import me.lucko.helper.Schedulers
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Gui
 import me.lucko.helper.menu.scheme.MenuScheme
@@ -73,14 +74,16 @@ class IslandFlagGui(player: Player, private val island: Island, private val redi
                         }
 
                         island.setFlagRole(flag, currentRole.next())
+                        redraw()
 
-                        redis.transactional<UUID, Island>(
-                            Redis.ISLAND_MAP_NAME,
-                            { map -> map[island.id] = island },
-                            onSuccess = {
-                                redis.publish(IslandUpdateRequest(island))
-                                redraw()
-                            })
+                        Schedulers.async().run {
+                            redis.transactional<UUID, Island>(
+                                Redis.ISLAND_MAP_NAME,
+                                { map -> map[island.id] = island },
+                                onSuccess = {
+                                    redis.publish(IslandUpdateRequest(island))
+                                })
+                        }
                     })
         }
 

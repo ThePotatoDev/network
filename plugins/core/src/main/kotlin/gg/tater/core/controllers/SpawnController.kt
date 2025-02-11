@@ -34,8 +34,6 @@ class SpawnController(private val redis: Redis, private val id: String) : Termin
                     }
 
                     it.reply("&a&oTeleporting you to spawn...")
-                    player.setDefaultSpawn(ServerType.SPAWN)
-                    player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_SPAWN)
                     val spawn = ServerType.SPAWN.spawn
 
                     // If they are already on a spawn server, just teleport them to location
@@ -52,6 +50,9 @@ class SpawnController(private val redis: Redis, private val id: String) : Termin
                         )
                         return@thenAcceptAsync
                     }
+
+                    player.setDefaultSpawn(ServerType.SPAWN)
+                    player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_SPAWN)
 
                     redis.transactional(
                         Redis.PLAYER_MAP_NAME,

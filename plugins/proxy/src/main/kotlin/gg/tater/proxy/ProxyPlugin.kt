@@ -2,6 +2,7 @@ package gg.tater.proxy
 
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
+import com.velocitypowered.api.event.connection.LoginEvent
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.Plugin
@@ -14,7 +15,9 @@ import gg.tater.shared.network.Agones
 import gg.tater.shared.network.model.ProxyDataModel
 import gg.tater.shared.network.model.server.ServerDataModel
 import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.PlayerRedirectRequest
+import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
 import io.github.cdimascio.dotenv.Dotenv
 import io.kubernetes.client.openapi.ApiClient
@@ -184,8 +187,26 @@ class ProxyPlugin @Inject constructor(
     }
 
     @Subscribe
+    private fun onLogin(event: LoginEvent) {
+        val player = event.player
+        val uuid = player.uniqueId
+        val name = player.username
+
+        redis.players().computeIfAbsentAsync(uuid) {
+            PlayerDataModel(
+                uuid,
+                name,
+                ServerType.SPAWN,
+            ).setPositionResolver(PlayerPositionResolver.Type.TELEPORT_SPAWN)
+        }.thenApplyAsync { data ->
+            data.name = name
+            redis.players()[uuid] = data
+        }
+    }
+
+    @Subscribe
     private fun onServerConnect(event: PlayerChooseInitialServerEvent) {
-        val server = redis.getReadyServer(ServerType.LIMBO)
+        val server = redis.getReadyServer(ServerType.SPAWN)
         val info = proxy.getServer(server.id).orElse(null)
         event.setInitialServer(info)
     }

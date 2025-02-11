@@ -1,7 +1,5 @@
 package gg.tater.shared.redis
 
-import com.google.common.collect.BiMap
-import com.google.common.collect.HashBiMap
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import gg.tater.shared.Json
@@ -67,7 +65,8 @@ class Redis(credential: Credential) {
             const val DATA_FIELD = "data"
         }
 
-        private val mappings: BiMap<KClass<*>, String> = HashBiMap.create()
+        private val mappingsByClazz: MutableMap<KClass<*>, String> = mutableMapOf()
+        private val mappingsById: MutableMap<String, KClass<*>> = mutableMapOf()
 
         /**
          * Initialize the mappings for the codec
@@ -83,15 +82,15 @@ class Redis(credential: Credential) {
         init {
             for (clazz in findAnnotatedClasses(Mapping::class.java)) {
                 val mapping = clazz.getAnnotation(Mapping::class.java)
-                mappings[clazz.kotlin] = mapping.id
+                mappingsById[mapping.id] = clazz.kotlin
+                mappingsByClazz[clazz.kotlin] = mapping.id
             }
         }
 
         private val encoder = Encoder { obj ->
             try {
-                val mapping =
-                    mappings[obj::class]
-                        ?: obj::class.java.name // If the class mapping is not registered, use the simple name
+                val mapping = mappingsByClazz[obj::class]
+                    ?: obj::class.java.name // If the class mapping is not registered, use the simple name
 
                 val json = JsonObject().apply {
                     addProperty(MAPPING_FIELD, mapping)
@@ -111,7 +110,12 @@ class Redis(credential: Credential) {
                 val mapping = json.get(MAPPING_FIELD).asString
                 val data = json.get(DATA_FIELD).asString
 
-                val clazz = mappings.inverse()[mapping] ?: Class.forName(mapping).kotlin
+                var clazz: KClass<*>? = mappingsById[mapping]
+                if (clazz == null) {
+                    clazz = mappingsById.computeIfAbsent(mapping) {
+                        Class.forName(mapping).kotlin
+                    }
+                }
 
                 Json.INSTANCE.fromJson(data, clazz.java)
             } catch (e: Exception) {

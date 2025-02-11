@@ -17,7 +17,6 @@ class IslandHomeSubCommand(private val redis: Redis, private val server: String)
 
     override fun handle(context: CommandContext<Player>) {
         val sender = context.sender()
-        val uuid = sender.uniqueId
 
         redis.players().getAsync(sender.uniqueId).thenAcceptAsync { player ->
             val island = player.islandId?.let { redis.islands()[it] }
@@ -46,6 +45,12 @@ class IslandHomeSubCommand(private val redis: Redis, private val server: String)
             }
 
             player.setSpawn(ServerType.SERVER, island.spawn)
+
+            // If they are already set to teleport home, direct immediately
+            if (player.getCurrentPositionResolver() == PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME) {
+                IslandPlacementRequest.directToActive(redis, sender, island)
+                return@thenAcceptAsync
+            }
 
             redis.transactional(
                 Redis.PLAYER_MAP_NAME,
