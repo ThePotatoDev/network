@@ -19,6 +19,7 @@ import gg.tater.shared.player.playershop.PlayerShopDataModel
 import gg.tater.shared.player.vault.VaultDataModel
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
+import me.lucko.helper.promise.ThreadContext
 import org.redisson.Redisson
 import org.redisson.api.*
 import org.redisson.client.codec.BaseCodec
@@ -147,12 +148,16 @@ class Redis(credential: Credential) {
     /**
      *
      */
-    fun <K, V> execute(
+    fun <K, V> transactional(
         mapName: String,
         operation: (RMap<K, V>) -> Unit,
         onSuccess: () -> Unit = {},
         onFailure: (Exception) -> Unit = {}
     ) {
+        if (ThreadContext.forCurrentThread() != ThreadContext.ASYNC) {
+            throw Exception("You must be in an async context to create transactions!")
+        }
+
         val transaction = client.createTransaction(TransactionOptions.defaults())
         val map = transaction.getMap<K, V>(mapName)
 

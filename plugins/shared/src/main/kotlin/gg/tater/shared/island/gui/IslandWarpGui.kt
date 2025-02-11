@@ -1,11 +1,12 @@
 package gg.tater.shared.island.gui
 
 import gg.tater.shared.ARROW_TEXT
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.position.PlayerPositionResolver
+import gg.tater.shared.redis.Redis
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Item
 import me.lucko.helper.menu.paginated.PageInfo
@@ -19,6 +20,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import java.util.*
 
 class IslandWarpGui(opener: Player, private val island: Island, private val redis: Redis, private val server: String) :
     PaginatedGui(
@@ -108,12 +110,16 @@ class IslandWarpGui(opener: Player, private val island: Island, private val redi
 
                         redis.players().getAsync(uuid).thenAcceptAsync { player ->
                             player.setSpawn(ServerType.SERVER, warp)
-                            redis.players()
-                                .fastPut(
-                                    uuid,
-                                    player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_WARP)
-                                )
-                            IslandPlacementRequest.directToActive(redis, opener, island)
+
+                            redis.transactional<UUID, PlayerDataModel>(
+                                Redis.ISLAND_MAP_NAME,
+                                { map ->
+                                    map[uuid] =
+                                        player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_WARP)
+                                },
+                                onSuccess = {
+                                    IslandPlacementRequest.directToActive(redis, opener, island)
+                                })
                         }
                     }
             }

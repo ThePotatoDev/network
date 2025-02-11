@@ -1,10 +1,11 @@
 package gg.tater.core.controllers.island.subcommand
 
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.message.IslandDeleteRequest
+import gg.tater.shared.redis.Redis
 import me.lucko.helper.command.context.CommandContext
 import org.bukkit.entity.Player
+import java.util.*
 
 class IslandDeleteSubCommand(private val redis: Redis, private val server: String) : IslandSubCommand {
 
@@ -34,9 +35,12 @@ class IslandDeleteSubCommand(private val redis: Redis, private val server: Strin
             val id = island.id
             val server = island.currentServerId
 
-            redis.deleteIsland(island).thenRun {
-                redis.publish(IslandDeleteRequest(id, server))
-            }
+            redis.transactional<UUID, Island>(
+                Redis.ISLAND_MAP_NAME,
+                { map -> map.remove(island.id) },
+                onSuccess = {
+                    redis.publish(IslandDeleteRequest(id, server))
+                })
         }
     }
 }

@@ -1,16 +1,18 @@
 package gg.tater.core.controllers.island.subcommand
 
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.island.setting.model.IslandSettingType
 import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.position.PlayerPositionResolver
+import gg.tater.shared.redis.Redis
 import me.lucko.helper.command.context.CommandContext
 import net.luckperms.api.LuckPermsProvider
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import java.util.*
 
 class IslandVisitSubCommand(private val redis: Redis, private val server: String) : IslandSubCommand {
 
@@ -71,8 +73,15 @@ class IslandVisitSubCommand(private val redis: Redis, private val server: String
             }
 
             data.setSpawn(ServerType.SERVER, island.spawn)
-            redis.players()[sender.uniqueId] = data.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_VISIT)
-            IslandPlacementRequest.directToActive(redis, sender, island)
+
+            redis.transactional<UUID, PlayerDataModel>(
+                Redis.PLAYER_MAP_NAME,
+                { map ->
+                    map[sender.uniqueId] = data.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_VISIT)
+                },
+                onSuccess = {
+                    IslandPlacementRequest.directToActive(redis, sender, island)
+                })
         }
     }
 }

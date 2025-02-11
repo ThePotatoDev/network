@@ -1,10 +1,11 @@
 package gg.tater.core.controllers.island.subcommand
 
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.position.PlayerPositionResolver
+import gg.tater.shared.redis.Redis
 import me.lucko.helper.command.context.CommandContext
 import org.bukkit.entity.Player
 import java.util.*
@@ -41,17 +42,20 @@ class IslandCreateSubCommand(private val redis: Redis) : IslandSubCommand {
             player.islandId = newIsland.id
             player.setDefaultSpawn(ServerType.SERVER)
 
-            redis.players()[uuid] =
-                player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME)
-            redis.publish(
-                IslandPlacementRequest(
-                    server.id,
-                    sender.uniqueId,
-                    newIsland.id,
-                    sender.name,
-                    true
-                )
-            )
+            redis.transactional<UUID, PlayerDataModel>(
+                Redis.PLAYER_MAP_NAME,
+                { map -> map[uuid] = player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME) },
+                onSuccess = {
+                    redis.publish(
+                        IslandPlacementRequest(
+                            server.id,
+                            sender.uniqueId,
+                            newIsland.id,
+                            sender.name,
+                            true
+                        )
+                    )
+                })
         }
     }
 }

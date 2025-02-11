@@ -53,7 +53,7 @@ class SpawnController(private val redis: Redis, private val id: String) : Termin
                         return@thenAcceptAsync
                     }
 
-                    redis.execute(
+                    redis.transactional(
                         Redis.PLAYER_MAP_NAME,
                         { map -> map[player.uuid] = player },
                         onSuccess = {

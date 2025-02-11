@@ -2,9 +2,9 @@ package gg.tater.shared.island.gui
 
 import com.destroystokyo.paper.profile.ProfileProperty
 import gg.tater.shared.ARROW_TEXT
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.flag.model.FlagType
+import gg.tater.shared.redis.Redis
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Item
 import me.lucko.helper.menu.paginated.PageInfo
@@ -133,10 +133,14 @@ class IslandMemberGui(
                             }
 
                             island.setRoleFor(member.key, currentRole.next())
-                            redis.islands().fastPutAsync(island.id, island)
 
-                            gui.updateContent(getItems(gui, island, offline, redis))
-                            gui.redraw()
+                            redis.transactional<UUID, Island>(
+                                Redis.ISLAND_MAP_NAME,
+                                { map -> map[island.id] = island },
+                                onSuccess = {
+                                    gui.updateContent(getItems(gui, island, offline, redis))
+                                    gui.redraw()
+                                })
                         }
                 }
         }
