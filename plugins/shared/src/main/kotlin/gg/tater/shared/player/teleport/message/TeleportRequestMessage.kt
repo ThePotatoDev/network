@@ -6,8 +6,8 @@ import gg.tater.shared.player.teleport.TeleportRequest
 import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 
-@Redis.Mapping("chat_message_req")
-@Redis.ReqRes("chat_message")
+@Redis.Mapping("teleport_req_message")
+@Redis.ReqRes("teleport_req_messages")
 class TeleportRequestMessage(val request: TeleportRequest) {
 
     private companion object {
