@@ -4,14 +4,10 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import gg.tater.shared.Json
 import gg.tater.shared.findAnnotatedClasses
-import gg.tater.shared.island.Island
 import gg.tater.shared.network.model.ProxyDataModel
 import gg.tater.shared.network.model.server.ServerDataModel
 import gg.tater.shared.network.model.server.ServerState
 import gg.tater.shared.network.model.server.ServerType
-import gg.tater.shared.player.PlayerDataModel
-import gg.tater.shared.player.auction.model.AuctionHouseItem
-import gg.tater.shared.player.kit.KitPlayerDataModel
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import me.lucko.helper.promise.ThreadContext
@@ -24,14 +20,12 @@ import org.redisson.client.protocol.Encoder
 import org.redisson.config.Config
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import java.util.*
 import kotlin.reflect.KClass
 
 class Redis(credential: Credential) {
 
     companion object {
         const val SERVER_MAP_NAME = "servers"
-        const val MESSAGE_TARGET_MAP_NAME = "message_targets"
         const val PROXY_DATA_BUCKET_NAME = "proxy_data"
     }
 
@@ -228,10 +222,6 @@ class Redis(credential: Credential) {
 
     fun servers(): RMap<String, ServerDataModel> {
         return client.getMap(SERVER_MAP_NAME)
-    }
-
-    fun targets(): RMapCache<UUID, UUID> {
-        return client.getMapCache(MESSAGE_TARGET_MAP_NAME)
     }
 }
 

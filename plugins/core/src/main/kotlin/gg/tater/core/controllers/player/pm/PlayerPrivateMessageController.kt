@@ -4,19 +4,33 @@ import gg.tater.core.controllers.player.pm.listener.PlayerPrivateMessageRequestL
 import gg.tater.core.controllers.player.pm.listener.PlayerPrivateMessageResponseListener
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.pm.PlayerPrivateMessageRequest
+import gg.tater.shared.player.pm.PrivateMessageService
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Commands
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
-import me.lucko.helper.terminable.module.TerminableModule
 import net.luckperms.api.LuckPermsProvider
+import org.redisson.api.RFuture
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class PlayerPrivateMessageController(
     private val redis: Redis,
     private val players: PlayerService = Services.load(PlayerService::class.java)
-) : TerminableModule {
+) : PrivateMessageService {
+
+    override fun get(uuid: UUID): RFuture<UUID> {
+        return redis.client.getMapCache<UUID, UUID>(PrivateMessageService.MESSAGE_TARGET_MAP_NAME)
+            .getAsync(uuid)
+    }
+
+    override fun set(uuid: UUID, targetId: UUID): RFuture<Boolean> {
+        return redis.client.getMapCache<UUID, UUID>(PrivateMessageService.MESSAGE_TARGET_MAP_NAME)
+            .fastPutAsync(uuid, targetId, 1L, TimeUnit.MINUTES)
+    }
 
     override fun setup(consumer: TerminableConsumer) {
+        Services.provide(PrivateMessageService::class.java, this)
         val perms = LuckPermsProvider.get()
 
         consumer.bindModule(PlayerPrivateMessageRequestListener(redis))
@@ -67,7 +81,7 @@ class PlayerPrivateMessageController(
                 val sender = it.sender()
                 val message = it.args().joinToString(" ")
 
-                redis.targets().getAsync(sender.uniqueId).thenAcceptAsync { targetId ->
+                get(sender.uniqueId).thenAcceptAsync { targetId ->
                     if (targetId == null) {
                         it.reply("&cYou have no one to reply to.")
                         return@thenAcceptAsync
