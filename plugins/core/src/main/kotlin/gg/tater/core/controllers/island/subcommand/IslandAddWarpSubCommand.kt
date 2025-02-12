@@ -1,11 +1,18 @@
 package gg.tater.core.controllers.island.subcommand
 
-import gg.tater.shared.redis.Redis
+import gg.tater.shared.island.IslandService
+import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.WrappedPosition
+import gg.tater.shared.redis.Redis
+import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
 import org.bukkit.entity.Player
 
-class IslandAddWarpSubCommand(private val redis: Redis) : IslandSubCommand {
+class IslandAddWarpSubCommand(
+    private val redis: Redis,
+    private val players: PlayerService = Services.load(PlayerService::class.java),
+    private val islands: IslandService = Services.load(IslandService::class.java)
+) : IslandSubCommand {
 
     override fun id(): String {
         return "addwarp"
@@ -22,8 +29,8 @@ class IslandAddWarpSubCommand(private val redis: Redis) : IslandSubCommand {
         val sender = context.sender()
         val uuid = sender.uniqueId
 
-        redis.players().getAsync(uuid).thenAcceptAsync { player ->
-            val island = player.islandId?.let { redis.islands()[it] }
+        players.get(uuid).thenAcceptAsync { player ->
+            val island = islands.getIslandFor(player)?.get()
             if (island == null) {
                 context.reply("&cYou do not have an island.")
                 return@thenAcceptAsync
@@ -35,7 +42,7 @@ class IslandAddWarpSubCommand(private val redis: Redis) : IslandSubCommand {
             }
 
             island.warps[name] = WrappedPosition(sender.location)
-            redis.islands().fastPutAsync(island.id, island)
+            islands.save(island)
 
             context.reply("&aCreated island warp: $name")
         }

@@ -10,10 +10,13 @@ import java.util.*
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
+private const val PROFILES_MAP_NAME = "profiles"
+
 fun fetchMojangProfile(uuid: UUID): Future<Pair<String, String>> {
     val redis = Services.load(Redis::class.java)
+    val map = redis.client.getMapCache<UUID, Pair<String, String>>(PROFILES_MAP_NAME)
 
-    return redis.profiles()
+    return map
         .getAsync(uuid)
         .thenApplyAsync { current ->
             if (current != null) return@thenApplyAsync current
@@ -37,7 +40,7 @@ fun fetchMojangProfile(uuid: UUID): Future<Pair<String, String>> {
                             val properties = it.get("properties").asJsonArray
                             val profile =
                                 Pair(it.get("name").asString, properties[0].asJsonObject.get("value").asString)
-                            redis.profiles().fastPutAsync(uuid, profile, 1L, TimeUnit.DAYS)
+                            map.fastPutAsync(uuid, profile, 1L, TimeUnit.DAYS)
                             profile
                         }
                 }

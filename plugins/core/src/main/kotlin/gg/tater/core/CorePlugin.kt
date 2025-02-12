@@ -1,13 +1,14 @@
 package gg.tater.core
 
-import gg.tater.core.controllers.ServerStatusController
-import gg.tater.core.controllers.SpawnController
 import gg.tater.core.controllers.island.IslandController
 import gg.tater.core.controllers.leaderboard.LeaderboardController
 import gg.tater.core.controllers.player.PlayerController
 import gg.tater.core.controllers.player.combat.CombatController
 import gg.tater.core.controllers.player.duel.DuelController
+import gg.tater.core.controllers.player.teleport.TeleportController
 import gg.tater.core.controllers.player.warp.WarpController
+import gg.tater.core.controllers.server.ServerStatusController
+import gg.tater.core.controllers.server.SpawnController
 import gg.tater.shared.network.Agones
 import gg.tater.shared.redis.Redis
 import io.github.cdimascio.dotenv.Dotenv
@@ -24,8 +25,8 @@ class CorePlugin : ExtendedJavaPlugin() {
         Services.provide(OkHttpClient::class.java, client)
         val actions = Agones(client)
 
-        val id = actions.getGameServerId()
-        if (id == null) {
+        val server = actions.getGameServerId()
+        if (server == null) {
             logger.severe("Failed to get game server id")
             Bukkit.shutdown()
             return
@@ -40,25 +41,26 @@ class CorePlugin : ExtendedJavaPlugin() {
         )
 
         val redis = Services.provide(Redis::class.java, Redis(credential))
-        bindModule(ServerStatusController(id, actions, redis))
+        bindModule(ServerStatusController(server, actions, redis))
         bind(AutoCloseable {
-            redis.servers().remove(id)
+            redis.servers().remove(server)
         })
 
-        if (id.contains("duel")) {
+        if (server.contains("duel")) {
             bindModule(DuelController(redis, credential))
             return
         }
 
-        val islands = bindModule(IslandController(redis, id, credential))
+        val islands = bindModule(IslandController(redis, server, credential))
 
         if (Helper.plugins().isPluginEnabled("FancyNpcs")) {
             bindModule(CombatController(redis))
         }
 
-        bindModule(SpawnController(redis, id))
-        bindModule(PlayerController(this, redis, id, islands))
+        bindModule(TeleportController(redis, server))
+        bindModule(SpawnController(redis, server))
+        bindModule(PlayerController(this, redis, server, islands))
         bindModule(LeaderboardController())
-        bindModule(WarpController(redis, id))
+        bindModule(WarpController(redis, server))
     }
 }

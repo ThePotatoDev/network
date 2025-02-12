@@ -4,9 +4,7 @@ import com.google.gson.*
 import gg.tater.shared.JsonAdapter
 import gg.tater.shared.island.Island
 import gg.tater.shared.network.model.server.ServerDataModel
-import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.redis.Redis
-import me.lucko.helper.promise.ThreadContext
 import org.bukkit.entity.Player
 import java.lang.reflect.Type
 import java.util.*
@@ -28,35 +26,8 @@ class IslandPlacementRequest(
         const val INTERNAL_FIELD = "login"
         const val ISLAND_ID_FIELD = "island_id"
 
-        private fun build(sender: Player, island: Island, server: ServerDataModel): IslandPlacementRequest {
+        fun of(sender: Player, island: Island, server: ServerDataModel): IslandPlacementRequest {
             return IslandPlacementRequest(server.id, sender.uniqueId, island.id, sender.name, true)
-        }
-
-        fun directToActive(redis: Redis, sender: Player, island: Island): Boolean {
-            if (ThreadContext.forCurrentThread() != ThreadContext.ASYNC) {
-                throw IllegalStateException("This method must be called asynchronously.")
-            }
-
-            // If the island is already placed on a server, teleport the player to the server
-            val currentServerId = island.currentServerId
-            var server: ServerDataModel?
-
-            if (currentServerId != null) {
-                server = redis.getServer(currentServerId).get()
-
-                // If the server is not online, place the island on a fresh server
-                if (server == null) {
-                    server = redis.getServer(ServerType.SERVER) ?: return false
-                }
-            } else {
-                // If everything else fails to check, place the island on a fresh server
-                server = redis.getServer(ServerType.SERVER) ?: return false
-            }
-
-            redis.publish(build(sender, island, server))
-            island.currentServerId = server.id
-            redis.islands()[island.id] = island
-            return true
         }
     }
 

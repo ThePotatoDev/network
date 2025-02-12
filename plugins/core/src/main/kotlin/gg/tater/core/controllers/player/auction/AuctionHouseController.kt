@@ -1,25 +1,67 @@
 package gg.tater.core.controllers.player.auction
 
 import gg.tater.shared.DECIMAL_FORMAT
-import gg.tater.shared.redis.Redis
-import gg.tater.shared.player.auction.AuctionHouseCategory
-import gg.tater.shared.player.auction.AuctionHouseItem
-import gg.tater.shared.player.auction.AuctionHouseSort
+import gg.tater.shared.player.auction.AuctionHouseService
 import gg.tater.shared.player.auction.gui.AuctionHouseGui
+import gg.tater.shared.player.auction.model.AuctionHouseCategory
+import gg.tater.shared.player.auction.model.AuctionHouseItem
+import gg.tater.shared.player.auction.model.AuctionHouseSort
+import gg.tater.shared.redis.Redis
 import me.lucko.helper.Commands
+import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
-import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.Material
+import org.redisson.api.RFuture
 import org.redisson.api.map.event.EntryExpiredListener
+import java.util.*
 import java.util.concurrent.TimeUnit
 
-class AuctionHouseController(private val redis: Redis) : TerminableModule {
+class AuctionHouseController(private val redis: Redis) : AuctionHouseService {
+
+    private companion object {
+        const val AUCTIONS_MAP_NAME = "auctions"
+        const val EXPIRED_AUCTIONS_SET_NAME = "expired_auctions"
+    }
+
+    init {
+        redis.client.getMapCache<UUID, AuctionHouseItem>(AUCTIONS_MAP_NAME)
+            .addListenerAsync(EntryExpiredListener {
+                saveExpired(it.key, it.value)
+            })
+    }
+
+    override fun all(): RFuture<Collection<AuctionHouseItem>> {
+        return redis.client.getMapCache<UUID, AuctionHouseItem>(AUCTIONS_MAP_NAME)
+            .readAllValuesAsync()
+    }
+
+    override fun saveExpired(uuid: UUID, item: AuctionHouseItem): RFuture<Boolean> {
+        return redis.client.getListMultimap<UUID, AuctionHouseItem>(EXPIRED_AUCTIONS_SET_NAME)
+            .putAsync(uuid, item)
+    }
+
+    override fun removeExpired(uuid: UUID, item: AuctionHouseItem): RFuture<Long> {
+        return redis.client.getListMultimap<UUID, AuctionHouseItem>(EXPIRED_AUCTIONS_SET_NAME)
+            .fastRemoveAsync(uuid, item.id)
+    }
+
+    override fun getExpired(uuid: UUID): RFuture<Collection<AuctionHouseItem>> {
+        return redis.client.getListMultimap<UUID, AuctionHouseItem>(EXPIRED_AUCTIONS_SET_NAME)
+            .getAllAsync(uuid)
+    }
+
+    override fun save(item: AuctionHouseItem): RFuture<Boolean> {
+        return redis.client.getMapCache<UUID, AuctionHouseItem>(AUCTIONS_MAP_NAME)
+            .fastPutAsync(item.id, item, 3L, TimeUnit.DAYS)
+    }
+
+    override fun delete(item: AuctionHouseItem): RFuture<Long> {
+        return redis.client.getMapCache<UUID, AuctionHouseItem>(AUCTIONS_MAP_NAME)
+            .fastRemoveAsync(item.id)
+    }
 
     override fun setup(consumer: TerminableConsumer) {
-        // Listen for item expirations for auction house
-        redis.auctions().addListenerAsync(EntryExpiredListener {
-            redis.expiredAuctions().putAsync(it.key, it.value)
-        })
+        Services.provide(AuctionHouseService::class.java, this)
 
         Commands.create()
             .assertPlayer()
@@ -27,7 +69,7 @@ class AuctionHouseController(private val redis: Redis) : TerminableModule {
                 val sender = it.sender()
 
                 if (it.args().isEmpty()) {
-                    redis.auctions().readAllValuesAsync().thenAccept { items ->
+                    all().thenAccept { items ->
                         AuctionHouseGui(
                             items,
                             sender,
@@ -58,7 +100,7 @@ class AuctionHouseController(private val redis: Redis) : TerminableModule {
                     sender.inventory.setItemInMainHand(null)
                     sender.updateInventory()
 
-                    redis.auctions().putAsync(item.id, item, 3L, TimeUnit.DAYS)
+                    save(item)
 
                     it.reply("&aYou have listed your item to the auction house for $${DECIMAL_FORMAT.format(item.price)}!")
                 }

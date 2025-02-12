@@ -2,8 +2,9 @@ package gg.tater.shared.player.chat.color
 
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.MINI_MESSAGE
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.player.PlayerDataModel
+import gg.tater.shared.player.PlayerService
+import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.paginated.PageInfo
 import me.lucko.helper.menu.paginated.PaginatedGui
@@ -16,27 +17,32 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-class ChatColorGui(player: Player, val data: PlayerDataModel, val redis: Redis) :
+class ChatColorGui(
+    player: Player,
+    private val data: PlayerDataModel,
+    private val players: PlayerService = Services.load(PlayerService::class.java)
+) :
     PaginatedGui(
         { gui ->
-            gui.setItem(49, ItemStackBuilder.of(Material.REDSTONE)
-                .name("&cReset Chat Color")
-                .lore(
-                    " ",
-                    "$ARROW_TEXT &bClick &fto reset!",
-                    " ",
-                )
-                .build {
-                    gui.close()
-                    if (data.chatColor == null) {
-                        player.sendMessage(Component.text("You do not have a chat color.", NamedTextColor.RED))
-                        return@build
-                    }
+            gui.setItem(
+                49, ItemStackBuilder.of(Material.REDSTONE)
+                    .name("&cReset Chat Color")
+                    .lore(
+                        " ",
+                        "$ARROW_TEXT &bClick &fto reset!",
+                        " ",
+                    )
+                    .build {
+                        gui.close()
+                        if (data.chatColor == null) {
+                            player.sendMessage(Component.text("You do not have a chat color.", NamedTextColor.RED))
+                            return@build
+                        }
 
-                    data.chatColor = null
-                    redis.players().fastPutAsync(player.uniqueId, data)
-                    player.sendMessage(Component.text("You have reset your chat color!", NamedTextColor.RED))
-                })
+                        data.chatColor = null
+                        players.save(data)
+                        player.sendMessage(Component.text("You have reset your chat color!", NamedTextColor.RED))
+                    })
 
             ChatColor.CHAT_COLORS.map {
                 val color = it.value
@@ -64,7 +70,7 @@ class ChatColorGui(player: Player, val data: PlayerDataModel, val redis: Redis) 
 
                         gui.close()
                         data.chatColor = color
-                        redis.players().fastPutAsync(player.uniqueId, data)
+                        players.save(data)
                         player.sendMessage(Component.text("Selected chat color: ${it.key}!", NamedTextColor.GREEN))
                     }
             }

@@ -2,11 +2,13 @@ package gg.tater.shared.island.setting
 
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.island.Island
+import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.message.IslandUpdateRequest
 import gg.tater.shared.island.setting.model.IslandSettingType
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Schedulers
+import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Gui
 import me.lucko.helper.menu.scheme.MenuScheme
@@ -14,9 +16,13 @@ import me.lucko.helper.menu.scheme.StandardSchemeMappings
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
-import java.util.*
 
-class IslandSettingGui(player: Player, val redis: Redis, val island: Island) : Gui(player, 4, "Island Settings") {
+class IslandSettingGui(
+    player: Player,
+    private val redis: Redis,
+    private val island: Island,
+    private val islands: IslandService = Services.load(IslandService::class.java)
+) : Gui(player, 4, "Island Settings") {
 
     companion object {
         private val PANE_SCHEME = MenuScheme(StandardSchemeMappings.STAINED_GLASS)
@@ -85,8 +91,7 @@ class IslandSettingGui(player: Player, val redis: Redis, val island: Island) : G
                         }
 
                         Schedulers.async().run {
-                            redis.transactional<UUID, Island>(
-                                Redis.ISLAND_MAP_NAME,
+                            islands.transaction(
                                 { map -> map[island.id] = island },
                                 onSuccess = {
                                     redis.publish(IslandUpdateRequest(island))

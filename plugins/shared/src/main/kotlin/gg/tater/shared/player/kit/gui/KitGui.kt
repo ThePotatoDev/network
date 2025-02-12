@@ -1,9 +1,11 @@
 package gg.tater.shared.player.kit.gui
 
 import gg.tater.shared.ARROW_TEXT
-import gg.tater.shared.redis.Redis
 import gg.tater.shared.player.kit.KitDataModel
 import gg.tater.shared.player.kit.KitPlayerDataModel
+import gg.tater.shared.player.kit.KitService
+import gg.tater.shared.redis.Redis
+import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Gui
 import me.lucko.helper.menu.Item
@@ -19,7 +21,8 @@ class KitGui(
     player: Player,
     private val kits: Set<KitDataModel>,
     private val data: KitPlayerDataModel,
-    private val redis: Redis
+    private val redis: Redis,
+    private val service: KitService = Services.load(KitService::class.java)
 ) :
     Gui(player, 3, "Select a Kit") {
 
@@ -78,7 +81,7 @@ class KitGui(
                         }
 
                         val data = data.setLastUsed(kit)
-                        redis.kits().fastPutAsync(player.uniqueId, data)
+                        service.save(player.uniqueId, data)
 
                         val inventory = player.inventory
 

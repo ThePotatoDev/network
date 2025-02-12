@@ -1,20 +1,25 @@
 package gg.tater.core.controllers.island.subcommand
 
 import gg.tater.shared.island.Island
-import gg.tater.shared.island.message.placement.IslandPlacementRequest
+import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.setting.model.IslandSettingType
 import gg.tater.shared.network.model.server.ServerType
-import gg.tater.shared.player.PlayerDataModel
+import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
+import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
 import net.luckperms.api.LuckPermsProvider
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
-import java.util.*
 
-class IslandVisitSubCommand(private val redis: Redis, private val server: String) : IslandSubCommand {
+class IslandVisitSubCommand(
+    private val redis: Redis,
+    private val server: String,
+    private val players: PlayerService = Services.load(PlayerService::class.java),
+    private val islands: IslandService = Services.load(IslandService::class.java)
+) : IslandSubCommand {
 
     override fun id(): String {
         return "visit"
@@ -36,13 +41,21 @@ class IslandVisitSubCommand(private val redis: Redis, private val server: String
                 return@thenAcceptAsync
             }
 
-            val island = redis.players()[uuid].let { redis.islands()[it?.islandId] }
+            val player = players.get(uuid).get()
+            val islandId = player.islandId
+
+            if (islandId == null) {
+                context.reply("&cPlayer does not have an island associated with them.")
+                return@thenAcceptAsync
+            }
+
+            val island = islands.getIsland(islandId).get()
             if (island == null) {
                 context.reply("&cPlayer does not have an island.")
                 return@thenAcceptAsync
             }
 
-            val data = redis.players()[sender.uniqueId]
+            val data = players.get(sender.uniqueId).get()
             if (data == null) {
                 context.reply("&cCould not find player data.")
                 return@thenAcceptAsync
@@ -74,13 +87,10 @@ class IslandVisitSubCommand(private val redis: Redis, private val server: String
 
             data.setSpawn(ServerType.SERVER, island.spawn)
 
-            redis.transactional<UUID, PlayerDataModel>(
-                Redis.PLAYER_MAP_NAME,
-                { map ->
-                    map[sender.uniqueId] = data.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_VISIT)
-                },
+            players.transaction(
+                data.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_VISIT),
                 onSuccess = {
-                    IslandPlacementRequest.directToActive(redis, sender, island)
+                    islands.directToOccupiedServer(sender, island)
                 })
         }
     }

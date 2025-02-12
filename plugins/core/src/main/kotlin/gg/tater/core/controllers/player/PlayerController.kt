@@ -12,15 +12,20 @@ import gg.tater.core.controllers.player.vault.PlayerVaultController
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.getFormattedDate
+import gg.tater.shared.player.PlayerDataModel
+import gg.tater.shared.player.PlayerService
+import gg.tater.shared.player.PlayerService.Companion.PLAYER_MAP_NAME
 import gg.tater.shared.player.economy.EconomyType
+import gg.tater.shared.player.economy.PlayerEconomyService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.player.position.resolver.*
 import gg.tater.shared.redis.Redis
+import gg.tater.shared.redis.transactional
 import me.lucko.helper.Commands
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
+import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
-import me.lucko.helper.terminable.module.TerminableModule
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
@@ -39,6 +44,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.redisson.api.RFuture
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -48,7 +54,7 @@ class PlayerController(
     private val server: String,
     private val islands: IslandController
 ) :
-    TerminableModule {
+    PlayerService {
 
     private val handlers: MutableMap<PlayerPositionResolver.Type, PlayerPositionResolver> = mutableMapOf()
     private val sidebars: MutableMap<UUID, Pair<Sidebar, ComponentSidebarLayout>> = ConcurrentHashMap(WeakHashMap())
@@ -56,7 +62,33 @@ class PlayerController(
     private lateinit var animation: SidebarAnimation<Component>
     private lateinit var scoreboardLibrary: ScoreboardLibrary
 
+    override fun compute(player: Player): RFuture<PlayerDataModel> {
+        return redis.client.getMap<UUID, PlayerDataModel>(PLAYER_MAP_NAME)
+            .computeIfAbsentAsync(player.uniqueId) {
+                PlayerDataModel(player)
+            }
+    }
+
+    override fun get(uuid: UUID): RFuture<PlayerDataModel> {
+        return redis.client.getMap<UUID, PlayerDataModel>(PLAYER_MAP_NAME)
+            .getAsync(uuid)
+    }
+
+    override fun save(data: PlayerDataModel): RFuture<Boolean> {
+        return redis.client.getMap<UUID, PlayerDataModel>(PLAYER_MAP_NAME)
+            .fastPutAsync(data.uuid, data)
+    }
+
+    override fun transaction(data: PlayerDataModel, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        redis.client.apply {
+            this.getMap<UUID, PlayerDataModel>(PLAYER_MAP_NAME)
+                .transactional(this, { map -> map[data.uuid] = data }, onSuccess, onFailure)
+        }
+    }
+
     override fun setup(consumer: TerminableConsumer) {
+        Services.provide(PlayerService::class.java, this)
+
         scoreboardLibrary = try {
             ScoreboardLibrary.loadScoreboardLibrary(plugin)
         } catch (e: NoPacketAdapterAvailableException) {
@@ -114,7 +146,7 @@ class PlayerController(
                 it.joinMessage(null)
                 val currentServer = redis.servers()[server] ?: return@handler
 
-                redis.players().getAsync(it.player.uniqueId).thenAcceptAsync { player ->
+                get(it.player.uniqueId).thenAcceptAsync { player ->
                     display(it.player)
 
                     val resolver = player.resolver!!
@@ -128,7 +160,8 @@ class PlayerController(
 
                     player.currentServerId = server
                     player.online = true
-                    redis.players().fastPut(player.uuid, player.setPositionResolver(PlayerPositionResolver.Type.NONE))
+
+                    save(player)
                 }
             }
             .bindWith(consumer)
@@ -139,9 +172,9 @@ class PlayerController(
                 val uuid = it.player.uniqueId
                 sidebars.remove(uuid)
 
-                redis.players().getAsync(uuid).thenAcceptAsync { player ->
+                get(uuid).thenAcceptAsync { player ->
                     val server = redis.servers()[server] ?: return@thenAcceptAsync
-                    redis.players().fastPut(uuid, player.update(it.player, server.type))
+                    save(player.update(it.player, server.type))
                 }
             }
             .bindWith(consumer)
@@ -164,6 +197,8 @@ class PlayerController(
     }
 
     private fun display(player: Player) {
+        val eco = Services.load(PlayerEconomyService::class.java)
+
         val sidebar: Sidebar = scoreboardLibrary.createSidebar()
         val data = redis.proxy().get()
 
@@ -176,7 +211,7 @@ class PlayerController(
                     .append(Component.text(player.name, NamedTextColor.WHITE))
             )
             .addDynamicLine {
-                val balance = redis.economy()[player.uniqueId]?.get(EconomyType.MONEY) ?: 0
+                val balance = eco.getSync(player.uniqueId)?.get(EconomyType.MONEY) ?: 0
                 Component.text("• ʙᴀʟᴀɴᴄᴇ: ", NamedTextColor.GRAY)
                     .append(Component.text("$${DECIMAL_FORMAT.format(balance)}", NamedTextColor.WHITE))
             }

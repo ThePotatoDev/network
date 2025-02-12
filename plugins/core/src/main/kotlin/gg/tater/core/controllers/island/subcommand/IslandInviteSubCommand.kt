@@ -1,12 +1,20 @@
 package gg.tater.core.controllers.island.subcommand
 
-import gg.tater.shared.redis.Redis
+import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.flag.model.FlagType
+import gg.tater.shared.player.PlayerService
+import gg.tater.shared.redis.Redis
+import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
 import net.luckperms.api.LuckPermsProvider
 import org.bukkit.entity.Player
 
-class IslandInviteSubCommand(val redis: Redis) : IslandSubCommand {
+class IslandInviteSubCommand(
+    private val redis: Redis,
+    private val players: PlayerService = Services.load(PlayerService::class.java),
+    private val islands: IslandService = Services.load(IslandService::class.java)
+) :
+    IslandSubCommand {
 
     override fun id(): String {
         return "invite"
@@ -16,8 +24,8 @@ class IslandInviteSubCommand(val redis: Redis) : IslandSubCommand {
         val perms = LuckPermsProvider.get()
         val sender = context.sender()
 
-        redis.players().getAsync(sender.uniqueId).thenAcceptAsync { player ->
-            val island = player.islandId?.let { redis.islands()[it] }
+        players.get(sender.uniqueId).thenAcceptAsync { player ->
+            val island = islands.getIslandFor(player)?.get()
             if (island == null) {
                 context.reply("&cYou do not have an island.")
                 return@thenAcceptAsync
@@ -35,12 +43,12 @@ class IslandInviteSubCommand(val redis: Redis) : IslandSubCommand {
                 return@thenAcceptAsync
             }
 
-            if (redis.invites().containsEntry(target, island.id)) {
+            if (islands.hasInvite(target, island).get()) {
                 context.reply("&cThat player already has a pending invite to your island.")
                 return@thenAcceptAsync
             }
 
-            redis.invites().put(target, island.id)
+            islands.addInvite(target, island)
             context.reply("&aYou have invited $name to your island!")
         }
     }

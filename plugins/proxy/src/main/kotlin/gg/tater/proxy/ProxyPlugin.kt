@@ -187,24 +187,6 @@ class ProxyPlugin @Inject constructor(
     }
 
     @Subscribe
-    private fun onLogin(event: LoginEvent) {
-        val player = event.player
-        val uuid = player.uniqueId
-        val name = player.username
-
-        redis.players().computeIfAbsentAsync(uuid) {
-            PlayerDataModel(
-                uuid,
-                name,
-                ServerType.SPAWN,
-            ).setPositionResolver(PlayerPositionResolver.Type.TELEPORT_SPAWN)
-        }.thenApplyAsync { data ->
-            data.name = name
-            redis.players()[uuid] = data
-        }
-    }
-
-    @Subscribe
     private fun onServerConnect(event: PlayerChooseInitialServerEvent) {
         val server = redis.getReadyServer(ServerType.SPAWN)
         val info = proxy.getServer(server.id).orElse(null)

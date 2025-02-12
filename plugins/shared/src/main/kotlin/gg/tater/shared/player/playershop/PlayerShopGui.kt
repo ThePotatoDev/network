@@ -2,10 +2,12 @@ package gg.tater.shared.player.playershop
 
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.DECIMAL_FORMAT
-import gg.tater.shared.island.message.placement.IslandPlacementRequest
+import gg.tater.shared.island.IslandService
 import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
+import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.paginated.PageInfo
 import me.lucko.helper.menu.paginated.PaginatedGui
@@ -23,7 +25,9 @@ class PlayerShopGui(
     opener: Player,
     private val shops: Collection<PlayerShopDataModel>,
     private val redis: Redis,
-    private val server: String
+    private val server: String,
+    private val islands: IslandService = Services.load(IslandService::class.java),
+    private val players: PlayerService = Services.load(PlayerService::class.java),
 ) :
     PaginatedGui(
         {
@@ -32,8 +36,7 @@ class PlayerShopGui(
                     .name(shop.name)
                     .lore(getLore(shop))
                     .build {
-                        redis.islands()
-                            .getAsync(shop.islandId)
+                        islands.getIsland(shop.islandId)
                             .thenAcceptAsync { island ->
                                 if (island == null) {
                                     opener.sendMessage(
@@ -80,16 +83,16 @@ class PlayerShopGui(
                                     return@thenAcceptAsync
                                 }
 
-                                redis.players().getAsync(opener.uniqueId).thenAcceptAsync { player ->
+                                players.get(opener.uniqueId).thenAcceptAsync { player ->
                                     player.setSpawn(ServerType.SERVER, position)
-                                    redis.players().fastPut(
-                                        opener.uniqueId,
+
+                                    players.transaction(
                                         player.setPositionResolver(
                                             PlayerPositionResolver.Type.TELEPORT_PLAYER_SHOP,
                                             shop.islandId.toString()
-                                        )
-                                    )
-                                    IslandPlacementRequest.directToActive(redis, opener, island)
+                                        ), onSuccess = {
+                                            islands.directToOccupiedServer(opener, island)
+                                        })
                                 }
                             }
                     }

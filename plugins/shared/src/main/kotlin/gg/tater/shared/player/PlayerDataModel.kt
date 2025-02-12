@@ -32,6 +32,8 @@ data class PlayerDataModel(
     var islandId: UUID? = null
 ) {
 
+    constructor(player: Player) : this(player.uniqueId, player.name, ServerType.SPAWN)
+
     companion object {
         const val UUID_FIELD = "uuid"
         const val NAME_FIELD = "name"

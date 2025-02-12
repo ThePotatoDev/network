@@ -2,11 +2,13 @@ package gg.tater.shared.island.gui
 
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.island.Island
-import gg.tater.shared.island.message.placement.IslandPlacementRequest
+import gg.tater.shared.island.IslandService
 import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.PlayerDataModel
+import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
+import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Item
 import me.lucko.helper.menu.paginated.PageInfo
@@ -22,7 +24,12 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import java.util.*
 
-class IslandWarpGui(opener: Player, private val island: Island, private val redis: Redis, private val server: String) :
+class IslandWarpGui(
+    opener: Player,
+    private val island: Island,
+    private val redis: Redis,
+    private val server: String
+) :
     PaginatedGui(
         {
             getItems(it, opener, island, redis, server)
@@ -71,7 +78,9 @@ class IslandWarpGui(opener: Player, private val island: Island, private val redi
             opener: Player,
             island: Island,
             redis: Redis,
-            server: String
+            server: String,
+            players: PlayerService = Services.load(PlayerService::class.java),
+            islands: IslandService = Services.load(IslandService::class.java)
         ): List<Item> {
             return island.warps.map {
                 val name = it.key
@@ -107,18 +116,13 @@ class IslandWarpGui(opener: Player, private val island: Island, private val redi
                         }
 
                         val uuid = opener.uniqueId
-
-                        redis.players().getAsync(uuid).thenAcceptAsync { player ->
+                        players.get(uuid).thenAcceptAsync { player ->
                             player.setSpawn(ServerType.SERVER, warp)
 
-                            redis.transactional<UUID, PlayerDataModel>(
-                                Redis.ISLAND_MAP_NAME,
-                                { map ->
-                                    map[uuid] =
-                                        player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_WARP)
-                                },
+                            players.transaction(
+                                player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_WARP),
                                 onSuccess = {
-                                    IslandPlacementRequest.directToActive(redis, opener, island)
+                                    islands.directToOccupiedServer(opener, island)
                                 })
                         }
                     }

@@ -1,13 +1,15 @@
 package gg.tater.core.controllers.player.chat
 
 import gg.tater.shared.MINI_MESSAGE
-import gg.tater.shared.redis.Redis
+import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.chat.color.ChatColorGui
 import gg.tater.shared.player.chat.message.ChatMessagePart
 import gg.tater.shared.player.chat.message.ChatMessageRequest
+import gg.tater.shared.redis.Redis
 import io.papermc.paper.event.player.AsyncChatEvent
 import me.lucko.helper.Commands
 import me.lucko.helper.Events
+import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule
@@ -19,7 +21,10 @@ import net.luckperms.api.LuckPermsProvider
 import org.bukkit.Bukkit
 import org.bukkit.event.EventPriority
 
-class PlayerChatController(private val redis: Redis) : TerminableModule {
+class PlayerChatController(
+    private val redis: Redis,
+    private val players: PlayerService = Services.load(PlayerService::class.java)
+) : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {
         val perms = LuckPermsProvider.get()
@@ -82,7 +87,7 @@ class PlayerChatController(private val redis: Redis) : TerminableModule {
                 request.setPart(ChatMessagePart.TEXT, text)
                 request.setPart(ChatMessagePart.PREFIX, prefix!!)
 
-                val data = redis.players()[player.uniqueId]!!
+                val data = players.get(player.uniqueId).get()
 
                 if (data.chatColor != null) {
                     val color = data.chatColor!!
@@ -98,8 +103,7 @@ class PlayerChatController(private val redis: Redis) : TerminableModule {
             .assertPlayer()
             .handler {
                 val sender = it.sender()
-                redis.players().getAsync(sender.uniqueId)
-                    .thenAccept { player -> ChatColorGui(sender, player, redis).open() }
+                players.get(sender.uniqueId).thenAccept { player -> ChatColorGui(sender, player).open() }
             }
             .registerAndBind(consumer, "chatcolor", "cc")
 

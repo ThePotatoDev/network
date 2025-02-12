@@ -10,11 +10,8 @@ import gg.tater.shared.network.model.server.ServerDataModel
 import gg.tater.shared.network.model.server.ServerState
 import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.PlayerDataModel
-import gg.tater.shared.player.auction.AuctionHouseItem
-import gg.tater.shared.player.economy.PlayerEconomyModel
+import gg.tater.shared.player.auction.model.AuctionHouseItem
 import gg.tater.shared.player.kit.KitPlayerDataModel
-import gg.tater.shared.player.playershop.PlayerShopDataModel
-import gg.tater.shared.player.vault.VaultDataModel
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import me.lucko.helper.promise.ThreadContext
@@ -33,20 +30,9 @@ import kotlin.reflect.KClass
 class Redis(credential: Credential) {
 
     companion object {
-        const val PLAYER_MAP_NAME = "players"
         const val SERVER_MAP_NAME = "servers"
-        const val ECONOMY_MAP_NAME = "economy"
         const val MESSAGE_TARGET_MAP_NAME = "message_targets"
-        const val ISLAND_MAP_NAME = "islands"
-        const val INVITES_FOR_MAP_NAME = "invites_for"
-        const val KIT_PLAYER_DATA_MODEL = "kit_players"
-        const val AUCTIONS_SET_NAME = "auctions"
-        const val EXPIRED_AUCTIONS_SET_NAME = "expired_auctions"
-        const val VAULT_MAP_NAME = "vaults"
-        const val PROFILES_MAP_NAME = "profiles"
-        const val PLAYER_SHOP_MAP_NAME = "player_shops"
         const val PROXY_DATA_BUCKET_NAME = "proxy_data"
-        const val COMBAT_MAP_NAME = "combat"
     }
 
     @Target(AnnotationTarget.CLASS)
@@ -150,44 +136,6 @@ class Redis(credential: Credential) {
     }
 
     /**
-     *
-     */
-    fun <K, V> transactional(
-        mapName: String,
-        operation: (RMap<K, V>) -> Unit,
-        onSuccess: () -> Unit = {},
-        onFailure: (Exception) -> Unit = {}
-    ) {
-        if (ThreadContext.forCurrentThread() != ThreadContext.ASYNC) {
-            throw Exception("You must be in an async context to create transactions!")
-        }
-
-        val transaction = client.createTransaction(TransactionOptions.defaults())
-        val map = transaction.getMap<K, V>(mapName)
-
-        try {
-            operation(map) // Execute the custom operation (put, remove, etc.)
-            transaction.commit()
-            onSuccess()
-        } catch (e: Exception) {
-            transaction.rollback()
-            println("Transaction failed: ${e.message}")
-            onFailure(e)
-        }
-    }
-
-
-    /**
-     * Delete a server by its island object.
-     *
-     * @param island The island object to delete.
-     */
-    fun deleteIsland(island: Island): RFuture<Island> {
-        // Remove the island for all the members
-        return islands().removeAsync(island.id)
-    }
-
-    /**
      * Query a server by an id asynchronously.
      *
      * @param id The server id to query.
@@ -278,42 +226,6 @@ class Redis(credential: Credential) {
         }
     }
 
-    fun playerShops(): RMap<UUID, PlayerShopDataModel> {
-        return client.getMap(PLAYER_SHOP_MAP_NAME)
-    }
-
-    fun profiles(): RMapCache<UUID, Pair<String, String>> {
-        return client.getMapCache(PROFILES_MAP_NAME)
-    }
-
-    fun vaults(): RMap<UUID, VaultDataModel> {
-        return client.getMap(VAULT_MAP_NAME)
-    }
-
-    fun economy(): RMap<UUID, PlayerEconomyModel> {
-        return client.getMap(ECONOMY_MAP_NAME)
-    }
-
-    fun auctions(): RMapCache<UUID, AuctionHouseItem> {
-        return client.getMapCache(AUCTIONS_SET_NAME)
-    }
-
-    fun expiredAuctions(): RListMultimap<UUID, AuctionHouseItem> {
-        return client.getListMultimap(EXPIRED_AUCTIONS_SET_NAME)
-    }
-
-    fun kits(): RMap<UUID, KitPlayerDataModel> {
-        return client.getMap(KIT_PLAYER_DATA_MODEL)
-    }
-
-    fun invites(): RListMultimapCache<UUID, UUID> {
-        return client.getListMultimapCache(INVITES_FOR_MAP_NAME)
-    }
-
-    fun players(): RMap<UUID, PlayerDataModel> {
-        return client.getMap(PLAYER_MAP_NAME)
-    }
-
     fun servers(): RMap<String, ServerDataModel> {
         return client.getMap(SERVER_MAP_NAME)
     }
@@ -321,8 +233,34 @@ class Redis(credential: Credential) {
     fun targets(): RMapCache<UUID, UUID> {
         return client.getMapCache(MESSAGE_TARGET_MAP_NAME)
     }
+}
 
-    fun islands(): RMap<UUID, Island> {
-        return client.getMap(ISLAND_MAP_NAME)
+/**
+ * Compute on a redis map in a transactional manner. This will wait for the
+ * operation to fully complete before continuing on to subsequent logic.
+ * Invocations of this method must be in an async context.
+ *
+ */
+fun <K, V> RMap<K, V>.transactional(
+    client: RedissonClient,
+    operation: (RMap<K, V>) -> Unit,
+    onSuccess: () -> Unit = {},
+    onFailure: (Exception) -> Unit = {}
+) {
+    if (ThreadContext.forCurrentThread() != ThreadContext.ASYNC) {
+        throw Exception("You must be in an async context to create transactions!")
+    }
+
+    val transaction = client.createTransaction(TransactionOptions.defaults())
+    val transactionalMap = transaction.getMap<K, V>(this.name) // Use `this.name`
+
+    try {
+        operation(transactionalMap) // Execute the custom operation
+        transaction.commit()
+        onSuccess()
+    } catch (e: Exception) {
+        transaction.rollback()
+        println("Transaction failed: ${e.message}")
+        onFailure(e)
     }
 }

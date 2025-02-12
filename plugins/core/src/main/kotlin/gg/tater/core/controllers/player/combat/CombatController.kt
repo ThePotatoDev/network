@@ -96,7 +96,7 @@ class CombatController(private val redis: Redis) : CombatService {
                 val skin = SkinFetcher.SkinData(player.name, null, null)
                 setSkin(skin)
                 location = player.location
-                displayName = "<red><bold>${player.name}'s"
+                displayName = "<red><bold>${player.name}'s Combat Log"
             })
 
         PLUGIN.npcManager.registerNpc(npc)

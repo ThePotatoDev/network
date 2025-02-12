@@ -3,8 +3,10 @@ package gg.tater.shared.island.gui
 import com.destroystokyo.paper.profile.ProfileProperty
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.island.Island
+import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.redis.Redis
+import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Item
 import me.lucko.helper.menu.paginated.PageInfo
@@ -23,12 +25,11 @@ import java.util.*
 class IslandMemberGui(
     player: Player,
     private val island: Island,
-    private val offline: Map<UUID, Pair<String, String>>,
-    private val redis: Redis
+    private val offline: Map<UUID, Pair<String, String>>
 ) :
     PaginatedGui(
         {
-            getItems(it, island, offline, redis)
+            getItems(it, island, offline)
         },
         player, BUILDER
     ) {
@@ -93,7 +94,7 @@ class IslandMemberGui(
             gui: PaginatedGui,
             island: Island,
             offline: Map<UUID, Pair<String, String>>,
-            redis: Redis
+            islands: IslandService = Services.load(IslandService::class.java)
         ): List<Item> {
             val player = gui.player
 
@@ -134,13 +135,10 @@ class IslandMemberGui(
 
                             island.setRoleFor(member.key, currentRole.next())
 
-                            redis.transactional<UUID, Island>(
-                                Redis.ISLAND_MAP_NAME,
-                                { map -> map[island.id] = island },
-                                onSuccess = {
-                                    gui.updateContent(getItems(gui, island, offline, redis))
-                                    gui.redraw()
-                                })
+                            islands.transaction({ map -> map[island.id] = island }, onSuccess = {
+                                gui.updateContent(getItems(gui, island, offline))
+                                gui.redraw()
+                            })
                         }
                 }
         }

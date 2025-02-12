@@ -2,14 +2,19 @@ package gg.tater.core.controllers.player.pm
 
 import gg.tater.core.controllers.player.pm.listener.PlayerPrivateMessageRequestListener
 import gg.tater.core.controllers.player.pm.listener.PlayerPrivateMessageResponseListener
+import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.pm.PlayerPrivateMessageRequest
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Commands
+import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule
 import net.luckperms.api.LuckPermsProvider
 
-class PlayerPrivateMessageController(private val redis: Redis) : TerminableModule {
+class PlayerPrivateMessageController(
+    private val redis: Redis,
+    private val players: PlayerService = Services.load(PlayerService::class.java)
+) : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {
         val perms = LuckPermsProvider.get()
@@ -35,7 +40,7 @@ class PlayerPrivateMessageController(private val redis: Redis) : TerminableModul
                         return@thenAcceptAsync
                     }
 
-                    val data = redis.players()[targetId]
+                    val data = players.get(targetId).get()
                     if (data == null) {
                         it.reply("&cCould not find player data.")
                         return@thenAcceptAsync
@@ -68,7 +73,7 @@ class PlayerPrivateMessageController(private val redis: Redis) : TerminableModul
                         return@thenAcceptAsync
                     }
 
-                    val data = redis.players()[targetId]
+                    val data = players.get(targetId).get()
                     if (data == null) {
                         it.reply("&cCould not find player data.")
                         return@thenAcceptAsync

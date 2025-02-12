@@ -2,6 +2,7 @@ package gg.tater.core.controllers.player.vault
 
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.player.vault.VaultDataModel
+import gg.tater.shared.player.vault.VaultService
 import gg.tater.shared.player.vault.gui.VaultGuiItem
 import gg.tater.shared.player.vault.gui.VaultItemGui
 import gg.tater.shared.player.vault.gui.VaultSelectionGui
@@ -11,13 +12,18 @@ import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.terminable.TerminableConsumer
-import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.redisson.api.RFuture
+import java.util.*
 
-class PlayerVaultController(private val redis: Redis) : TerminableModule {
+class PlayerVaultController(private val redis: Redis) : VaultService {
+
+    private companion object {
+        const val VAULT_MAP_NAME = "vaults"
+    }
 
     override fun setup(consumer: TerminableConsumer) {
         Commands.create()
@@ -25,47 +31,46 @@ class PlayerVaultController(private val redis: Redis) : TerminableModule {
             .handler {
                 val sender = it.sender()
 
-                redis.vaults().computeIfAbsentAsync(sender.uniqueId) { VaultDataModel(sender.uniqueId) }
-                    .thenAccept { vault ->
-                        Schedulers.sync().run {
-                            if (it.args().isEmpty()) {
-                                val amount = vault.amount
-                                val items: MutableList<VaultGuiItem> = mutableListOf()
+                compute(sender.uniqueId).thenAccept { vault ->
+                    Schedulers.sync().run {
+                        if (it.args().isEmpty()) {
+                            val amount = vault.amount
+                            val items: MutableList<VaultGuiItem> = mutableListOf()
 
-                                for (i in 0 until amount) {
-                                    val id = i + 1
+                            for (i in 0 until amount) {
+                                val id = i + 1
 
-                                    items.add(
-                                        VaultGuiItem(
-                                            id, ItemStackBuilder.of(Material.ENDER_CHEST)
-                                                .name("&3&lVault #$id")
-                                                .lore(
-                                                    " ",
-                                                    "$ARROW_TEXT &7Click to open this vault",
-                                                    " "
-                                                )
-                                                .build { VaultItemGui(sender, i, vault.getVaultItems(i)).open() })
-                                    )
-                                }
-
-                                VaultSelectionGui(sender, items).open()
-                                return@run
+                                items.add(
+                                    VaultGuiItem(
+                                        id, ItemStackBuilder.of(Material.ENDER_CHEST)
+                                            .name("&3&lVault #$id")
+                                            .lore(
+                                                " ",
+                                                "$ARROW_TEXT &7Click to open this vault",
+                                                " "
+                                            )
+                                            .build { VaultItemGui(sender, i, vault.getVaultItems(i)).open() })
+                                )
                             }
 
-                            val index = it.arg(0).parseOrFail(String::class.java).toInt() - 1 // Grab the index
-                            if (index == -1) {
-                                it.reply("&cPlease specify a valid vault number.")
-                                return@run
-                            }
-
-                            if (index + 1 > vault.amount) {
-                                it.reply("&cYou do not have access to that vault!")
-                                return@run
-                            }
-
-                            VaultItemGui(sender, index, vault.getVaultItems(index)).open()
+                            VaultSelectionGui(sender, items).open()
+                            return@run
                         }
+
+                        val index = it.arg(0).parseOrFail(String::class.java).toInt() - 1 // Grab the index
+                        if (index == -1) {
+                            it.reply("&cPlease specify a valid vault number.")
+                            return@run
+                        }
+
+                        if (index + 1 > vault.amount) {
+                            it.reply("&cYou do not have access to that vault!")
+                            return@run
+                        }
+
+                        VaultItemGui(sender, index, vault.getVaultItems(index)).open()
                     }
+                }
             }
             .registerAndBind(consumer, "playervault", "pv")
 
@@ -78,13 +83,28 @@ class PlayerVaultController(private val redis: Redis) : TerminableModule {
                 val gui = inventory.holder as VaultItemGui
                 val id = gui.id
 
-                redis.vaults().getAsync(player.uniqueId).thenAccept { vault ->
+                get(player.uniqueId).thenAccept { vault ->
                     vault.setVaultItems(id, inventory.contents)
-                    redis.vaults().fastPutAsync(player.uniqueId, vault)
+                    save(player.uniqueId, vault)
                 }
 
                 player.performCommand("pv")
             }
             .bindWith(consumer)
+    }
+
+    override fun compute(uuid: UUID): RFuture<VaultDataModel> {
+        return redis.client.getMap<UUID, VaultDataModel>(VAULT_MAP_NAME)
+            .computeIfAbsentAsync(uuid) { VaultDataModel(uuid) }
+    }
+
+    override fun save(uuid: UUID, vault: VaultDataModel): RFuture<VaultDataModel> {
+        return redis.client.getMap<UUID, VaultDataModel>(VAULT_MAP_NAME)
+            .putAsync(uuid, vault)
+    }
+
+    override fun get(uuid: UUID): RFuture<VaultDataModel> {
+        return redis.client.getMap<UUID, VaultDataModel>(VAULT_MAP_NAME)
+            .getAsync(uuid)
     }
 }

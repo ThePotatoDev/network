@@ -2,12 +2,15 @@ package gg.tater.shared.player.auction.gui
 
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.DECIMAL_FORMAT
-import gg.tater.shared.redis.Redis
-import gg.tater.shared.player.auction.AuctionHouseCategory
-import gg.tater.shared.player.auction.AuctionHouseItem
-import gg.tater.shared.player.auction.AuctionHouseScope
-import gg.tater.shared.player.auction.AuctionHouseSort
+import gg.tater.shared.player.auction.AuctionHouseService
+import gg.tater.shared.player.auction.model.AuctionHouseCategory
+import gg.tater.shared.player.auction.model.AuctionHouseItem
+import gg.tater.shared.player.auction.model.AuctionHouseScope
+import gg.tater.shared.player.auction.model.AuctionHouseSort
 import gg.tater.shared.player.economy.EconomyType
+import gg.tater.shared.player.economy.PlayerEconomyService
+import gg.tater.shared.redis.Redis
+import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Item
 import me.lucko.helper.menu.paginated.PageInfo
@@ -84,26 +87,29 @@ class AuctionHouseGui(
             gui: PaginatedGui,
             category: AuctionHouseCategory,
             sort: AuctionHouseSort,
-            scope: AuctionHouseScope
+            scope: AuctionHouseScope,
+            ecoService: PlayerEconomyService = Services.load(PlayerEconomyService::class.java),
+            auctionService: AuctionHouseService = Services.load(AuctionHouseService::class.java),
         ): List<Item> {
             if (scope == AuctionHouseScope.NONE) {
-                gui.setItem(47, ItemStackBuilder.of(Material.PLAYER_HEAD)
-                    .name("&bYour Auction Page")
-                    .lore(
-                        " ",
-                        "&7View the following sections:",
-                        "$ARROW_TEXT &fYour Active Listings",
-                        "$ARROW_TEXT &fYour Expired Items",
-                        " ",
-                        "&bClick &fto view!"
-                    )
-                    .transformMeta { meta ->
-                        val skull = meta as SkullMeta
-                        skull.setOwningPlayer(player)
-                    }
-                    .build {
-                        AuctionHouseSelectionGui(player, redis).open()
-                    })
+                gui.setItem(
+                    47, ItemStackBuilder.of(Material.PLAYER_HEAD)
+                        .name("&bYour Auction Page")
+                        .lore(
+                            " ",
+                            "&7View the following sections:",
+                            "$ARROW_TEXT &fYour Active Listings",
+                            "$ARROW_TEXT &fYour Expired Items",
+                            " ",
+                            "&bClick &fto view!"
+                        )
+                        .transformMeta { meta ->
+                            val skull = meta as SkullMeta
+                            skull.setOwningPlayer(player)
+                        }
+                        .build {
+                            AuctionHouseSelectionGui(player, redis).open()
+                        })
             } else {
                 gui.setItem(
                     47, ItemStackBuilder.of(Material.WHITE_STAINED_GLASS_PANE)
@@ -114,14 +120,15 @@ class AuctionHouseGui(
                 gui.setFallbackGui { AuctionHouseSelectionGui(player, redis) }
             }
 
-            gui.setItem(48, ItemStackBuilder.of(Material.CLOCK)
-                .name("&bCategory: &f${category.friendly}")
-                .lore(getCategoryLore(category))
-                .build {
-                    val next = category.next()
-                    gui.updateContent(getItems(player, items, redis, gui, next, sort, scope))
-                    gui.redraw()
-                })
+            gui.setItem(
+                48, ItemStackBuilder.of(Material.CLOCK)
+                    .name("&bCategory: &f${category.friendly}")
+                    .lore(getCategoryLore(category))
+                    .build {
+                        val next = category.next()
+                        gui.updateContent(getItems(player, items, redis, gui, next, sort, scope))
+                        gui.redraw()
+                    })
 
             gui.setItem(
                 49, ItemStackBuilder.of(Material.WRITTEN_BOOK)
@@ -141,14 +148,15 @@ class AuctionHouseGui(
                     .build(null)
             )
 
-            gui.setItem(52, ItemStackBuilder.of(Material.HOPPER)
-                .name("&bSort By: &f${sort.friendly}")
-                .lore(getSortLore(sort))
-                .build {
-                    val next = sort.next()
-                    gui.updateContent(getItems(player, items, redis, gui, category, next, scope))
-                    gui.redraw()
-                })
+            gui.setItem(
+                52, ItemStackBuilder.of(Material.HOPPER)
+                    .name("&bSort By: &f${sort.friendly}")
+                    .lore(getSortLore(sort))
+                    .build {
+                        val next = sort.next()
+                        gui.updateContent(getItems(player, items, redis, gui, category, next, scope))
+                        gui.redraw()
+                    })
 
             return items.sortedWith(sort.comparator)
                 .filter { item ->
@@ -184,9 +192,9 @@ class AuctionHouseGui(
                             inventory.addItem(item.stack)
 
                             if (scope != AuctionHouseScope.PERSONAL_EXPIRED_LISTINGS) {
-                                redis.auctions().removeAsync(item.id, item)
+                                auctionService.delete(item)
                             } else {
-                                redis.expiredAuctions().removeAsync(player.uniqueId, item)
+                                auctionService.removeExpired(player.uniqueId, item)
                             }
 
                             player.sendMessage(
@@ -208,7 +216,7 @@ class AuctionHouseGui(
                                 return@build
                             }
 
-                            redis.economy().getAsync(player.uniqueId).thenAccept { eco ->
+                            ecoService.get(player.uniqueId).thenAccept { eco ->
                                 val balance = eco.get(EconomyType.MONEY)
 
                                 if (balance - item.price < 0) {
@@ -238,9 +246,10 @@ class AuctionHouseGui(
 
                                 inventory.addItem(item.stack)
 
-                                redis.auctions().removeAsync(item.id, item)
+                                auctionService.delete(item)
+
                                 eco.withdraw(EconomyType.MONEY, item.price)
-                                redis.economy().fastPutAsync(player.uniqueId, eco)
+                                ecoService.save(player.uniqueId, eco)
 
                                 player.sendMessage(
                                     Component.text(

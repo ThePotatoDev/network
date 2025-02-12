@@ -4,11 +4,13 @@ import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI
 import com.infernalsuite.aswm.api.loaders.SlimeLoader
 import com.infernalsuite.aswm.api.world.SlimeWorld
 import gg.tater.core.controllers.island.IslandController.Companion.PROPERTIES
+import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.island.message.placement.IslandPlacementResponse
 import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Schedulers
+import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.Bukkit
@@ -21,7 +23,8 @@ class IslandPlacementRequestListener(
     private val server: String,
     private val api: AdvancedSlimePaperAPI,
     private val loader: SlimeLoader,
-    private val template: SlimeWorld
+    private val template: SlimeWorld,
+    private val islands: IslandService = Services.load(IslandService::class.java)
 ) : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {
@@ -40,9 +43,9 @@ class IslandPlacementRequestListener(
                 val worldName = id.toString()
                 val exists = loader.worldExists(worldName)
 
-                val island = redis.islands()[id]!!
+                val island = islands.getIsland(id).get()!!
                 island.lastActivity = Instant.now()
-                redis.islands().fastPut(id, island)
+                islands.save(island)
 
                 val world: SlimeWorld = if (exists) {
                     api.readWorld(loader, worldName, false, PROPERTIES)

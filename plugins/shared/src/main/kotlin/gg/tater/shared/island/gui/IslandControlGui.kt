@@ -130,7 +130,7 @@ class IslandControlGui(
                         fetchMojangProfile(it.key).get()
                     }
                 }.thenAcceptSync {
-                    IslandMemberGui(player, island, it, redis).open()
+                    IslandMemberGui(player, island, it).open()
                 }
             })
 
