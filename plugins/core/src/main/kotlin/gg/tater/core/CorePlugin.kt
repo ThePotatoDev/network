@@ -54,10 +54,10 @@ class CorePlugin : ExtendedJavaPlugin() {
         val islands = bindModule(IslandController(redis, server, credential))
 
         if (Helper.plugins().isPluginEnabled("FancyNpcs")) {
-            bindModule(CombatController(redis))
+//            bindModule(CombatController(redis))
         }
 
-        bindModule(TeleportController(redis, server))
+//        bindModule(TeleportController(redis, server))
         bindModule(SpawnController(redis, server))
         bindModule(PlayerController(this, redis, server, islands))
         bindModule(LeaderboardController())

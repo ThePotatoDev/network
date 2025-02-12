@@ -3,22 +3,21 @@ package gg.tater.core.controllers.island.subcommand
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.player.PlayerService
-import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
 import net.luckperms.api.LuckPermsProvider
 import org.bukkit.entity.Player
 
-class IslandJoinSubCommand(
-    private val players: PlayerService = Services.load(PlayerService::class.java),
-    private val islands: IslandService = Services.load(IslandService::class.java)
-) : IslandSubCommand {
+class IslandJoinSubCommand : IslandSubCommand {
 
     override fun id(): String {
         return "join"
     }
 
     override fun handle(context: CommandContext<Player>) {
+        val players: PlayerService = Services.load(PlayerService::class.java)
+        val islands: IslandService = Services.load(IslandService::class.java)
+
         val perms = LuckPermsProvider.get()
         val sender = context.sender()
         val senderId = sender.uniqueId

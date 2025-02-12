@@ -8,6 +8,7 @@ import gg.tater.shared.player.combat.CombatService
 import gg.tater.shared.player.combat.model.CombatLogEntry
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Events
+import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
 import net.jodah.expiringmap.ExpirationPolicy
@@ -49,6 +50,8 @@ class CombatController(private val redis: Redis) : CombatService {
         .build()
 
     override fun setup(consumer: TerminableConsumer) {
+        Services.provide(CombatService::class.java, this)
+
         Events.subscribe(PlayerQuitEvent::class.java, EventPriority.HIGHEST)
             .handler {
                 val player = it.player

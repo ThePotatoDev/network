@@ -4,7 +4,6 @@ import gg.tater.shared.island.IslandService
 import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
-import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
 import org.bukkit.Bukkit
@@ -12,10 +11,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 
 class IslandHomeSubCommand(
-    private val redis: Redis,
     private val server: String,
-    private val players: PlayerService = Services.load(PlayerService::class.java),
-    private val islands: IslandService = Services.load(IslandService::class.java)
 ) : IslandSubCommand {
 
     override fun id(): String {
@@ -24,6 +20,8 @@ class IslandHomeSubCommand(
 
     override fun handle(context: CommandContext<Player>) {
         val sender = context.sender()
+        val players: PlayerService = Services.load(PlayerService::class.java)
+        val islands: IslandService = Services.load(IslandService::class.java)
 
         players.get(sender.uniqueId).thenAcceptAsync { player ->
             val island = islands.getIslandFor(player)?.get()

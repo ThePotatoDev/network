@@ -26,8 +26,7 @@ import org.bukkit.event.weather.WeatherChangeEvent
 
 class SpawnController(
     private val redis: Redis,
-    private val id: String,
-    private val players: PlayerService = Services.load(PlayerService::class.java),
+    private val id: String
 ) : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {
@@ -37,6 +36,7 @@ class SpawnController(
             .assertPlayer()
             .handler {
                 val sender = it.sender()
+                val players: PlayerService = Services.load(PlayerService::class.java)
 
                 if (combat.isInCombat(sender.uniqueId)) {
                     it.reply("&cYou cannot go to spawn while in combat!")

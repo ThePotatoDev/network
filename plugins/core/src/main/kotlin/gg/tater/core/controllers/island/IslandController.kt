@@ -44,8 +44,7 @@ import java.util.concurrent.ScheduledExecutorService
 class IslandController(
     private val redis: Redis,
     private val server: String,
-    private val credential: Redis.Credential,
-    private val players: PlayerService = Services.load(PlayerService::class.java),
+    private val credential: Redis.Credential
 ) : IslandService {
 
     companion object {
@@ -85,12 +84,12 @@ class IslandController(
         val flagSubCommand = IslandFlagSubCommand(redis)
         val settingSubCommand = IslandSettingSubCommand(redis)
         commands["create"] = IslandCreateSubCommand(redis)
-        commands["home"] = IslandHomeSubCommand(redis, server)
+        commands["home"] = IslandHomeSubCommand(server)
         commands["delete"] = IslandDeleteSubCommand(redis)
-        commands["visit"] = IslandVisitSubCommand(redis, server)
-        commands["invite"] = IslandInviteSubCommand(redis)
+        commands["visit"] = IslandVisitSubCommand(server)
+        commands["invite"] = IslandInviteSubCommand()
         commands["join"] = IslandJoinSubCommand()
-        commands["addwarp"] = IslandAddWarpSubCommand(redis)
+        commands["addwarp"] = IslandAddWarpSubCommand()
 
         for (setting in listOf("setting", "settings")) {
             commands[setting] = settingSubCommand
@@ -136,6 +135,8 @@ class IslandController(
         Commands.create()
             .assertPlayer()
             .handler {
+                val players: PlayerService = Services.load(PlayerService::class.java)
+
                 if (it.args().isEmpty()) {
                     val sender = it.sender()
 

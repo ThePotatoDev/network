@@ -23,14 +23,15 @@ class IslandPlacementRequestListener(
     private val server: String,
     private val api: AdvancedSlimePaperAPI,
     private val loader: SlimeLoader,
-    private val template: SlimeWorld,
-    private val islands: IslandService = Services.load(IslandService::class.java)
+    private val template: SlimeWorld
 ) : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {
         redis.listen<IslandPlacementRequest> {
             // Make sure the server name matches, ignore it otherwise
             if (it.server != server) return@listen
+
+            val islands: IslandService = Services.load(IslandService::class.java)
 
             /**
              * Acquire a semaphore for this server with a

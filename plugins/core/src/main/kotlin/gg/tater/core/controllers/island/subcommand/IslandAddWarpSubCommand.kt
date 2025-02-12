@@ -8,17 +8,16 @@ import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
 import org.bukkit.entity.Player
 
-class IslandAddWarpSubCommand(
-    private val redis: Redis,
-    private val players: PlayerService = Services.load(PlayerService::class.java),
-    private val islands: IslandService = Services.load(IslandService::class.java)
-) : IslandSubCommand {
+class IslandAddWarpSubCommand : IslandSubCommand {
 
     override fun id(): String {
         return "addwarp"
     }
 
     override fun handle(context: CommandContext<Player>) {
+        val players: PlayerService = Services.load(PlayerService::class.java)
+        val islands: IslandService = Services.load(IslandService::class.java)
+
         if (context.args().size != 2) {
             context.reply("&cUsage: /is addwarp <name>")
             return

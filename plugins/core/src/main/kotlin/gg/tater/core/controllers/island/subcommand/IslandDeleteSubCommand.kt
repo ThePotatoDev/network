@@ -10,9 +10,7 @@ import me.lucko.helper.command.context.CommandContext
 import org.bukkit.entity.Player
 
 class IslandDeleteSubCommand(
-    private val redis: Redis,
-    private val players: PlayerService = Services.load(PlayerService::class.java),
-    private val islands: IslandService = Services.load(IslandService::class.java)
+    private val redis: Redis
 ) : IslandSubCommand {
 
     override fun id(): String {
@@ -20,6 +18,9 @@ class IslandDeleteSubCommand(
     }
 
     override fun handle(context: CommandContext<Player>) {
+        val players: PlayerService = Services.load(PlayerService::class.java)
+        val islands: IslandService = Services.load(IslandService::class.java)
+
         val sender = context.sender()
         val uuid = sender.uniqueId
 
