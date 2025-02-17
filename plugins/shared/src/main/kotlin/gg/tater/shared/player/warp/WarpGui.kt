@@ -22,7 +22,8 @@ class WarpGui(
     override fun redraw() {
         for (warp in WarpType.entries) {
             setItem(
-                warp.slot, warp.icon.lore(getLore(warp))
+                warp.slot, warp.icon.clearLore()
+                    .lore(getLore(warp))
                     .build {
                         players.get(opener.uniqueId).thenAcceptAsync { player ->
                             // If the player is already on the warp's server

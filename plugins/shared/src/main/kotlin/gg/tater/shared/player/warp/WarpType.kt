@@ -12,24 +12,28 @@ enum class WarpType(
 ) {
 
     PVP(
-        10,
+        11,
         ItemStackBuilder.of(Material.DIAMOND_SWORD)
-            .name("&cPvP &7(Click)"),
+            .name("&cPvP Warp &7(Click)"),
         ServerType.PVP,
-        listOf("Fight to the death versus players!", "May only the best survive.")
+        listOf("&7&oFight to the death versus players!", "&7&oMay only the best survive.")
     ),
     SPAWN(
         13,
         ItemStackBuilder.of(Material.REDSTONE_LAMP)
-            .name("&3Spawn &7(Click)"),
+            .name("&3Spawn Warp &7(Click)"),
         ServerType.SPAWN,
-        listOf("Interact with players", "and use various npcs.")
+        listOf("&7&oInteract with players", "&7&oand use various npcs.")
     ),
     PLANETS(
         15,
         ItemStackBuilder.of(Material.END_STONE)
-            .name("&bPlanets &7(Click)"),
+            .name("&bPlanets Warp &7(Click)"),
         ServerType.PLANET,
-        listOf("Progress your way through planets", "through mining to unlock", "special items and achievements.")
-    )
+        listOf(
+            "&7&oProgress your way through planets",
+            "&7&othrough mining to unlock",
+            "&7&ospecial items and achievements."
+        )
+    );
 }
