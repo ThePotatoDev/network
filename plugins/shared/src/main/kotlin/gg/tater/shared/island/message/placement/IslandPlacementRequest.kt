@@ -3,7 +3,7 @@ package gg.tater.shared.island.message.placement
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
 import gg.tater.shared.island.Island
-import gg.tater.shared.network.model.server.ServerDataModel
+import gg.tater.shared.network.server.ServerDataModel
 import gg.tater.shared.redis.Redis
 import org.bukkit.entity.Player
 import java.lang.reflect.Type

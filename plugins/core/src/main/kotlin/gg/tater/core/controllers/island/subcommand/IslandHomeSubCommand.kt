@@ -1,7 +1,9 @@
 package gg.tater.core.controllers.island.subcommand
 
 import gg.tater.shared.island.IslandService
-import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.network.server.ServerDataModel
+import gg.tater.shared.network.server.ServerDataService
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import me.lucko.helper.Services
@@ -10,9 +12,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-class IslandHomeSubCommand(
-    private val server: String,
-) : IslandSubCommand {
+class IslandHomeSubCommand: IslandSubCommand {
 
     override fun id(): String {
         return "home"
@@ -22,6 +22,7 @@ class IslandHomeSubCommand(
         val sender = context.sender()
         val players: PlayerService = Services.load(PlayerService::class.java)
         val islands: IslandService = Services.load(IslandService::class.java)
+        val server = Services.load(ServerDataService::class.java).id()
 
         players.get(sender.uniqueId).thenAcceptAsync { player ->
             val island = islands.getIslandFor(player)?.get()

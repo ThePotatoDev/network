@@ -1,7 +1,9 @@
 package gg.tater.core.controllers.player.playershop
 
+import gg.tater.shared.Controller
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.flag.model.FlagType
+import gg.tater.shared.network.server.ServerDataService
 import gg.tater.shared.player.chat.ScopedChatPrompt
 import gg.tater.shared.player.playershop.PlayerShopDataModel
 import gg.tater.shared.player.playershop.PlayerShopGui
@@ -20,7 +22,10 @@ import org.redisson.api.RFuture
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class PlayerShopController(private val redis: Redis, private val service: IslandService, private val server: String) :
+@Controller(
+    id = "player-shop-controller"
+)
+class PlayerShopController :
     PlayerShopService {
 
     companion object {
@@ -69,6 +74,9 @@ class PlayerShopController(private val redis: Redis, private val service: Island
         }
     }
 
+    private val server = Services.load(ServerDataService::class.java).id()
+    private val redis = Services.load(Redis::class.java)
+
     override fun all(): RFuture<Collection<PlayerShopDataModel>> {
         return redis.client.getMap<UUID, PlayerShopDataModel>(PLAYER_SHOP_MAP_NAME)
             .readAllValuesAsync()
@@ -106,6 +114,7 @@ class PlayerShopController(private val redis: Redis, private val service: Island
             }
             .handler {
                 val sender = it.sender()
+                val islands = Services.load(IslandService::class.java)
 
                 if (it.args().isEmpty()) {
                     all().thenAcceptAsync { shops -> PlayerShopGui(sender, shops, redis, server).open() }
@@ -127,7 +136,7 @@ class PlayerShopController(private val redis: Redis, private val service: Island
                             return@thenAccept
                         }
 
-                        val island = service.getIsland(world)
+                        val island = islands.getIsland(world)
                         if (island == null) {
                             it.reply("&cYou cannot create a player shop here because there is no island present!")
                             return@thenAccept
@@ -171,7 +180,7 @@ class PlayerShopController(private val redis: Redis, private val service: Island
                             return@thenAccept
                         }
 
-                        val island = service.getIsland(sender.world)
+                        val island = islands.getIsland(sender.world)
                         if (island == null) {
                             it.reply("&cThere is not an island present at your location.")
                             return@thenAccept

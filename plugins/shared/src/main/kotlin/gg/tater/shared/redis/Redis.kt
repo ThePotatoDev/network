@@ -4,10 +4,10 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import gg.tater.shared.Json
 import gg.tater.shared.findAnnotatedClasses
-import gg.tater.shared.network.model.ProxyDataModel
-import gg.tater.shared.network.model.server.ServerDataModel
-import gg.tater.shared.network.model.server.ServerState
-import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.network.ProxyDataModel
+import gg.tater.shared.network.server.ServerDataModel
+import gg.tater.shared.network.server.ServerState
+import gg.tater.shared.network.server.ServerType
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import me.lucko.helper.promise.ThreadContext
@@ -21,6 +21,7 @@ import org.redisson.config.Config
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import kotlin.reflect.KClass
+import kotlin.reflect.full.findAnnotation
 
 class Redis(credential: Credential) {
 
@@ -60,10 +61,10 @@ class Redis(credential: Credential) {
          * If a mapping does not exist for an object, the class name will be used as the mapping. (This is not recommended but required for classes such as string, int, etc.)
          */
         init {
-            for (clazz in findAnnotatedClasses(Mapping::class.java)) {
-                val mapping = clazz.getAnnotation(Mapping::class.java)
-                mappingsById[mapping.id] = clazz.kotlin
-                mappingsByClazz[clazz.kotlin] = mapping.id
+            for (clazz in findAnnotatedClasses(Mapping::class)) {
+                val mapping = clazz.findAnnotation<Mapping>() ?: continue
+                mappingsById[mapping.id] = clazz
+                mappingsByClazz[clazz] = mapping.id
             }
         }
 

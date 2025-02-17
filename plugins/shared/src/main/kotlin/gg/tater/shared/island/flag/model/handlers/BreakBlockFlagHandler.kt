@@ -4,6 +4,7 @@ import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.flag.model.IslandFlagHandler
 import gg.tater.shared.island.IslandService
 import me.lucko.helper.Events
+import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
 import net.kyori.adventure.text.Component
@@ -11,7 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 
-class BreakBlockFlagHandler(private val service: IslandService) : IslandFlagHandler {
+class BreakBlockFlagHandler : IslandFlagHandler {
 
     override fun type(): FlagType {
         return FlagType.BREAK_BLOCKS
@@ -21,10 +22,11 @@ class BreakBlockFlagHandler(private val service: IslandService) : IslandFlagHand
         Events.subscribe(BlockBreakEvent::class.java, EventPriority.HIGHEST)
             .filter(EventFilters.ignoreCancelled())
             .handler {
+                val islands = Services.load(IslandService::class.java)
                 val player = it.player
                 val world = player.world
 
-                val island = service.getIsland(world) ?: return@handler
+                val island = islands.getIsland(world) ?: return@handler
                 if (island.canInteract(player.uniqueId, FlagType.BREAK_BLOCKS)) return@handler
 
                 it.isCancelled = true

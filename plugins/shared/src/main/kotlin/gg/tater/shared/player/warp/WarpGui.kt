@@ -1,6 +1,5 @@
 package gg.tater.shared.player.warp
 
-import gg.tater.shared.network.model.server.ServerType
 import gg.tater.shared.player.PlayerRedirectRequest
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
@@ -22,34 +21,50 @@ class WarpGui(
 
     override fun redraw() {
         for (warp in WarpType.entries) {
-            val location = Location(
-                Bukkit.getWorld("world"),
-                warp.position.x,
-                warp.position.y,
-                warp.position.z,
-                warp.position.yaw,
-                warp.position.pitch
-            )
+            setItem(
+                warp.slot, warp.icon.lore(getLore(warp))
+                    .build {
+                        players.get(opener.uniqueId).thenAcceptAsync { player ->
+                            // If the player is already on the warp's server
+                            if (player.currentServerId == server) {
+                                val position = warp.serverType.spawn!!
 
-            setItem(warp.slot, warp.icon.build {
-                players.get(opener.uniqueId).thenAcceptAsync { player ->
-                    // If the player is already on the warp's server
-                    if (player.currentServerId == server) {
-                        opener.teleportAsync(
-                            location
-                        )
-                    } else {
-                        player.setSpawn(ServerType.SPAWN, warp.position)
-                        players.transaction(
-                            player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_SERVER_WARP),
-                            onSuccess = {
-                                redis.publish(PlayerRedirectRequest(player.uuid, ServerType.SPAWN))
-                            })
-                    }
+                                val location = Location(
+                                    Bukkit.getWorld("world"),
+                                    position.x,
+                                    position.y,
+                                    position.z,
+                                    position.yaw,
+                                    position.pitch
+                                )
 
-                    opener.sendMessage(Component.text("Teleporting you to the ${warp.name} warp..."))
-                }
-            })
+                                opener.teleportAsync(
+                                    location
+                                )
+                            } else {
+                                val serverType = warp.serverType
+
+                                player.setSpawn(serverType, serverType.spawn!!)
+                                players.transaction(
+                                    player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_SERVER_WARP),
+                                    onSuccess = {
+                                        redis.publish(PlayerRedirectRequest(player.uuid, serverType))
+                                    })
+                            }
+
+                            opener.sendMessage(Component.text("Teleporting you to the ${warp.name} warp..."))
+                        }
+                    })
+        }
+    }
+
+    private fun getLore(warp: WarpType): List<String> {
+        return mutableListOf<String>().apply {
+            add(" ")
+            addAll(warp.description)
+            add(" ")
+            add("&7&oClick to teleport!")
+            add(" ")
         }
     }
 }

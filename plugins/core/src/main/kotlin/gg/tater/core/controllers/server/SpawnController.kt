@@ -1,6 +1,8 @@
 package gg.tater.core.controllers.server
 
-import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.Controller
+import gg.tater.shared.network.server.ServerDataService
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerRedirectRequest
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.combat.CombatService
@@ -24,13 +26,13 @@ import org.bukkit.event.player.PlayerArmorStandManipulateEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 
-class SpawnController(
-    private val redis: Redis,
-    private val id: String
-) : TerminableModule {
+@Controller(id = "spawn-controller")
+class SpawnController : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {
         val combat = Services.load(CombatService::class.java)
+        val redis = Services.load(Redis::class.java)
+        val id = Services.load(ServerDataService::class.java).id()
 
         Commands.create()
             .assertPlayer()

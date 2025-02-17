@@ -3,7 +3,8 @@ package gg.tater.core.controllers.island.subcommand
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.setting.model.IslandSettingType
-import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.network.server.ServerDataService
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import me.lucko.helper.Services
@@ -13,9 +14,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-class IslandVisitSubCommand(
-    private val server: String
-) : IslandSubCommand {
+class IslandVisitSubCommand : IslandSubCommand {
 
     override fun id(): String {
         return "visit"
@@ -24,6 +23,7 @@ class IslandVisitSubCommand(
     override fun handle(context: CommandContext<Player>) {
         val players: PlayerService = Services.load(PlayerService::class.java)
         val islands: IslandService = Services.load(IslandService::class.java)
+        val server = Services.load(ServerDataService::class.java).id()
 
         if (context.args().size < 2) {
             context.reply("&cUsage: /island visit <player>")

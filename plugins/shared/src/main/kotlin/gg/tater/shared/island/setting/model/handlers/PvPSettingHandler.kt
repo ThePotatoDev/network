@@ -4,6 +4,7 @@ import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.setting.model.IslandSettingHandler
 import gg.tater.shared.island.setting.model.IslandSettingType
 import me.lucko.helper.Events
+import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
 import org.bukkit.entity.Player
@@ -11,7 +12,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 
-class PvPSettingHandler(service: IslandService) : IslandSettingHandler(service) {
+class PvPSettingHandler : IslandSettingHandler() {
 
     override fun setup(consumer: TerminableConsumer) {
         Events.subscribe(EntityDamageByEntityEvent::class.java, EventPriority.HIGHEST)
@@ -20,7 +21,8 @@ class PvPSettingHandler(service: IslandService) : IslandSettingHandler(service) 
             .handler {
                 val entity = it.entity
                 val world = entity.location.world
-                val island = service.getIsland(world) ?: return@handler
+                val islands = Services.load(IslandService::class.java)
+                val island = islands.getIsland(world) ?: return@handler
 
                 val enabled = island.isSettingEnabled(IslandSettingType.PVP)
                 if (enabled) return@handler
@@ -35,7 +37,8 @@ class PvPSettingHandler(service: IslandService) : IslandSettingHandler(service) 
                 if (hitEntity !is Player) return@handler
 
                 val world = hitEntity.world
-                val island = service.getIsland(world) ?: return@handler
+                val islands = Services.load(IslandService::class.java)
+                val island = islands.getIsland(world) ?: return@handler
 
                 val enabled = island.isSettingEnabled(IslandSettingType.PVP)
                 if (enabled) return@handler

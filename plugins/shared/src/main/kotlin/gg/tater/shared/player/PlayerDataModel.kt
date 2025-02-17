@@ -2,7 +2,7 @@ package gg.tater.shared.player
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
-import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.chat.color.ChatColor
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.player.position.WrappedPosition

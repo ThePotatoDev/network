@@ -1,9 +1,10 @@
 package gg.tater.shared.island.flag.model.handlers
 
+import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.flag.model.IslandFlagHandler
-import gg.tater.shared.island.IslandService
 import me.lucko.helper.Events
+import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
 import net.kyori.adventure.text.Component
@@ -12,7 +13,7 @@ import org.bukkit.entity.Villager
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerInteractEntityEvent
 
-class VillagerTradingFlagHandler(private val service: IslandService) : IslandFlagHandler {
+class VillagerTradingFlagHandler : IslandFlagHandler {
 
     override fun type(): FlagType {
         return FlagType.VILLAGER_TRADING
@@ -25,7 +26,8 @@ class VillagerTradingFlagHandler(private val service: IslandService) : IslandFla
             .handler {
                 val player = it.player
                 val world = player.world
-                val island = service.getIsland(world) ?: return@handler
+                val islands = Services.load(IslandService::class.java)
+                val island = islands.getIsland(world) ?: return@handler
 
                 if (island.canInteract(player.uniqueId, FlagType.VILLAGER_TRADING)) return@handler
 

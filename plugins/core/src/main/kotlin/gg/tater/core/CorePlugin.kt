@@ -1,29 +1,28 @@
 package gg.tater.core
 
-import gg.tater.core.controllers.island.IslandController
-import gg.tater.core.controllers.leaderboard.LeaderboardController
-import gg.tater.core.controllers.player.PlayerController
-import gg.tater.core.controllers.player.combat.CombatController
-import gg.tater.core.controllers.player.duel.DuelController
-import gg.tater.core.controllers.player.teleport.TeleportController
-import gg.tater.core.controllers.player.warp.WarpController
-import gg.tater.core.controllers.server.ServerStatusController
-import gg.tater.core.controllers.server.SpawnController
+import gg.tater.shared.Controller
+import gg.tater.shared.findAnnotatedClasses
 import gg.tater.shared.network.Agones
+import gg.tater.shared.network.server.ServerDataService
 import gg.tater.shared.redis.Redis
 import io.github.cdimascio.dotenv.Dotenv
 import me.lucko.helper.Helper
 import me.lucko.helper.Services
 import me.lucko.helper.plugin.ExtendedJavaPlugin
+import me.lucko.helper.terminable.module.TerminableModule
 import okhttp3.OkHttpClient
 import org.bukkit.Bukkit
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.primaryConstructor
 
-class CorePlugin : ExtendedJavaPlugin() {
+class CorePlugin : ExtendedJavaPlugin(), ServerDataService {
+
+    private lateinit var serverId: String
 
     override fun enable() {
-        val client = OkHttpClient()
-        Services.provide(OkHttpClient::class.java, client)
-        val actions = Agones(client)
+        Services.provide(CorePlugin::class.java, this)
+        val client = Services.provide(OkHttpClient::class.java, OkHttpClient())
+        val actions = Services.provide(Agones::class.java, Agones(client))
 
         val server = actions.getGameServerId()
         if (server == null) {
@@ -31,6 +30,9 @@ class CorePlugin : ExtendedJavaPlugin() {
             Bukkit.shutdown()
             return
         }
+
+        this.serverId = server
+        Services.provide(ServerDataService::class.java, this)
 
         val env = Dotenv.load()
         val credential = Redis.Credential(
@@ -40,27 +42,29 @@ class CorePlugin : ExtendedJavaPlugin() {
             env.get("REDIS_PORT").toInt()
         )
 
+        Services.provide(Redis.Credential::class.java, credential)
         val redis = Services.provide(Redis::class.java, Redis(credential))
-        bindModule(ServerStatusController(server, actions, redis))
+
+        for (clazz in findAnnotatedClasses(Controller::class)) {
+            val meta = clazz.findAnnotation<Controller>() ?: continue
+
+            if (meta.requiredPlugins.isNotEmpty() && meta.requiredPlugins.any { plugin ->
+                    !Helper.plugins().isPluginEnabled(plugin)
+                }) {
+                logger.info("Could not enable controller: ${clazz.simpleName}. Required plugins not present.")
+                return
+            }
+
+            bindModule(clazz.primaryConstructor?.call() as TerminableModule)
+            logger.info("Bound controller as module: ${clazz.simpleName}")
+        }
+
         bind(AutoCloseable {
             redis.servers().remove(server)
         })
+    }
 
-        if (server.contains("duel")) {
-            bindModule(DuelController(redis, credential))
-            return
-        }
-
-        val islands = bindModule(IslandController(redis, server, credential))
-
-        if (Helper.plugins().isPluginEnabled("FancyNpcs")) {
-            bindModule(CombatController(redis))
-        }
-
-        bindModule(TeleportController(redis, server))
-        bindModule(SpawnController(redis, server))
-        bindModule(PlayerController(this, redis, server, islands))
-        bindModule(LeaderboardController())
-        bindModule(WarpController(redis, server))
+    override fun id(): String {
+        return serverId
     }
 }

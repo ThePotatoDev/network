@@ -1,5 +1,6 @@
 package gg.tater.core.controllers.player.chat
 
+import gg.tater.shared.Controller
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.chat.color.ChatColorGui
@@ -21,13 +22,12 @@ import net.luckperms.api.LuckPermsProvider
 import org.bukkit.Bukkit
 import org.bukkit.event.EventPriority
 
-class PlayerChatController(
-    private val redis: Redis,
-    private val players: PlayerService = Services.load(PlayerService::class.java)
-) : TerminableModule {
+@Controller(id = "player-chat-controller")
+class PlayerChatController : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {
         val perms = LuckPermsProvider.get()
+        val redis = Services.load(Redis::class.java)
 
         redis.listen<ChatMessageRequest> {
             var targets = it.targets
@@ -67,6 +67,7 @@ class PlayerChatController(
         Events.subscribe(AsyncChatEvent::class.java, EventPriority.HIGHEST)
             .filter(EventFilters.ignoreCancelled())
             .handler {
+                val players = Services.load(PlayerService::class.java)
                 val player = it.player
                 val user = perms.userManager.getUser(player.uniqueId)
                 val group = perms.groupManager.getGroup(user?.primaryGroup ?: "default")
@@ -102,6 +103,7 @@ class PlayerChatController(
         Commands.create()
             .assertPlayer()
             .handler {
+                val players = Services.load(PlayerService::class.java)
                 val sender = it.sender()
                 players.get(sender.uniqueId).thenAccept { player -> ChatColorGui(sender, player).open() }
             }

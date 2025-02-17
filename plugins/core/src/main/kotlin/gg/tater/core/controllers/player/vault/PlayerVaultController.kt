@@ -1,6 +1,7 @@
 package gg.tater.core.controllers.player.vault
 
 import gg.tater.shared.ARROW_TEXT
+import gg.tater.shared.Controller
 import gg.tater.shared.player.vault.VaultDataModel
 import gg.tater.shared.player.vault.VaultService
 import gg.tater.shared.player.vault.gui.VaultGuiItem
@@ -10,6 +11,7 @@ import gg.tater.shared.redis.Redis
 import me.lucko.helper.Commands
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
+import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.terminable.TerminableConsumer
 import org.bukkit.Material
@@ -19,11 +21,14 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.redisson.api.RFuture
 import java.util.*
 
-class PlayerVaultController(private val redis: Redis) : VaultService {
+@Controller(id = "player-vault-controller")
+class PlayerVaultController : VaultService {
 
     private companion object {
         const val VAULT_MAP_NAME = "vaults"
     }
+
+    private val redis = Services.load(Redis::class.java)
 
     override fun setup(consumer: TerminableConsumer) {
         Commands.create()

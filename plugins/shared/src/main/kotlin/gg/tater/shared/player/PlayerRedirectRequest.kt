@@ -3,7 +3,7 @@ package gg.tater.shared.player
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
 import gg.tater.shared.redis.Redis
-import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.network.server.ServerType
 import java.lang.reflect.Type
 import java.util.*
 

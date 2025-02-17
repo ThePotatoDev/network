@@ -2,6 +2,7 @@ package gg.tater.core.controllers.player.pm
 
 import gg.tater.core.controllers.player.pm.listener.PlayerPrivateMessageRequestListener
 import gg.tater.core.controllers.player.pm.listener.PlayerPrivateMessageResponseListener
+import gg.tater.shared.Controller
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.pm.PlayerPrivateMessageRequest
 import gg.tater.shared.player.pm.PrivateMessageService
@@ -14,10 +15,10 @@ import org.redisson.api.RFuture
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class PlayerPrivateMessageController(
-    private val redis: Redis,
-    private val players: PlayerService = Services.load(PlayerService::class.java)
-) : PrivateMessageService {
+@Controller(id = "private-message-controller")
+class PlayerPrivateMessageController : PrivateMessageService {
+
+    private val redis = Services.load(Redis::class.java)
 
     override fun get(uuid: UUID): RFuture<UUID> {
         return redis.client.getMapCache<UUID, UUID>(PrivateMessageService.MESSAGE_TARGET_MAP_NAME)
@@ -43,6 +44,8 @@ class PlayerPrivateMessageController(
                     it.reply("&cUsage: /msg <player> <message>")
                     return@handler
                 }
+
+                val players = Services.load(PlayerService::class.java)
 
                 val sender = it.sender()
                 val target = it.arg(0).parseOrFail(String::class.java)
@@ -80,6 +83,7 @@ class PlayerPrivateMessageController(
 
                 val sender = it.sender()
                 val message = it.args().joinToString(" ")
+                val players = Services.load(PlayerService::class.java)
 
                 get(sender.uniqueId).thenAcceptAsync { targetId ->
                     if (targetId == null) {

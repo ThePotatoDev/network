@@ -3,7 +3,7 @@ package gg.tater.core.controllers.island.subcommand
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
-import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis

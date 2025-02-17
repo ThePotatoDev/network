@@ -1,10 +1,14 @@
 package gg.tater.core.controllers.leaderboard
 
+import gg.tater.shared.Controller
 import gg.tater.shared.leaderboard.Leaderboard
 import gg.tater.shared.leaderboard.LeaderboardService
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 
+@Controller(
+    id = "leaderboard-controller"
+)
 class LeaderboardController : LeaderboardService {
 
     override fun setup(consmer: TerminableConsumer) {

@@ -2,7 +2,6 @@ package gg.tater.proxy
 
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
-import com.velocitypowered.api.event.connection.LoginEvent
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.Plugin
@@ -12,12 +11,10 @@ import com.velocitypowered.api.proxy.server.RegisteredServer
 import com.velocitypowered.api.proxy.server.ServerInfo
 import gg.tater.shared.island.message.placement.IslandPlacementResponse
 import gg.tater.shared.network.Agones
-import gg.tater.shared.network.model.ProxyDataModel
-import gg.tater.shared.network.model.server.ServerDataModel
-import gg.tater.shared.network.model.server.ServerType
-import gg.tater.shared.player.PlayerDataModel
+import gg.tater.shared.network.ProxyDataModel
+import gg.tater.shared.network.server.ServerDataModel
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerRedirectRequest
-import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
 import io.github.cdimascio.dotenv.Dotenv
 import io.kubernetes.client.openapi.ApiClient

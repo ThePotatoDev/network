@@ -10,6 +10,7 @@ import gg.tater.core.controllers.island.listener.IslandDeleteRequestListener
 import gg.tater.core.controllers.island.listener.IslandPlacementRequestListener
 import gg.tater.core.controllers.island.listener.IslandUpdateRequestListener
 import gg.tater.core.controllers.island.subcommand.*
+import gg.tater.shared.Controller
 import gg.tater.shared.UUID_REGEX
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
@@ -19,8 +20,9 @@ import gg.tater.shared.island.flag.IslandFlagController
 import gg.tater.shared.island.gui.IslandControlGui
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.island.setting.IslandSettingController
-import gg.tater.shared.network.model.server.ServerDataModel
-import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.network.server.ServerDataModel
+import gg.tater.shared.network.server.ServerDataService
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.redis.Redis
@@ -41,11 +43,10 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
-class IslandController(
-    private val redis: Redis,
-    private val server: String,
-    private val credential: Redis.Credential
-) : IslandService {
+@Controller(
+    id = "island-controller"
+)
+class IslandController : IslandService {
 
     companion object {
         val SCHEDULER: ScheduledExecutorService = Executors.newScheduledThreadPool(5)
@@ -59,6 +60,8 @@ class IslandController(
             setValue(SlimeProperties.ALLOW_MONSTERS, true)
         }
     }
+
+    private val redis = Services.load(Redis::class.java)
 
     private val commands: MutableMap<String, IslandSubCommand> = mutableMapOf()
 
@@ -78,15 +81,17 @@ class IslandController(
     private lateinit var api: AdvancedSlimePaperAPI
 
     override fun setup(consumer: TerminableConsumer) {
-        consumer.bindModule(IslandFlagController(this))
-        consumer.bindModule(IslandSettingController(this))
+        val credential = Services.load(Redis.Credential::class.java)
+
+        consumer.bindModule(IslandSettingController())
+        consumer.bindModule(IslandFlagController())
 
         val flagSubCommand = IslandFlagSubCommand(redis)
         val settingSubCommand = IslandSettingSubCommand(redis)
         commands["create"] = IslandCreateSubCommand(redis)
-        commands["home"] = IslandHomeSubCommand(server)
+        commands["home"] = IslandHomeSubCommand()
         commands["delete"] = IslandDeleteSubCommand(redis)
-        commands["visit"] = IslandVisitSubCommand(server)
+        commands["visit"] = IslandVisitSubCommand()
         commands["invite"] = IslandInviteSubCommand()
         commands["join"] = IslandJoinSubCommand()
         commands["addwarp"] = IslandAddWarpSubCommand()
@@ -104,9 +109,9 @@ class IslandController(
             RedisLoader("redis://:${credential.password}@${credential.address}:${credential.port}")
         val template = api.readWorld(loader, "island_world_template", false, PROPERTIES)
 
-        consumer.bindModule(IslandPlacementRequestListener(redis, server, api, loader, template))
-        consumer.bindModule(IslandUpdateRequestListener(redis, server, cache))
-        consumer.bindModule(IslandDeleteRequestListener(redis, server, cache))
+        consumer.bindModule(IslandPlacementRequestListener(api, loader, template))
+        consumer.bindModule(IslandUpdateRequestListener(cache))
+        consumer.bindModule(IslandDeleteRequestListener(cache))
 
         Schedulers.async().runRepeating(Runnable {
             for (world in api.loadedWorlds) {
@@ -136,6 +141,7 @@ class IslandController(
             .assertPlayer()
             .handler {
                 val players: PlayerService = Services.load(PlayerService::class.java)
+                val server = Services.load(ServerDataService::class.java).id()
 
                 if (it.args().isEmpty()) {
                     val sender = it.sender()
@@ -169,7 +175,7 @@ class IslandController(
     }
 
     override fun all(): RFuture<Collection<Island>> {
-        return redis.client.getMap<UUID, Island>(ISLAND_MAP_NAME)
+        return Services.load(Redis::class.java).client.getMap<UUID, Island>(ISLAND_MAP_NAME)
             .readAllValuesAsync()
     }
 

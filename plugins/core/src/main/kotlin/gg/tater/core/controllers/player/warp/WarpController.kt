@@ -1,12 +1,22 @@
 package gg.tater.core.controllers.player.warp
 
+import gg.tater.shared.Controller
+import gg.tater.shared.network.server.ServerDataService
 import gg.tater.shared.player.warp.WarpGui
+import gg.tater.shared.player.warp.WarpService
+import gg.tater.shared.player.warp.WarpType
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Commands
+import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
-import me.lucko.helper.terminable.module.TerminableModule
 
-class WarpController(private val redis: Redis, private val server: String) : TerminableModule {
+@Controller(
+    id = "warp-controller"
+)
+class WarpController : WarpService {
+
+    private val redis = Services.load(Redis::class.java)
+    private val server = Services.load(ServerDataService::class.java).id()
 
     override fun setup(consumer: TerminableConsumer) {
         Commands.create()
@@ -16,5 +26,9 @@ class WarpController(private val redis: Redis, private val server: String) : Ter
                 WarpGui(sender, redis, server).open()
             }
             .registerAndBind(consumer, "warps", "warp")
+    }
+
+    override fun getPlayerCount(warp: WarpType): Int {
+        TODO("Not yet implemented")
     }
 }

@@ -1,17 +1,12 @@
 package gg.tater.core.controllers.player
 
 import gg.tater.core.CorePlugin
-import gg.tater.core.controllers.island.IslandController
-import gg.tater.core.controllers.player.auction.AuctionHouseController
-import gg.tater.core.controllers.player.chat.PlayerChatController
-import gg.tater.core.controllers.player.economy.EconomyController
-import gg.tater.core.controllers.player.kit.KitController
 import gg.tater.core.controllers.player.playershop.PlayerShopController
-import gg.tater.core.controllers.player.pm.PlayerPrivateMessageController
-import gg.tater.core.controllers.player.vault.PlayerVaultController
+import gg.tater.shared.Controller
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.getFormattedDate
+import gg.tater.shared.network.server.ServerDataService
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.PlayerService.Companion.PLAYER_MAP_NAME
@@ -48,13 +43,13 @@ import org.redisson.api.RFuture
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-class PlayerController(
-    private val plugin: CorePlugin,
-    private val redis: Redis,
-    private val server: String,
-    private val islands: IslandController
-) :
+@Controller(id = "player-controller")
+class PlayerController :
     PlayerService {
+
+    private val server = Services.load(ServerDataService::class.java).id()
+    private val plugin = Services.load(CorePlugin::class.java)
+    private val redis = Services.load(Redis::class.java)
 
     private val handlers: MutableMap<PlayerPositionResolver.Type, PlayerPositionResolver> = mutableMapOf()
     private val sidebars: MutableMap<UUID, Pair<Sidebar, ComponentSidebarLayout>> = ConcurrentHashMap(WeakHashMap())
@@ -96,19 +91,14 @@ class PlayerController(
             NoopScoreboardLibrary()
         }
 
-        consumer.bindModule(PlayerPrivateMessageController(redis))
-        consumer.bindModule(PlayerChatController(redis))
-        consumer.bindModule(KitController(redis))
-        consumer.bindModule(AuctionHouseController(redis))
-        consumer.bindModule(EconomyController(redis))
-        consumer.bindModule(PlayerVaultController(redis))
-        consumer.bindModule(PlayerShopController(redis, islands, server))
+        consumer.bindModule(PlayerShopController())
 
-        handlers[PlayerPositionResolver.Type.TELEPORT_SPAWN] = SpawnPositionResolver(redis)
-        handlers[PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME] = IslandHomePositionResolver(redis)
-        handlers[PlayerPositionResolver.Type.TELEPORT_ISLAND_VISIT] = IslandVisitPositionResolver(redis)
-        handlers[PlayerPositionResolver.Type.TELEPORT_ISLAND_WARP] = IslandWarpPositionResolver(redis)
-        handlers[PlayerPositionResolver.Type.TELEPORT_PLAYER_SHOP] = PlayerShopPositionResolver(redis)
+        handlers[PlayerPositionResolver.Type.TELEPORT_PLAYER_SHOP] = PlayerShopPositionResolver()
+        handlers[PlayerPositionResolver.Type.TELEPORT_SPAWN] = SpawnPositionResolver()
+        handlers[PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME] = IslandHomePositionResolver()
+        handlers[PlayerPositionResolver.Type.TELEPORT_ISLAND_WARP] = IslandWarpPositionResolver()
+        handlers[PlayerPositionResolver.Type.TELEPORT_ISLAND_VISIT] = IslandVisitPositionResolver()
+        handlers[PlayerPositionResolver.Type.TELEPORT_SERVER_WARP] = ServerWarpPositionResolver()
 
         Commands.create()
             .assertPlayer()

@@ -4,6 +4,7 @@ import de.oliver.fancynpcs.api.FancyNpcsPlugin
 import de.oliver.fancynpcs.api.Npc
 import de.oliver.fancynpcs.api.NpcData
 import de.oliver.fancynpcs.api.utils.SkinFetcher
+import gg.tater.shared.Controller
 import gg.tater.shared.player.combat.CombatService
 import gg.tater.shared.player.combat.model.CombatLogEntry
 import gg.tater.shared.redis.Redis
@@ -24,7 +25,13 @@ import java.util.concurrent.TimeUnit
 
 // References SkinFetcher (Will remove when FancyNPC's updates)
 @Suppress("DEPRECATION")
-class CombatController(private val redis: Redis) : CombatService {
+@Controller(
+    id = "combat-controller",
+    requiredPlugins = ["FancyNpcs"]
+)
+class CombatController : CombatService {
+
+    private val redis = Services.load(Redis::class.java)
 
     //TODO: handle rejoins & inventory item pulling synchronization
 

@@ -1,5 +1,7 @@
 package gg.tater.core.controllers.player.teleport
 
+import gg.tater.shared.Controller
+import gg.tater.shared.network.server.ServerDataService
 import gg.tater.shared.player.combat.CombatService
 import gg.tater.shared.player.teleport.TeleportRequest
 import gg.tater.shared.player.teleport.message.TeleportRequestMessage
@@ -10,10 +12,15 @@ import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.Bukkit
 
-class TeleportController(private val redis: Redis, private val server: String) : TerminableModule {
+@Controller(
+    id = "teleport-controller"
+)
+class TeleportController : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {
         val combat = Services.load(CombatService::class.java)
+        val redis = Services.load(Redis::class.java)
+        val server = Services.load(ServerDataService::class.java).id()
 
         redis.listen<TeleportRequestMessage> {
             val request = it.request

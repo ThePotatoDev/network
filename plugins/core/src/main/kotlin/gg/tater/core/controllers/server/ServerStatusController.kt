@@ -1,17 +1,27 @@
 package gg.tater.core.controllers.server
 
+import gg.tater.shared.Controller
 import gg.tater.shared.network.Agones
-import gg.tater.shared.network.model.server.ServerState
+import gg.tater.shared.network.server.ServerDataService
+import gg.tater.shared.network.server.ServerState
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Schedulers
+import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.Bukkit
 
-class ServerStatusController(private val id: String, private val actions: Agones, private val redis: Redis) :
+@Controller(
+    id = "server-status-controller"
+)
+class ServerStatusController :
     TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {
+        val actions = Services.load(Agones::class.java)
+        val id = Services.load(ServerDataService::class.java).id()
+        val redis = Services.load(Redis::class.java)
+
         Schedulers.sync().runRepeating(Runnable {
             val runtime = Runtime.getRuntime()
 

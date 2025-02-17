@@ -1,12 +1,11 @@
 package gg.tater.shared.player.position
 
-import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerDataModel
-import gg.tater.shared.redis.Redis
 import org.bukkit.Location
 import java.util.concurrent.CompletableFuture
 
-abstract class PlayerPositionResolver(val redis: Redis) {
+abstract class PlayerPositionResolver {
 
     abstract fun getLocation(
         data: PlayerDataModel,

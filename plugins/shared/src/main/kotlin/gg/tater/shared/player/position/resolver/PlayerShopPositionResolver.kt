@@ -1,15 +1,15 @@
 package gg.tater.shared.player.position.resolver
 
-import gg.tater.shared.redis.Redis
-import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.position.PlayerPositionResolver
+import gg.tater.shared.redis.Redis
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class PlayerShopPositionResolver(redis: Redis) : PlayerPositionResolver(redis) {
+class PlayerShopPositionResolver : PlayerPositionResolver() {
 
     override fun getLocation(
         data: PlayerDataModel,

@@ -4,6 +4,7 @@ import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.flag.model.IslandFlagHandler
 import gg.tater.shared.island.IslandService
 import me.lucko.helper.Events
+import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
 import net.kyori.adventure.text.Component
@@ -11,7 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 
-class BreakSpawnersFlagHandler(private val service: IslandService) : IslandFlagHandler {
+class BreakSpawnersFlagHandler : IslandFlagHandler {
 
     override fun type(): FlagType {
         return FlagType.BREAK_SPAWNERS
@@ -23,7 +24,8 @@ class BreakSpawnersFlagHandler(private val service: IslandService) : IslandFlagH
             .handler {
                 val player = it.player
                 val world = player.world
-                val island = service.getIsland(world) ?: return@handler
+                val islands = Services.load(IslandService::class.java)
+                val island = islands.getIsland(world) ?: return@handler
                 val block = it.block
 
                 if (!block.type.name.contains("SPAWNER")) return@handler

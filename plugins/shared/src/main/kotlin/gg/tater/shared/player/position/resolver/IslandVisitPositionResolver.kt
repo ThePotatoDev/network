@@ -3,12 +3,12 @@ package gg.tater.shared.player.position.resolver
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
-import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.network.server.ServerType
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.util.concurrent.CompletableFuture
 
-class IslandVisitPositionResolver(redis: Redis) : PlayerPositionResolver(redis) {
+class IslandVisitPositionResolver : PlayerPositionResolver() {
 
     override fun getLocation(
         data: PlayerDataModel,

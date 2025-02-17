@@ -4,6 +4,7 @@ import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.flag.model.IslandFlagHandler
 import gg.tater.shared.island.IslandService
 import me.lucko.helper.Events
+import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
 import net.kyori.adventure.text.Component
@@ -13,7 +14,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 
-class DamageAnimalsFlagHandler(private val service: IslandService) : IslandFlagHandler {
+class DamageAnimalsFlagHandler : IslandFlagHandler {
 
     override fun type(): FlagType {
         return FlagType.DAMAGE_ANIMALS
@@ -27,7 +28,8 @@ class DamageAnimalsFlagHandler(private val service: IslandService) : IslandFlagH
                 val entity = it.entity
                 val damager = it.damager
                 val world = entity.world
-                val island = service.getIsland(world) ?: return@handler
+                val islands = Services.load(IslandService::class.java)
+                val island = islands.getIsland(world) ?: return@handler
 
                 if (island.canInteract(damager.uniqueId, FlagType.DAMAGE_ANIMALS)) return@handler
 

@@ -7,7 +7,8 @@ import gg.tater.core.controllers.island.IslandController.Companion.PROPERTIES
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.island.message.placement.IslandPlacementResponse
-import gg.tater.shared.network.model.server.ServerType
+import gg.tater.shared.network.server.ServerDataService
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
@@ -19,11 +20,11 @@ import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 class IslandPlacementRequestListener(
-    private val redis: Redis,
-    private val server: String,
     private val api: AdvancedSlimePaperAPI,
     private val loader: SlimeLoader,
-    private val template: SlimeWorld
+    private val template: SlimeWorld,
+    private val redis: Redis = Services.load(Redis::class.java),
+    private val server: String = Services.load(ServerDataService::class.java).id()
 ) : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {

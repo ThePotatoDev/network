@@ -1,5 +1,6 @@
 package gg.tater.core.controllers.player.auction
 
+import gg.tater.shared.Controller
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.player.auction.AuctionHouseService
 import gg.tater.shared.player.auction.gui.AuctionHouseGui
@@ -16,12 +17,15 @@ import org.redisson.api.map.event.EntryExpiredListener
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class AuctionHouseController(private val redis: Redis) : AuctionHouseService {
+@Controller(id = "auction-house-controller")
+class AuctionHouseController : AuctionHouseService {
 
     private companion object {
         const val AUCTIONS_MAP_NAME = "auctions"
         const val EXPIRED_AUCTIONS_SET_NAME = "expired_auctions"
     }
+
+    private val redis = Services.load(Redis::class.java)
 
     init {
         redis.client.getMapCache<UUID, AuctionHouseItem>(AUCTIONS_MAP_NAME)

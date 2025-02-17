@@ -1,5 +1,6 @@
 package gg.tater.core.controllers.player.kit
 
+import gg.tater.shared.Controller
 import gg.tater.shared.player.kit.KitDataModel
 import gg.tater.shared.player.kit.KitPlayerDataModel
 import gg.tater.shared.player.kit.KitService
@@ -14,7 +15,8 @@ import org.bukkit.inventory.ItemStack
 import org.redisson.api.RFuture
 import java.util.*
 
-class KitController(private val redis: Redis) : KitService {
+@Controller(id = "kit-controller")
+class KitController : KitService {
 
     companion object {
         private const val KITS_MAP_NAME = "kits"
@@ -33,6 +35,8 @@ class KitController(private val redis: Redis) : KitService {
             )
         )
     }
+
+    private val redis = Services.load(Redis::class.java)
 
     override fun compute(uuid: UUID): RFuture<KitPlayerDataModel> {
         return redis.client.getMap<UUID, KitPlayerDataModel>(KITS_MAP_NAME)

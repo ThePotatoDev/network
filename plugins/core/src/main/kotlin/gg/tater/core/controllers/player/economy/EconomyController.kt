@@ -1,5 +1,6 @@
 package gg.tater.core.controllers.player.economy
 
+import gg.tater.shared.Controller
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.player.economy.EconomyType
 import gg.tater.shared.player.economy.PlayerEconomyModel
@@ -12,11 +13,14 @@ import net.luckperms.api.LuckPermsProvider
 import org.redisson.api.RFuture
 import java.util.*
 
-class EconomyController(private val redis: Redis) : PlayerEconomyService {
+@Controller(id = "economy-controller")
+class EconomyController : PlayerEconomyService {
 
     private companion object {
         const val ECONOMY_MAP_NAME = "economy"
     }
+
+    private val redis = Services.load(Redis::class.java)
 
     override fun compute(uuid: UUID): RFuture<PlayerEconomyModel> {
         return redis.client.getMap<UUID, PlayerEconomyModel>(ECONOMY_MAP_NAME)
