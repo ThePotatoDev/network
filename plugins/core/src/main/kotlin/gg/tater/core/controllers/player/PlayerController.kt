@@ -57,10 +57,10 @@ class PlayerController :
     private lateinit var animation: SidebarAnimation<Component>
     private lateinit var scoreboardLibrary: ScoreboardLibrary
 
-    override fun compute(player: Player): RFuture<PlayerDataModel> {
+    override fun compute(name: String, uuid: UUID): RFuture<PlayerDataModel> {
         return redis.client.getMap<UUID, PlayerDataModel>(PLAYER_MAP_NAME)
-            .computeIfAbsentAsync(player.uniqueId) {
-                PlayerDataModel(player)
+            .computeIfAbsentAsync(uuid) {
+                PlayerDataModel(uuid, name)
             }
     }
 
@@ -99,6 +99,17 @@ class PlayerController :
         handlers[PlayerPositionResolver.Type.TELEPORT_ISLAND_WARP] = IslandWarpPositionResolver()
         handlers[PlayerPositionResolver.Type.TELEPORT_ISLAND_VISIT] = IslandVisitPositionResolver()
         handlers[PlayerPositionResolver.Type.TELEPORT_SERVER_WARP] = ServerWarpPositionResolver()
+
+        Commands.create()
+            .assertPlayer()
+            .assertPermission("server.createdata")
+            .handler {
+                val sender = it.sender()
+
+                compute(sender.name, sender.uniqueId)
+                it.reply("Computed data")
+            }
+            .registerAndBind(consumer, "createdata")
 
         Commands.create()
             .assertPlayer()

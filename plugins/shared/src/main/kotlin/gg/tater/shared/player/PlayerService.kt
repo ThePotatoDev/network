@@ -1,7 +1,6 @@
 package gg.tater.shared.player
 
 import me.lucko.helper.terminable.module.TerminableModule
-import org.bukkit.entity.Player
 import org.redisson.api.RFuture
 import java.util.*
 
@@ -11,7 +10,7 @@ interface PlayerService : TerminableModule {
         const val PLAYER_MAP_NAME = "players"
     }
 
-    fun compute(player: Player): RFuture<PlayerDataModel>
+    fun compute(name: String, uuid: UUID): RFuture<PlayerDataModel>
 
     fun get(uuid: UUID): RFuture<PlayerDataModel>
 

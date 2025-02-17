@@ -17,7 +17,6 @@ import java.util.*
 data class PlayerDataModel(
     val uuid: UUID,
     var name: String,
-    var lastServerType: ServerType,
     var currentServerId: String? = null,
     var lastPositionMap: MutableMap<ServerType, WrappedPosition> = mutableMapOf(),
     var inventoryMap: MutableMap<InventoryType, Array<out ItemStack?>> = mutableMapOf(),
@@ -32,13 +31,12 @@ data class PlayerDataModel(
     var islandId: UUID? = null
 ) {
 
-    constructor(player: Player) : this(player.uniqueId, player.name, ServerType.SPAWN)
+    constructor(player: Player) : this(player.uniqueId, player.name)
 
     companion object {
         const val UUID_FIELD = "uuid"
         const val NAME_FIELD = "name"
         const val POSITION_MAP_FIELD = "position_map"
-        const val LAST_SERVER_TYPE_FIELD = "last_server_type"
         const val INVENTORY_MAP_FIELD = "inv_map"
         const val HEALTH_FIELD = "health"
         const val HUNGER_FIELD = "hunger"
@@ -64,10 +62,6 @@ data class PlayerDataModel(
 
     fun setDefaultSpawn(type: ServerType) {
         lastPositionMap[type] = type.spawn!!
-    }
-
-    fun getSetDefaultSpawn(type: ServerType): WrappedPosition? {
-        return lastPositionMap[type]
     }
 
     fun setSpawn(type: ServerType, position: WrappedPosition) {
@@ -119,7 +113,6 @@ data class PlayerDataModel(
     }
 
     fun update(player: Player, type: ServerType): PlayerDataModel {
-        lastServerType = type
         setLastPosition(type, WrappedPosition(player.location))
 
         setInventory(InventoryType.ARMOR, player.inventory.armorContents)
@@ -159,7 +152,6 @@ data class PlayerDataModel(
 
                     addProperty(UUID_FIELD, model.uuid.toString())
                     addProperty(NAME_FIELD, model.name)
-                    addProperty(LAST_SERVER_TYPE_FIELD, model.lastServerType.name)
                     addProperty(HEALTH_FIELD, model.health)
                     addProperty(HUNGER_FIELD, model.hunger)
                     addProperty(EXP_FIELD, model.exp)
@@ -222,7 +214,6 @@ data class PlayerDataModel(
                 return PlayerDataModel(
                     UUID.fromString(get(UUID_FIELD).asString),
                     get(NAME_FIELD).asString,
-                    ServerType.valueOf(get(LAST_SERVER_TYPE_FIELD).asString),
                     get(CURRENT_SERVER_ID_FIELD)?.asString,
                     lastPositionMap,
                     lastInventoryMap,
@@ -244,4 +235,10 @@ data class PlayerDataModel(
             }
         }
     }
+}
+
+fun PlayerDataModel.getCurrentServerType(): ServerType? {
+    val currentServerId = this.currentServerId ?: return null
+    val prefix = currentServerId.split("-", "")[0]
+    return ServerType.valueOf(prefix.uppercase())
 }

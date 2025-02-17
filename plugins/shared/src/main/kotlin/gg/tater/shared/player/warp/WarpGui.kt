@@ -2,6 +2,7 @@ package gg.tater.shared.player.warp
 
 import gg.tater.shared.player.PlayerRedirectRequest
 import gg.tater.shared.player.PlayerService
+import gg.tater.shared.player.getCurrentServerType
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services
@@ -25,10 +26,12 @@ class WarpGui(
                 warp.slot, warp.icon.clearLore()
                     .lore(getLore(warp))
                     .build {
+                        val serverType = warp.serverType
+
                         players.get(opener.uniqueId).thenAcceptAsync { player ->
                             // If the player is already on the warp's server
-                            if (player.currentServerId == server) {
-                                val position = warp.serverType.spawn!!
+                            if (player.getCurrentServerType() == warp.serverType) {
+                                val position = serverType.spawn!!
 
                                 val location = Location(
                                     Bukkit.getWorld("world"),
@@ -43,8 +46,6 @@ class WarpGui(
                                     location
                                 )
                             } else {
-                                val serverType = warp.serverType
-
                                 player.setSpawn(serverType, serverType.spawn!!)
                                 players.transaction(
                                     player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_SERVER_WARP),

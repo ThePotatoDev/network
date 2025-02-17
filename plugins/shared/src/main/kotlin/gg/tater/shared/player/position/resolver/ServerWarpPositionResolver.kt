@@ -14,7 +14,7 @@ class ServerWarpPositionResolver : PlayerPositionResolver() {
 
         return CompletableFuture.completedFuture(
             Location(
-                Bukkit.getWorld("world"),
+                Bukkit.getWorld("world")!!,
                 spawn.x,
                 spawn.y,
                 spawn.z,
