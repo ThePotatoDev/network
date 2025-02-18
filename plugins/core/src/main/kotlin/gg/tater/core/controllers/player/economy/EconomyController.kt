@@ -10,7 +10,11 @@ import me.lucko.helper.Commands
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 import net.luckperms.api.LuckPermsProvider
+import org.redisson.api.ObjectListener
 import org.redisson.api.RFuture
+import org.redisson.api.map.event.EntryCreatedListener
+import org.redisson.api.map.event.EntryEvent
+import org.redisson.api.map.event.EntryUpdatedListener
 import java.util.*
 
 @Controller(id = "economy-controller")
@@ -18,9 +22,13 @@ class EconomyController : PlayerEconomyService {
 
     private companion object {
         const val ECONOMY_MAP_NAME = "economy"
+        const val ECONOMY_ENTRY_CREATED_SEMAPHORE_NAME = "economy-entry-created-semaphore"
+        const val ECONOMY_ENTRY_UPDATED_SEMAPHORE_NAME = "economy-entry-updated-semaphore"
     }
 
     private val redis = Services.load(Redis::class.java)
+    private val creations = redis.client.getSemaphore(ECONOMY_ENTRY_CREATED_SEMAPHORE_NAME)
+    private val updates = redis.client.getSemaphore(ECONOMY_ENTRY_UPDATED_SEMAPHORE_NAME)
 
     override fun compute(uuid: UUID): RFuture<PlayerEconomyModel> {
         return redis.client.getMap<UUID, PlayerEconomyModel>(ECONOMY_MAP_NAME)
@@ -41,6 +49,32 @@ class EconomyController : PlayerEconomyService {
     override fun save(uuid: UUID, eco: PlayerEconomyModel): RFuture<Boolean> {
         return redis.client.getMap<UUID, PlayerEconomyModel>(ECONOMY_MAP_NAME)
             .fastPutAsync(uuid, eco)
+    }
+
+    override fun onCreated(action: (UUID, PlayerEconomyModel) -> Unit): RFuture<Int> {
+        return redis.client.getMap<UUID, PlayerEconomyModel>(ECONOMY_MAP_NAME)
+            .addListenerAsync(object : EntryCreatedListener<UUID, PlayerEconomyModel>, ObjectListener {
+                override fun onCreated(event: EntryEvent<UUID, PlayerEconomyModel>) {
+                    if (creations.tryAcquire()) {
+                        try {
+                            action(event.key, event.value)
+                        } finally {
+                            creations.release()
+                        }
+                    } else {
+                        println("Economy creation already in progress, skipping...")
+                    }
+                }
+            })
+    }
+
+    override fun onUpdated(action: (UUID, PlayerEconomyModel) -> Unit): RFuture<Int> {
+        return redis.client.getMap<UUID, PlayerEconomyModel>(ECONOMY_MAP_NAME)
+            .addListenerAsync(object : EntryUpdatedListener<UUID, PlayerEconomyModel>, ObjectListener {
+                override fun onUpdated(event: EntryEvent<UUID, PlayerEconomyModel>) {
+
+                }
+            })
     }
 
     override fun setup(consumer: TerminableConsumer) {

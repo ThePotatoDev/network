@@ -1,13 +1,14 @@
 package gg.tater.shared.leaderboard
 
 import me.lucko.helper.terminable.module.TerminableModule
+import org.redisson.api.RFuture
+import java.time.Instant
+import java.util.concurrent.CompletionStage
 
 interface LeaderboardService : TerminableModule {
 
-    fun addLeaderboard(leaderboard: Leaderboard): Boolean
+    fun getLastRefresh(leaderboard: Leaderboard<*, *>): CompletionStage<Instant>
 
-    fun removeLeaderboard(leaderboard: Leaderboard): Boolean
-
-    fun getLeaderboard(id: String): Leaderboard?
+    fun setLastRefresh(leaderboard: Leaderboard<*, *>): RFuture<Long>
 
 }

@@ -17,7 +17,6 @@ import org.bukkit.entity.Player
 class WarpGui(
     private val opener: Player,
     private val redis: Redis,
-    private val server: String,
     private val players: PlayerService = Services.load(PlayerService::class.java)
 ) :
     Gui(opener, 3, "Server Warps") {
