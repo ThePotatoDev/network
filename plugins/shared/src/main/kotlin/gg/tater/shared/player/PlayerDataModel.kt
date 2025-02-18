@@ -239,6 +239,6 @@ data class PlayerDataModel(
 
 fun PlayerDataModel.getCurrentServerType(): ServerType? {
     val currentServerId = this.currentServerId ?: return null
-    val prefix = currentServerId.split("-", "")[0]
+    val prefix = currentServerId.split("-")[0]
     return ServerType.valueOf(prefix.uppercase())
 }
