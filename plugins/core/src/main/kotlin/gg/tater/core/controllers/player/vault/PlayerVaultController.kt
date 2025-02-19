@@ -1,7 +1,7 @@
 package gg.tater.core.controllers.player.vault
 
 import gg.tater.shared.ARROW_TEXT
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.player.vault.VaultDataModel
 import gg.tater.shared.player.vault.VaultService
 import gg.tater.shared.player.vault.gui.VaultGuiItem

@@ -1,6 +1,6 @@
 package gg.tater.core.controllers.player.playershop
 
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.network.server.ServerDataService

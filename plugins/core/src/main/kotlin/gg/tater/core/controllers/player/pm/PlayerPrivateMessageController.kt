@@ -2,7 +2,7 @@ package gg.tater.core.controllers.player.pm
 
 import gg.tater.core.controllers.player.pm.listener.PlayerPrivateMessageRequestListener
 import gg.tater.core.controllers.player.pm.listener.PlayerPrivateMessageResponseListener
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.pm.PlayerPrivateMessageRequest
 import gg.tater.shared.player.pm.PrivateMessageService

@@ -1,6 +1,6 @@
 package gg.tater.core.controllers.leaderboard
 
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.leaderboard.Leaderboard
 import gg.tater.shared.leaderboard.LeaderboardService
 import gg.tater.shared.redis.Redis
@@ -27,8 +27,10 @@ class LeaderboardController : LeaderboardService {
         Services.provide(LeaderboardService::class.java, this)
 
         Schedulers.async().runRepeating(Runnable {
-
-        }, 1L, TimeUnit.SECONDS, 1L, TimeUnit.HOURS)
+            for (leaderboard in Leaderboard.all()) {
+                leaderboard.compute(10)
+            }
+        }, 1L, TimeUnit.SECONDS, 1L, TimeUnit.MINUTES)
     }
 
     override fun getLastRefresh(leaderboard: Leaderboard<*, *>): CompletionStage<Instant> {

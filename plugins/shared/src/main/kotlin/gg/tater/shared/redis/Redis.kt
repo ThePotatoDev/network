@@ -3,6 +3,8 @@ package gg.tater.shared.redis
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import gg.tater.shared.Json
+import gg.tater.shared.annotation.InvocationContext
+import gg.tater.shared.annotation.InvocationContextType
 import gg.tater.shared.findAnnotatedClasses
 import gg.tater.shared.network.ProxyDataModel
 import gg.tater.shared.network.server.ServerDataModel
@@ -259,6 +261,7 @@ class Redis(credential: Credential) {
  * @param onFailure Callback to execute if the transaction fails and is rolled back.
  * @throws Exception if not in an async context.
  */
+@InvocationContext(type = InvocationContextType.ASYNC)
 fun <K, V> RMap<K, V>.transactional(
     client: RedissonClient,
     operation: (RMap<K, V>) -> Unit,

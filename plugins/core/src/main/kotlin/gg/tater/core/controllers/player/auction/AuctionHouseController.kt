@@ -1,6 +1,6 @@
 package gg.tater.core.controllers.player.auction
 
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.player.auction.AuctionHouseService
 import gg.tater.shared.player.auction.gui.AuctionHouseGui

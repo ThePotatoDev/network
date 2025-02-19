@@ -1,6 +1,6 @@
 package gg.tater.core
 
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.findAnnotatedClasses
 import gg.tater.shared.network.Agones
 import gg.tater.shared.network.server.ServerDataService

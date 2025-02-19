@@ -1,6 +1,6 @@
 package gg.tater.core.controllers.server
 
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.network.server.ServerDataService
 import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerRedirectRequest

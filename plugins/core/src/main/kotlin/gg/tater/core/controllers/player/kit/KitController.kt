@@ -1,6 +1,6 @@
 package gg.tater.core.controllers.player.kit
 
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.player.kit.KitDataModel
 import gg.tater.shared.player.kit.KitPlayerDataModel
 import gg.tater.shared.player.kit.KitService

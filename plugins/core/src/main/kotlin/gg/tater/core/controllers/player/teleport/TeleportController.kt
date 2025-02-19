@@ -1,6 +1,6 @@
 package gg.tater.core.controllers.player.teleport
 
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.network.server.ServerDataService
 import gg.tater.shared.player.combat.CombatService
 import gg.tater.shared.player.teleport.TeleportRequest

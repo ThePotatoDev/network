@@ -1,6 +1,6 @@
 package gg.tater.core.controllers.player.planet
 
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.player.planet.PlanetPlayerData
 import gg.tater.shared.player.planet.PlanetService
 import gg.tater.shared.redis.Redis

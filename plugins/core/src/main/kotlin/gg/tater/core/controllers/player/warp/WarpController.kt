@@ -1,7 +1,6 @@
 package gg.tater.core.controllers.player.warp
 
-import gg.tater.shared.Controller
-import gg.tater.shared.network.server.ServerDataService
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.player.warp.WarpGui
 import gg.tater.shared.player.warp.WarpService
 import gg.tater.shared.player.warp.WarpType
@@ -16,14 +15,13 @@ import me.lucko.helper.terminable.TerminableConsumer
 class WarpController : WarpService {
 
     private val redis = Services.load(Redis::class.java)
-    private val server = Services.load(ServerDataService::class.java).id()
 
     override fun setup(consumer: TerminableConsumer) {
         Commands.create()
             .assertPlayer()
             .handler {
                 val sender = it.sender()
-                WarpGui(sender, redis, server).open()
+                WarpGui(sender, redis).open()
             }
             .registerAndBind(consumer, "warps", "warp")
     }

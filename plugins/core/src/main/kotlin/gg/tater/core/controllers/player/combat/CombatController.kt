@@ -4,7 +4,7 @@ import de.oliver.fancynpcs.api.FancyNpcsPlugin
 import de.oliver.fancynpcs.api.Npc
 import de.oliver.fancynpcs.api.NpcData
 import de.oliver.fancynpcs.api.utils.SkinFetcher
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.player.combat.CombatService
 import gg.tater.shared.player.combat.model.CombatLogEntry
 import gg.tater.shared.redis.Redis

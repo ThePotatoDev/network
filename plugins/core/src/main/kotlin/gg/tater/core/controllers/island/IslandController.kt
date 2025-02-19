@@ -10,7 +10,7 @@ import gg.tater.core.controllers.island.listener.IslandDeleteRequestListener
 import gg.tater.core.controllers.island.listener.IslandPlacementRequestListener
 import gg.tater.core.controllers.island.listener.IslandUpdateRequestListener
 import gg.tater.core.controllers.island.subcommand.*
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.UUID_REGEX
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService

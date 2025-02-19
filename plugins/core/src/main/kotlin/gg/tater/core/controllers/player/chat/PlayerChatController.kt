@@ -1,6 +1,6 @@
 package gg.tater.core.controllers.player.chat
 
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.chat.color.ChatColorGui

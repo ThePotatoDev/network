@@ -2,7 +2,7 @@ package gg.tater.core.controllers.player
 
 import gg.tater.core.CorePlugin
 import gg.tater.core.controllers.player.playershop.PlayerShopController
-import gg.tater.shared.Controller
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.getFormattedDate
