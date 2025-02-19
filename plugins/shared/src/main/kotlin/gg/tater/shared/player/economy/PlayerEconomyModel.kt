@@ -16,15 +16,15 @@ data class PlayerEconomyModel(val uuid: UUID, val balance: MutableMap<EconomyTyp
         return balance.getOrDefault(type, 0.0)
     }
 
-    fun withdraw(type: EconomyType, amount: Double) {
-        balance.computeIfPresent(type) { _, current ->
-            return@computeIfPresent current - amount
+    fun withdraw(type: EconomyType, amount: Double): Double? {
+        return balance.computeIfPresent(type) { _, current ->
+            current - amount
         }
     }
 
-    fun add(type: EconomyType, amount: Double) {
-        balance.computeIfPresent(type) { _, current ->
-            return@computeIfPresent current + amount
+    fun add(type: EconomyType, amount: Double): Double? {
+        return balance.computeIfPresent(type) { _, current ->
+            current + amount
         }
     }
 

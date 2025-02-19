@@ -11,8 +11,8 @@ data class WrappedPosition(
     val x: Double,
     val y: Double,
     val z: Double,
-    val yaw: Float,
-    val pitch: Float
+    val yaw: Float? = null,
+    val pitch: Float? = null
 ) {
 
     constructor(location: Location) : this(location.x, location.y, location.z, location.yaw, location.pitch)

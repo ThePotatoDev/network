@@ -2,10 +2,12 @@ package gg.tater.core.controllers.player.economy
 
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.annotation.Controller
+import gg.tater.shared.leaderboard.Leaderboard
 import gg.tater.shared.player.economy.EconomyType
 import gg.tater.shared.player.economy.PlayerEconomyModel
 import gg.tater.shared.player.economy.PlayerEconomyService
 import gg.tater.shared.player.economy.leaderboard.PlayerBalanceLeaderboard
+import gg.tater.shared.player.economy.message.EconomyBalanceUpdateMessage
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Commands
 import me.lucko.helper.Services
@@ -13,6 +15,8 @@ import me.lucko.helper.terminable.TerminableConsumer
 import net.luckperms.api.LuckPermsProvider
 import org.redisson.api.RFuture
 import java.util.*
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 
 @Controller(id = "economy-controller")
 class EconomyController : PlayerEconomyService {
@@ -47,7 +51,6 @@ class EconomyController : PlayerEconomyService {
     override fun setup(consumer: TerminableConsumer) {
         Services.provide(PlayerEconomyService::class.java, this)
         val perms = LuckPermsProvider.get()
-
         consumer.bindModule(PlayerBalanceLeaderboard())
 
         Commands.create()
