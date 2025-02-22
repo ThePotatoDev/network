@@ -1,0 +1,2 @@
+feature-flags:
+  disable-holograms-for-bedrock-players: false

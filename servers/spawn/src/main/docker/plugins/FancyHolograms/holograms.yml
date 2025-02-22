@@ -5,7 +5,7 @@ holograms:
     location:
       world: world
       x: 0.5
-      y: 65.37254795596608
+      y: 65.37255096435547
       z: -3.5
       yaw: 87.2823
       pitch: 41.849995
@@ -18,14 +18,14 @@ holograms:
     shadow_radius: 0.0
     shadow_strength: 1.0
     text:
-      - <gradient:#aa00ff:#ff55ff><bold>ONEBLOCK</bold></gradient>
-      - '&r'
-      - <bold><white>Your ultimate <gradient:#ff55ff:#ffffff>OneBlock</gradient> adventure!</white></bold>
-      - '&r'
-      - <bold><gradient:#ff55ff:#ffffff>WEBSITE:</gradient></bold> <click:open_url:'https://oneblock.is'><white>oneblock.is</white></click>
-      - <bold><gradient:#ff55ff:#ffffff>STORE:</gradient></bold> <click:open_url:'https://store.oneblock.is'><white>store.oneblock.is</white></click>
-      - <bold><gradient:#ff55ff:#ffffff>DISCORD:</gradient></bold> <click:open_url:'https://discord.oneblock.is'><white>discord.oneblock.is</white></click>
-      - '&r'
+    - <gradient:#aa00ff:#ff55ff><bold>ONEBLOCK</bold></gradient>
+    - '&r'
+    - <bold><white>Your ultimate <gradient:#ff55ff:#ffffff>OneBlock</gradient> adventure!</white></bold>
+    - '&r'
+    - <bold><gradient:#ff55ff:#ffffff>WEBSITE:</gradient></bold> <click:open_url:'https://oneblock.is'><white>oneblock.is</white></click>
+    - <bold><gradient:#ff55ff:#ffffff>STORE:</gradient></bold> <click:open_url:'https://store.oneblock.is'><white>store.oneblock.is</white></click>
+    - <bold><gradient:#ff55ff:#ffffff>DISCORD:</gradient></bold> <click:open_url:'https://discord.oneblock.is'><white>discord.oneblock.is</white></click>
+    - '&r'
     text_shadow: false
     see_through: false
     text_alignment: center
@@ -35,7 +35,7 @@ holograms:
     location:
       world: world
       x: -27.5
-      y: 64.37254795596608
+      y: 64.37255096435547
       z: 6.5
       yaw: 89.37839
       pitch: 5.2500973
@@ -48,13 +48,92 @@ holograms:
     shadow_radius: 0.0
     shadow_strength: 1.0
     text:
-      - <gradient:#aa00ff:#ff55ff><bold>CRATES</bold></gradient>
-      - '&r'
-      - <white>Open crates to receive rewards that will</white>
-      - <white>help you on your journey in OneBlock!</white>
-      - '&r'
-      - <bold><gradient:#ff55ff:#ffffff>PURCHASE AT:</gradient></bold> <click:open_url:'https://store.oneblock.is'><white>store.oneblock.is</white></click>
+    - <gradient:#aa00ff:#ff55ff><bold>CRATES</bold></gradient>
+    - '&r'
+    - <white>Open crates to receive rewards that will</white>
+    - <white>help you on your journey in OneBlock!</white>
+    - '&r'
+    - <bold><gradient:#ff55ff:#ffffff>PURCHASE AT:</gradient></bold> <click:open_url:'https://store.oneblock.is'><white>store.oneblock.is</white></click>
     text_shadow: false
     see_through: false
     text_alignment: center
     update_text_interval: -1
+  Vaults:
+    type: TEXT
+    location:
+      world: world
+      x: 7.440005589701256
+      y: 66.12000000476837
+      z: -5.518084758263979
+      yaw: 53.090363
+      pitch: 3.1000714
+    visibility_distance: -1
+    visibility: ALL
+    persistent: true
+    scale_x: 1.0
+    scale_y: 1.0
+    scale_z: 1.0
+    shadow_radius: 0.0
+    shadow_strength: 1.0
+    text:
+    - '&#56BCDD&lᴘ&#57BBDD&lʟ&#58BBDD&lᴀ&#5ABADD&lʏ&#5BB9DD&lᴇ&#5CB8DD&lʀ &#5EB7DE&lᴠ&#5FB6DE&lᴀ&#61B5DE&lᴜ&#62B5DE&lʟ&#63B4DE&lᴛ&#64B3DE&lꜱ'
+    - '&7Store your items securely'
+    - '&7in a private vault!'
+    text_shadow: false
+    see_through: false
+    text_alignment: center
+    update_text_interval: -1
+    linkedNpc: Vaults
+  AuctionHouse:
+    type: TEXT
+    location:
+      world: world
+      x: 8.437412348047133
+      y: 66.12000000476837
+      z: 0.5019208421054046
+      yaw: 89.09332
+      pitch: 2.9500837
+    visibility_distance: -1
+    visibility: ALL
+    persistent: true
+    scale_x: 1.0
+    scale_y: 1.0
+    scale_z: 1.0
+    shadow_radius: 0.0
+    shadow_strength: 1.0
+    text:
+    - '&#B01B6C&lᴀ&#B11C6D&lᴜ&#B11C6D&lᴄ&#B21D6E&lᴛ&#B31E6F&lɪ&#B31E6F&lᴏ&#B41F70&lɴ
+      &#B52071&lʜ&#B62172&lᴏ&#B72273&lᴜ&#B72273&lꜱ&#B82374&lᴇ'
+    - '&7Sell and buy items'
+    - '&7for money!'
+    text_shadow: false
+    see_through: false
+    text_alignment: center
+    update_text_interval: -1
+    linkedNpc: AuctionHouse
+  PlayerShops:
+    type: TEXT
+    location:
+      world: world
+      x: 7.5097754123753955
+      y: 66.12000000476837
+      z: 5.408879031634926
+      yaw: 127.49767
+      pitch: 1.2999583
+    visibility_distance: -1
+    visibility: ALL
+    persistent: true
+    scale_x: 1.0
+    scale_y: 1.0
+    scale_z: 1.0
+    shadow_radius: 0.0
+    shadow_strength: 1.0
+    text:
+    - '&#E9BF51&lᴘ&#E5BB4D&lʟ&#E1B749&lᴀ&#DEB445&lʏ&#DAB041&lᴇ&#D6AC3D&lʀ &#CEA434&lꜱ&#CAA030&lʜ&#C79D2C&lᴏ&#C39928&lᴘ&#BF9524&lꜱ'
+    - '&7Visit player islands to'
+    - '&7buy and sell items!'
+    text_shadow: false
+    see_through: false
+    text_alignment: center
+    update_text_interval: -1
+    linkedNpc: PlayerShops
