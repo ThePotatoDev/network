@@ -1,9 +1,7 @@
 package gg.tater.core.controllers.player.chat
 
 import gg.tater.shared.MINI_MESSAGE
-import gg.tater.shared.addCooldown
 import gg.tater.shared.annotation.Controller
-import gg.tater.shared.isCoolingDown
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.chat.color.ChatColorGui
 import gg.tater.shared.player.chat.message.ChatMessagePart
@@ -23,8 +21,6 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.luckperms.api.LuckPermsProvider
 import org.bukkit.Bukkit
 import org.bukkit.event.EventPriority
-import java.time.Instant
-import java.util.concurrent.TimeUnit
 
 @Controller(id = "player-chat-controller")
 class PlayerChatController : TerminableModule {
