@@ -15,6 +15,3 @@ kubectl apply -f fleet_dev.yaml
 
 cd "$PROJECT_ROOT/servers/spawn/src/main/helm"
 kubectl apply -f fleet_dev.yaml
-
-cd "$PROJECT_ROOT/servers/limbo/src/main/helm"
-kubectl apply -f fleet_dev.yaml

@@ -1,0 +1,60 @@
+version: 2 # DO NOT CHANGE
+holograms:
+  OneBlockWelcome:
+    type: TEXT
+    location:
+      world: world
+      x: 0.5
+      y: 65.37254795596608
+      z: -3.5
+      yaw: 87.2823
+      pitch: 41.849995
+    visibility_distance: -1
+    visibility: ALL
+    persistent: true
+    scale_x: 1.0
+    scale_y: 1.0
+    scale_z: 1.0
+    shadow_radius: 0.0
+    shadow_strength: 1.0
+    text:
+      - <gradient:#aa00ff:#ff55ff><bold>ONEBLOCK</bold></gradient>
+      - '&r'
+      - <bold><white>Your ultimate <gradient:#ff55ff:#ffffff>OneBlock</gradient> adventure!</white></bold>
+      - '&r'
+      - <bold><gradient:#ff55ff:#ffffff>WEBSITE:</gradient></bold> <click:open_url:'https://oneblock.is'><white>oneblock.is</white></click>
+      - <bold><gradient:#ff55ff:#ffffff>STORE:</gradient></bold> <click:open_url:'https://store.oneblock.is'><white>store.oneblock.is</white></click>
+      - <bold><gradient:#ff55ff:#ffffff>DISCORD:</gradient></bold> <click:open_url:'https://discord.oneblock.is'><white>discord.oneblock.is</white></click>
+      - '&r'
+    text_shadow: false
+    see_through: false
+    text_alignment: center
+    update_text_interval: -1
+  Crates:
+    type: TEXT
+    location:
+      world: world
+      x: -27.5
+      y: 64.37254795596608
+      z: 6.5
+      yaw: 89.37839
+      pitch: 5.2500973
+    visibility_distance: -1
+    visibility: ALL
+    persistent: true
+    scale_x: 1.0
+    scale_y: 1.0
+    scale_z: 1.0
+    shadow_radius: 0.0
+    shadow_strength: 1.0
+    text:
+      - <gradient:#aa00ff:#ff55ff><bold>CRATES</bold></gradient>
+      - '&r'
+      - <white>Open crates to receive rewards that will</white>
+      - <white>help you on your journey in OneBlock!</white>
+      - '&r'
+      - <bold><gradient:#ff55ff:#ffffff>PURCHASE AT:</gradient></bold> <click:open_url:'https://store.oneblock.is'><white>store.oneblock.is</white></click>
+    text_shadow: false
+    see_through: false
+    text_alignment: center
+    update_text_interval: -1

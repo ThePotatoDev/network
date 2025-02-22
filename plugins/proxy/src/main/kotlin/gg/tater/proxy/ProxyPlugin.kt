@@ -2,7 +2,9 @@ package gg.tater.proxy
 
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
+import com.velocitypowered.api.event.connection.PreLoginEvent
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
+import com.velocitypowered.api.event.player.ServerPreConnectEvent
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
@@ -38,7 +40,7 @@ class ProxyPlugin @Inject constructor(
     @DataDirectory private val dir: Path
 ) {
 
-    companion object {
+    private companion object {
         const val GROUP = "agones.dev"
         const val VERSION = "v1"
         const val NAMESPACE = "default"

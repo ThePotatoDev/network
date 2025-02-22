@@ -13,7 +13,6 @@ findProject("plugins:shared")?.name = "shared"
 
 include("servers:server")
 include("servers:spawn")
-include("servers:limbo")
 include("servers:proxy")
 include("servers")
 include("servers:duel")
