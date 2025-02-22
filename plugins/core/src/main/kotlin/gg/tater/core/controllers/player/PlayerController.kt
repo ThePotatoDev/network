@@ -1,10 +1,9 @@
 package gg.tater.core.controllers.player
 
 import gg.tater.core.CorePlugin
-import gg.tater.core.controllers.player.playershop.PlayerShopController
-import gg.tater.shared.annotation.Controller
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.MINI_MESSAGE
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.getFormattedDate
 import gg.tater.shared.network.server.ServerDataService
 import gg.tater.shared.player.PlayerDataModel
@@ -90,8 +89,6 @@ class PlayerController :
             // If no packet adapter was found, you can fall back to the no-op implementation:
             NoopScoreboardLibrary()
         }
-
-        consumer.bindModule(PlayerShopController())
 
         handlers[PlayerPositionResolver.Type.TELEPORT_PLAYER_SHOP] = PlayerShopPositionResolver()
         handlers[PlayerPositionResolver.Type.TELEPORT_SPAWN] = SpawnPositionResolver()

@@ -4,7 +4,6 @@ import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.message.IslandDeleteRequest
 import gg.tater.shared.player.PlayerService
-import gg.tater.shared.player.playershop.PlayerShopService
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
@@ -21,7 +20,6 @@ class IslandDeleteSubCommand(
     override fun handle(context: CommandContext<Player>) {
         val players: PlayerService = Services.load(PlayerService::class.java)
         val islands: IslandService = Services.load(IslandService::class.java)
-        val shops: PlayerShopService = Services.load(PlayerShopService::class.java)
 
         val sender = context.sender()
         val uuid = sender.uniqueId
