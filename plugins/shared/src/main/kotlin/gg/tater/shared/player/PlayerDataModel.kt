@@ -2,18 +2,18 @@ package gg.tater.shared.player
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
 import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.chat.color.ChatColor
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.player.position.WrappedPosition
-import gg.tater.shared.redis.Redis
 import me.lucko.helper.serialize.Serializers
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.lang.reflect.Type
 import java.util.*
 
-@Redis.Mapping("player_data_model")
+@Mapping("player_data_model")
 data class PlayerDataModel(
     val uuid: UUID,
     var name: String,

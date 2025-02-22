@@ -2,9 +2,14 @@ package gg.tater.shared.player.economy.message
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
+import gg.tater.shared.annotation.Message
+import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 import java.util.*
 
+@Mapping("economy_balance_update_message")
+@Message("economy_balance_updates")
 class EconomyBalanceUpdateMessage(val uuid: UUID, val newBalance: Double) {
 
     private companion object {

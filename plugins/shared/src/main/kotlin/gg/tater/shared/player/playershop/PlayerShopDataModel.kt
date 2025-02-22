@@ -3,12 +3,14 @@ package gg.tater.shared.player.playershop
 import com.google.gson.*
 import gg.tater.shared.Json
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
 import gg.tater.shared.player.position.WrappedPosition
 import me.lucko.helper.serialize.Serializers
 import org.bukkit.inventory.ItemStack
 import java.lang.reflect.Type
 import java.util.*
 
+@Mapping("player_shop_data_model")
 class PlayerShopDataModel(
     var name: String,
     var description: String,

@@ -5,6 +5,8 @@ import com.google.gson.JsonParser
 import gg.tater.shared.Json
 import gg.tater.shared.annotation.InvocationContext
 import gg.tater.shared.annotation.InvocationContextType
+import gg.tater.shared.annotation.Mapping
+import gg.tater.shared.annotation.Message
 import gg.tater.shared.findAnnotatedClasses
 import gg.tater.shared.network.ProxyDataModel
 import gg.tater.shared.network.server.ServerDataModel
@@ -26,19 +28,10 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 
 class Redis(credential: Credential) {
-
-    companion object {
+    private companion object {
         const val SERVER_MAP_NAME = "servers"
         const val PROXY_DATA_BUCKET_NAME = "proxy_data"
     }
-
-    @Target(AnnotationTarget.CLASS)
-    @Retention(AnnotationRetention.RUNTIME)
-    annotation class ReqRes(val channel: String)
-
-    @Target(AnnotationTarget.CLASS)
-    @Retention(AnnotationRetention.RUNTIME)
-    annotation class Mapping(val id: String)
 
     data class Credential(val username: String, val password: String, val address: String, val port: Int)
 
@@ -162,10 +155,10 @@ class Redis(credential: Credential) {
      * @param consumer The function to handle the received payload.
      * @param T The type of the message payload.
      * @throws IllegalArgumentException if the class is not annotated with @ReqRes.
-     * @see ReqRes The annotation that specifies the channel ID.
+     * @see Message The annotation that specifies the channel ID.
      */
     inline fun <reified T : Any> listen(noinline consumer: (T) -> Unit) {
-        val meta = T::class.annotations.find { it is ReqRes } as? ReqRes
+        val meta = T::class.annotations.find { it is Message } as? Message
             ?: throw IllegalArgumentException("Class ${T::class} must have @ReqRes annotation")
 
         client.getTopic(meta.channel).addListenerAsync(T::class.java) { _, message ->
@@ -180,10 +173,10 @@ class Redis(credential: Credential) {
      * @param message The message object to publish.
      * @param T The type of the message payload.
      * @throws IllegalArgumentException if the class is not annotated with @ReqRes.
-     * @see ReqRes The annotation that specifies the channel ID.
+     * @see Message The annotation that specifies the channel ID.
      */
     inline fun <reified T : Any> publish(message: T) {
-        val meta = T::class.annotations.find { it is ReqRes } as? ReqRes
+        val meta = T::class.annotations.find { it is Message } as? Message
             ?: throw IllegalArgumentException("Class ${T::class} must have @ReqRes annotation")
 
         client.getTopic(meta.channel).publishAsync(message)

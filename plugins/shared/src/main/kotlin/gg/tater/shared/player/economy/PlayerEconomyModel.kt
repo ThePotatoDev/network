@@ -2,9 +2,11 @@ package gg.tater.shared.player.economy
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
 import java.lang.reflect.Type
 import java.util.*
 
+@Mapping("player_economy_model")
 data class PlayerEconomyModel(val uuid: UUID, val balance: MutableMap<EconomyType, Double> = mutableMapOf()) {
 
     companion object {

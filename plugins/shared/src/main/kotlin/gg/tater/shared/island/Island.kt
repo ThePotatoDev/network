@@ -3,6 +3,7 @@ package gg.tater.shared.island
 import com.google.gson.*
 import gg.tater.shared.Json
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.setting.model.IslandSettingType
 import gg.tater.shared.network.server.ServerType
@@ -12,7 +13,7 @@ import java.lang.reflect.Type
 import java.time.Instant
 import java.util.*
 
-@Redis.Mapping("islands")
+@Mapping("islands")
 class Island(
     val id: UUID,
     val ownerId: UUID,

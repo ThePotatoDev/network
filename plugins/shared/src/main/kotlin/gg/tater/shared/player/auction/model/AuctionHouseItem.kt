@@ -2,6 +2,7 @@ package gg.tater.shared.player.auction.model
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
 import me.lucko.helper.serialize.Serializers
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -9,6 +10,7 @@ import java.lang.reflect.Type
 import java.time.Instant
 import java.util.*
 
+@Mapping("auction_house_item")
 class AuctionHouseItem(
     val id: UUID = UUID.randomUUID(),
     val ownerId: UUID,

@@ -2,12 +2,13 @@ package gg.tater.shared.island.message.placement
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
-import gg.tater.shared.redis.Redis
+import gg.tater.shared.annotation.Mapping
+import gg.tater.shared.annotation.Message
 import java.lang.reflect.Type
 import java.util.*
 
-@Redis.Mapping("island_placement_resp")
-@Redis.ReqRes("island_actions")
+@Mapping("island_placement_resp")
+@Message("island_actions")
 class IslandPlacementResponse(val server: String, val playerId: UUID, val name: String, var internal: Boolean = false) {
 
     companion object {

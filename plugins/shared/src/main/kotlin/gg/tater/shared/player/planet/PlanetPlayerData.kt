@@ -2,9 +2,11 @@ package gg.tater.shared.player.planet
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
 import java.lang.reflect.Type
 import java.util.*
 
+@Mapping("planet_player_data")
 data class PlanetPlayerData(val uuid: UUID) {
 
     private companion object {

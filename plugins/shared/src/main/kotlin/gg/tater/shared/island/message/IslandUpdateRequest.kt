@@ -2,13 +2,15 @@ package gg.tater.shared.island.message
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
+import gg.tater.shared.annotation.Message
 import gg.tater.shared.island.Island
 import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 import java.util.*
 
-@Redis.Mapping("island_update_req")
-@Redis.ReqRes("island_actions")
+@Mapping("island_update_req")
+@Message("island_actions")
 class IslandUpdateRequest(val islandId: UUID, var server: String?) {
 
     companion object {

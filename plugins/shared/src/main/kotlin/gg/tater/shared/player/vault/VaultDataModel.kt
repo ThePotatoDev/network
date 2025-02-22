@@ -2,11 +2,13 @@ package gg.tater.shared.player.vault
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
 import me.lucko.helper.serialize.Serializers
 import org.bukkit.inventory.ItemStack
 import java.lang.reflect.Type
 import java.util.*
 
+@Mapping("vault_data_model")
 data class VaultDataModel(
     val uuid: UUID,
     var amount: Int = DEFAULT_VAULT_AMOUNT,

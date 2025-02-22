@@ -2,12 +2,13 @@ package gg.tater.shared.player.chat.message
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
-import gg.tater.shared.redis.Redis
+import gg.tater.shared.annotation.Mapping
+import gg.tater.shared.annotation.Message
 import java.lang.reflect.Type
 import java.util.*
 
-@Redis.Mapping("chat_message_req")
-@Redis.ReqRes("chat_message")
+@Mapping("chat_message_req")
+@Message("chat_messages")
 class ChatMessageRequest(
     val targets: MutableSet<UUID>?,
     var permission: String?,

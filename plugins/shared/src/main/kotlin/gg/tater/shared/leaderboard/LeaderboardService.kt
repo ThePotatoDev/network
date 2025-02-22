@@ -7,8 +7,8 @@ import java.util.concurrent.CompletionStage
 
 interface LeaderboardService : TerminableModule {
 
-    fun getLastRefresh(leaderboard: Leaderboard<*>): CompletionStage<Instant>
+    fun getLastRefresh(leaderboard: Leaderboard<*, *>): CompletionStage<Instant>
 
-    fun setLastRefresh(leaderboard: Leaderboard<*>): RFuture<Long>
+    fun setLastRefresh(leaderboard: Leaderboard<*, *>): RFuture<Long>
 
 }

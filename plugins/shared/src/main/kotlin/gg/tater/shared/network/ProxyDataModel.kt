@@ -2,8 +2,10 @@ package gg.tater.shared.network
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
 import java.lang.reflect.Type
 
+@Mapping("proxy_data_model")
 data class ProxyDataModel(var players: Int = 0) {
 
     private companion object {

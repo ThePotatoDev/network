@@ -2,12 +2,13 @@ package gg.tater.shared.player.teleport.message
 
 import com.google.gson.*
 import gg.tater.shared.Json
+import gg.tater.shared.annotation.Mapping
+import gg.tater.shared.annotation.Message
 import gg.tater.shared.player.teleport.TeleportRequest
-import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 
-@Redis.Mapping("teleport_req_message")
-@Redis.ReqRes("teleport_req_messages")
+@Mapping("teleport_req_message")
+@Message("teleport_req_messages")
 class TeleportRequestMessage(val request: TeleportRequest) {
 
     private companion object {

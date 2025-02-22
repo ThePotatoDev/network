@@ -2,12 +2,14 @@ package gg.tater.shared.island.message
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
+import gg.tater.shared.annotation.Message
 import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 import java.util.*
 
-@Redis.Mapping("island_delete_req")
-@Redis.ReqRes("island_actions")
+@Mapping("island_delete_req")
+@Message("island_actions")
 class IslandDeleteRequest(
     val islandId: UUID,
     var server: String?,

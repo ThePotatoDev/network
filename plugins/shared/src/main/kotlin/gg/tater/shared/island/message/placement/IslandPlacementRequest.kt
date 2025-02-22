@@ -2,15 +2,16 @@ package gg.tater.shared.island.message.placement
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
+import gg.tater.shared.annotation.Message
 import gg.tater.shared.island.Island
 import gg.tater.shared.network.server.ServerDataModel
-import gg.tater.shared.redis.Redis
 import org.bukkit.entity.Player
 import java.lang.reflect.Type
 import java.util.*
 
-@Redis.Mapping("island_placement_req")
-@Redis.ReqRes("island_actions")
+@Mapping("island_placement_req")
+@Message("island_actions")
 class IslandPlacementRequest(
     val server: String,
     val playerId: UUID,

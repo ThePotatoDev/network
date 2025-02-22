@@ -2,17 +2,17 @@ package gg.tater.shared.player.position
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
-import gg.tater.shared.redis.Redis
+import gg.tater.shared.annotation.Mapping
 import org.bukkit.Location
 import java.lang.reflect.Type
 
-@Redis.Mapping("wrapped_position")
+@Mapping("wrapped_position")
 data class WrappedPosition(
     val x: Double,
     val y: Double,
     val z: Double,
-    val yaw: Float? = null,
-    val pitch: Float? = null
+    val yaw: Float,
+    val pitch: Float
 ) {
 
     constructor(location: Location) : this(location.x, location.y, location.z, location.yaw, location.pitch)

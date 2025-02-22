@@ -2,10 +2,11 @@ package gg.tater.shared.network.server
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
 import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 
-@Redis.Mapping("server_data_model")
+@Mapping("server_data_model")
 data class ServerDataModel(
     val id: String,
     val type: ServerType,

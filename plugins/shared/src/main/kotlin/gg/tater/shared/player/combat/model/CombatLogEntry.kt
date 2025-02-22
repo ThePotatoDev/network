@@ -2,11 +2,13 @@ package gg.tater.shared.player.combat.model
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import java.lang.reflect.Type
 import java.util.*
 
+@Mapping("combat_log_entry")
 data class CombatLogEntry(val uuid: UUID, val inventory: Inventory) {
 
     private companion object {

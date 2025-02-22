@@ -2,12 +2,13 @@ package gg.tater.shared.player.pm
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
-import gg.tater.shared.redis.Redis
+import gg.tater.shared.annotation.Mapping
+import gg.tater.shared.annotation.Message
 import java.lang.reflect.Type
 import java.util.*
 
-@Redis.Mapping("player_private_message_resp")
-@Redis.ReqRes("player_private_messages")
+@Mapping("player_private_message_resp")
+@Message("player_private_messages")
 class PlayerPrivateMessageResponse(
     val senderName: String,
     val senderId: UUID,

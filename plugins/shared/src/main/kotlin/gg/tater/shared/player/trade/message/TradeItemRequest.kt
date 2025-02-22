@@ -1,7 +1,7 @@
 package gg.tater.shared.player.trade.message
 
-import gg.tater.shared.redis.Redis
+import gg.tater.shared.annotation.Message
 
-@Redis.ReqRes("trade_item_requests")
+@Message("trade_item_requests")
 class TradeItemRequest {
 }

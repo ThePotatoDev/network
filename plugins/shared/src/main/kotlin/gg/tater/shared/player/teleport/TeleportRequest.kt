@@ -3,10 +3,12 @@ package gg.tater.shared.player.teleport
 import com.google.gson.*
 import gg.tater.shared.Json
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
 import gg.tater.shared.player.position.WrappedPosition
 import java.lang.reflect.Type
 import java.util.*
 
+@Mapping("teleport_request")
 data class TeleportRequest(
     val id: UUID,
     val senderId: UUID,

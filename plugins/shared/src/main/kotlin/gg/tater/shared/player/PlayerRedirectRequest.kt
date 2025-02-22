@@ -2,13 +2,15 @@ package gg.tater.shared.player
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
+import gg.tater.shared.annotation.Message
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.network.server.ServerType
 import java.lang.reflect.Type
 import java.util.*
 
-@Redis.Mapping("player_redirect_req")
-@Redis.ReqRes("player_redirects")
+@Mapping("player_redirect_req")
+@Message("player_redirects")
 data class PlayerRedirectRequest(val uuid: UUID, val type: ServerType, var server: String? = null) {
 
     companion object {

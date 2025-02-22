@@ -2,9 +2,11 @@ package gg.tater.shared.player.kit
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
+import gg.tater.shared.annotation.Mapping
 import java.lang.reflect.Type
 import java.time.Instant
 
+@Mapping("kit_player_data_model")
 class KitPlayerDataModel(private val lastUsed: MutableMap<String, Long> = mutableMapOf()) {
 
     companion object {
