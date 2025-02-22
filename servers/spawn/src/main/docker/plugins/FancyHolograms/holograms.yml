@@ -62,11 +62,11 @@ holograms:
     type: TEXT
     location:
       world: world
-      x: 7.440005589701256
+      x: 7.561288718302462
       y: 66.12000000476837
-      z: -5.518084758263979
-      yaw: 53.090363
-      pitch: 3.1000714
+      z: -5.495847493080246
+      yaw: 44.84874
+      pitch: -0.6500122
     visibility_distance: -1
     visibility: ALL
     persistent: true
@@ -115,11 +115,11 @@ holograms:
     type: TEXT
     location:
       world: world
-      x: 7.5097754123753955
+      x: 7.530219252091992
       y: 66.12000000476837
-      z: 5.408879031634926
-      yaw: 127.49767
-      pitch: 1.2999583
+      z: 5.468382811104152
+      yaw: 131.55022
+      pitch: 3.2499962
     visibility_distance: -1
     visibility: ALL
     persistent: true
