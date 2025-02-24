@@ -2,13 +2,13 @@ package gg.tater.proxy
 
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
-import com.velocitypowered.api.event.connection.PreLoginEvent
+import com.velocitypowered.api.event.connection.LoginEvent
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
-import com.velocitypowered.api.event.player.ServerPreConnectEvent
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
+import com.velocitypowered.api.proxy.player.ResourcePackInfo
 import com.velocitypowered.api.proxy.server.RegisteredServer
 import com.velocitypowered.api.proxy.server.ServerInfo
 import gg.tater.shared.island.message.placement.IslandPlacementResponse
@@ -25,6 +25,8 @@ import io.kubernetes.client.openapi.apis.CustomObjectsApi
 import io.kubernetes.client.util.Config
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import okhttp3.OkHttpClient
 import org.slf4j.Logger
 import java.net.InetSocketAddress
@@ -183,6 +185,17 @@ class ProxyPlugin @Inject constructor(
                 }
             }
         }).repeat(Duration.ofSeconds(1L)).schedule()
+    }
+
+    @Subscribe
+    private fun onJoin(event: LoginEvent) {
+        val player = event.player
+        player.sendResourcePackOffer(proxy.createResourcePackBuilder("")
+            .setId(UUID.randomUUID())
+            .setHash("".toByteArray())
+            .setShouldForce(true)
+            .setPrompt(Component.text("Accept texture pack to play", NamedTextColor.GREEN))
+            .build())
     }
 
     @Subscribe

@@ -1,0 +1,8 @@
+admin:
+  texture: ranks/admin
+  ascent: 10
+  height: 8
+developer:
+  texture: ranks/developer
+  ascent: 10
+  height: 8

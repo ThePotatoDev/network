@@ -1,0 +1,124 @@
+anchor:
+  texture: icons_pack/anchor.png
+  height: 9
+  ascent: 8
+bomb:
+  texture: icons_pack/icons_pack/bomb.png
+  height: 9
+  ascent: 8
+candy:
+  texture: icons_pack/candy.png
+  height: 9
+  ascent: 8
+chest:
+  texture: icons_pack/chest.png
+  height: 9
+  ascent: 8
+clover:
+  texture: icons_pack/clover.png
+  height: 9
+  ascent: 8
+cog:
+  texture: icons_pack/cog.png
+  height: 9
+  ascent: 8
+compass:
+  texture: icons_pack/compass.png
+  height: 9
+  ascent: 8
+crystals:
+  texture: icons_pack/crystals.png
+  height: 9
+  ascent: 8
+dialouge:
+  texture: icons_pack/dialouge.png
+  height: 9
+  ascent: 8
+earth:
+  texture: icons_pack/earth.png
+  height: 9
+  ascent: 8
+emerald:
+  texture: icons_pack/emerald.png
+  height: 9
+  ascent: 8
+exclamation:
+  texture: icons_pack/exclamation.png
+  height: 9
+  ascent: 8
+fire:
+  texture: icons_pack/fire.png
+  height: 9
+  ascent: 8
+fish_grey:
+  texture: icons_pack/fish_grey.png
+  height: 9
+  ascent: 8
+fish:
+  texture: icons_pack/fish.png
+  height: 9
+  ascent: 8
+flag_white:
+  texture: icons_pack/flag_white.png
+  height: 9
+  ascent: 8
+flag:
+  texture: icons_pack/flag.png
+  height: 9
+  ascent: 8
+helmet:
+  texture: icons_pack/helmet.png
+  height: 9
+  ascent: 8
+leaf:
+  texture: icons_pack/leaf.png
+  height: 9
+  ascent: 8
+lightbulb:
+  texture: icons_pack/lightbulb.png
+  height: 9
+  ascent: 8
+lock:
+  texture: icons_pack/lock.png
+  height: 9
+  ascent: 8
+magnet:
+  texture: icons_pack/magnet.png
+  height: 9
+  ascent: 8
+medal_bronze:
+  texture: icons_pack/medal_bronze.png
+  height: 9
+  ascent: 8
+medal_gold:
+  texture: icons_pack/medal_gold.png
+  height: 9
+  ascent: 8
+medal_silver:
+  texture: icons_pack/medal_silver.png
+  height: 9
+  ascent: 8
+money:
+  texture: icons_pack/money.png
+  height: 9
+  ascent: 8
+no:
+  texture: icons_pack/no.png
+  height: 9
+  ascent: 8
+palmtree:
+  texture: icons_pack/palmtree.png
+  height: 9
+  ascent: 8
+seashell:
+  texture: icons_pack/seashell.png
+  height: 9
+  ascent: 8
+starfish:
+  texture: icons_pack/starfish.png
+  height: 9
+  ascent: 8
+yes:
+  texture: icons_pack/yes.png
+  height: 9
+  ascent: 8

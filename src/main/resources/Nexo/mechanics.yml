@@ -1,0 +1,96 @@
+# MISCELLANEOUS
+commands:
+  enabled: true
+armor_effects:
+  enabled: true
+  delay_in_ticks: 20
+custom:
+  enabled: true
+itemtype:
+  enabled: true
+soulbound:
+  enabled: true
+backpack:
+  enabled: true
+misc:
+  enabled: true
+
+
+# GAMEPLAY
+noteblock:
+  tool_types:
+    - WOODEN
+    - STONE
+    - IRON
+    - GOLDEN
+    - DIAMOND
+    - NETHERITE
+  # Reimplements noteblock features while using custom blocks
+  # Adds instrument option in noteblock mechanics
+  reimplement_noteblock_features: false
+  custom_block_sounds:
+    enabled: true
+    # If false, plays for animals stepping/falling on blocks aswell
+    # Enable this if you are experiencing lag with noteblock-sounds
+    players_only: false
+  enabled: true
+stringblock:
+    tool_types:
+      - WOODEN
+      - STONE
+      - IRON
+      - GOLDEN
+      - DIAMOND
+      - NETHERITE
+    sapling_growth_check_delay: 4000
+    disable_vanilla_strings: false
+    custom_block_sounds:
+      enabled: true
+      # If false, plays for animals stepping/falling on blocks aswell
+      # Enable this if you are experiencing lag with stringblock-sounds
+      players_only: false
+    enabled: true
+chorusblock:
+  tool_types:
+    - WOODEN
+    - STONE
+    - IRON
+    - GOLDEN
+    - DIAMOND
+    - NETHERITE
+  enabled: true
+furniture:
+  tool_types:
+    - WOODEN
+    - STONE
+    - IRON
+    - GOLDEN
+    - DIAMOND
+    - NETHERITE
+  # ticks between each check for plant growth
+  evolution_check_delay: 200
+  custom_block_sounds: true
+  enabled: true
+
+# COMBAT
+lifesteal:
+  enabled: true
+energyblast:
+  enabled: true
+fireball:
+  enabled: true
+thor:
+  enabled: true
+witherskull:
+  enabled: true
+
+
+# FARMING
+smelting:
+  enabled: true
+  blacklist_cooked: [ WET_SPONGE ]
+harvesting:
+  enabled: true
+repair:
+  enabled: true
+  nexo_durability_only: true

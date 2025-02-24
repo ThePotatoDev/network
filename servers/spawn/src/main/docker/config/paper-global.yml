@@ -14,10 +14,10 @@
 
 _version: 29
 block-updates:
-  disable-chorus-plant-updates: false
-  disable-mushroom-block-updates: false
-  disable-noteblock-updates: false
-  disable-tripwire-updates: false
+  disable-chorus-plant-updates: true
+  disable-mushroom-block-updates: true
+  disable-noteblock-updates: true
+  disable-tripwire-updates: true
 chunk-loading-advanced:
   auto-config-send-distance: true
   player-max-concurrent-chunk-generates: 0
