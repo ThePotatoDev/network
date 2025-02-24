@@ -7,7 +7,7 @@ import gg.tater.shared.redis.Redis
 
 class PlayerRedirectListener(private val proxy: ProxyServer, private val redis: Redis) {
 
-    init {
+    fun exec() {
         redis.listen<PlayerRedirectRequest> {
             val player = proxy.getPlayer(it.uuid).orElse(null) ?: return@listen
             val target: RegisteredServer?
