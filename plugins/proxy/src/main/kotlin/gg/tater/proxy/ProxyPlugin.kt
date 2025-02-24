@@ -5,13 +5,13 @@ import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.LoginEvent
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
 import com.velocitypowered.api.event.player.PlayerResourcePackStatusEvent
-import com.velocitypowered.api.event.player.ServerConnectedEvent
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import gg.tater.proxy.listener.IslandPlacementListener
 import gg.tater.proxy.listener.PlayerRedirectListener
+import gg.tater.proxy.tasks.ServerRegistryTask
 import gg.tater.shared.hexToBytes
 import gg.tater.shared.network.Agones
 import gg.tater.shared.network.ProxyDataModel
@@ -92,6 +92,8 @@ class ProxyPlugin @Inject constructor(
                 val body = response.body ?: return
                 val texturePackHash = hexToBytes(body.string())
 
+                //cert.pem  chain.pem  fullchain.pem  privkey.pem
+
                 proxy.scheduler.buildTask(this, Runnable {
                     // Player already has pack applied
                     if (player.appliedResourcePacks.any { it.hash.contentEquals(texturePackHash) }) {
@@ -100,7 +102,7 @@ class ProxyPlugin @Inject constructor(
                     }
 
                     player.sendResourcePackOffer(
-                        proxy.createResourcePackBuilder("https://database.oneblock.is/request/${player.uniqueId}/${textureApiKey}")
+                        proxy.createResourcePackBuilder("https://tp.oneblock.is/request/${player.uniqueId}/${textureApiKey}")
                             .setId(player.uniqueId)
                             .setHash(texturePackHash)
                             .setShouldForce(true)

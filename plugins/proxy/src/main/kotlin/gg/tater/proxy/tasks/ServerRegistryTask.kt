@@ -1,4 +1,4 @@
-package gg.tater.proxy
+package gg.tater.proxy.tasks
 
 import com.velocitypowered.api.proxy.ProxyServer
 import com.velocitypowered.api.proxy.server.ServerInfo
