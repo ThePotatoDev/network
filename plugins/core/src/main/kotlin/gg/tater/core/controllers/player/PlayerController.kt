@@ -19,6 +19,7 @@ import me.lucko.helper.Commands
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
+import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -35,7 +36,9 @@ import net.megavex.scoreboardlibrary.api.sidebar.component.animation.CollectionS
 import net.megavex.scoreboardlibrary.api.sidebar.component.animation.SidebarAnimation
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
+import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
+import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.redisson.api.RFuture
@@ -138,6 +141,19 @@ class PlayerController :
                 }
             }
             .registerAndBind(consumer, "gmc", "gms")
+
+        Events.subscribe(PlayerCommandPreprocessEvent::class.java, EventPriority.LOWEST)
+            .filter(EventFilters.ignoreCancelled())
+            .handler {
+                val player = it.player
+                val message = it.message
+                if (!message.startsWith("/")) return@handler
+                if (!message.contains(":")) return@handler
+                if (player.hasPermission("server.coloncommands")) return@handler
+                it.isCancelled = true
+                player.sendMessage(Component.text("You cannot use colon commands.", NamedTextColor.RED))
+            }
+            .bindWith(consumer)
 
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {

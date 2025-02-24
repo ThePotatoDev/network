@@ -14,6 +14,9 @@ import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule
+import org.bukkit.Bukkit
+import org.bukkit.Difficulty
+import org.bukkit.GameRule
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
 import org.bukkit.event.EventPriority
@@ -33,6 +36,11 @@ class SpawnController : TerminableModule {
         val combat = Services.load(CombatService::class.java)
         val redis = Services.load(Redis::class.java)
         val id = Services.load(ServerDataService::class.java).id()
+
+        // Set basic world settings
+        val world = Bukkit.getWorld("world")!!
+        world.setGameRule(GameRule.DO_MOB_SPAWNING, false)
+        world.difficulty = Difficulty.PEACEFUL
 
         Commands.create()
             .assertPlayer()

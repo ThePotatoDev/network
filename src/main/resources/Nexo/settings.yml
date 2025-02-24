@@ -69,9 +69,9 @@ Pack:
       import_pack: true
       exclude_shaders: true
   dispatch:
-    send_pre_join: true
+    send_pre_join: false
     send_on_join: false
-    send_on_reload: true
+    send_on_reload: false
     delay: -1
     mandatory: true
     prompt: <#fa4943>Accept the pack to enjoy a full <b><gradient:#9055FF:#13E2DA>Nexo</b><#fa4943>

@@ -8,6 +8,8 @@ import gg.tater.shared.player.chat.color.ChatColor
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.player.position.WrappedPosition
 import me.lucko.helper.serialize.Serializers
+import org.bukkit.GameMode
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.lang.reflect.Type
@@ -20,7 +22,13 @@ data class PlayerDataModel(
     var currentServerId: String? = null,
     var lastPositionMap: MutableMap<ServerType, WrappedPosition> = mutableMapOf(),
     var inventoryMap: MutableMap<InventoryType, Array<out ItemStack?>> = mutableMapOf(),
+    var absorption: Double = 5.0,
     var health: Double = 20.0,
+    var gameMode: GameMode = GameMode.SURVIVAL,
+    var saturation: Float = 5F,
+    var saturatedRegenRate: Int = 10,
+    var unsaturatedRegenRate: Int = 80,
+    var heldItemSlot: Int = 0,
     var hunger: Int = 20,
     var exp: Float = 0F,
     var totalExp: Int = 0,
@@ -33,7 +41,7 @@ data class PlayerDataModel(
 
     constructor(player: Player) : this(player.uniqueId, player.name)
 
-    companion object {
+    private companion object {
         const val UUID_FIELD = "uuid"
         const val NAME_FIELD = "name"
         const val POSITION_MAP_FIELD = "position_map"
@@ -47,7 +55,13 @@ data class PlayerDataModel(
         const val ACTION_FIELD = "action"
         const val CHAT_COLOR_FIELD = "chat_color"
         const val ISLAND_ID_FIELD = "island_id"
-        const val CURRENT_SERVER_ID_FIELD = ""
+        const val CURRENT_SERVER_ID_FIELD = "current_server_id"
+        const val GAME_MODE_FIELD = "gamemode"
+        const val SATURATION_FIELD = "saturation"
+        const val UNSATURATED_REGEN_RATE_FIELD = "unsaturated_regen_rate"
+        const val SATURATED_REGEN_RATE_FIELD = "saturated_regen_rate"
+        const val HELD_ITEM_SLOT_FIELD = "held_item_slot"
+        const val ABSORPTION_FIELD = "absorption"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -81,11 +95,6 @@ data class PlayerDataModel(
         return this
     }
 
-    fun setPositionResolver(type: PlayerPositionResolver.Type, meta: String): PlayerDataModel {
-        this.resolver = Pair(type, meta)
-        return this
-    }
-
     private fun setInventory(type: InventoryType, inventory: Array<out ItemStack?>) {
         inventoryMap[type] = inventory
     }
@@ -105,6 +114,12 @@ data class PlayerDataModel(
         val regular = getInventory(InventoryType.REGULAR)
         if (regular != null) player.inventory.contents = regular
 
+        player.unsaturatedRegenRate = unsaturatedRegenRate
+        player.saturatedRegenRate = saturatedRegenRate
+        player.absorptionAmount = absorption
+        player.saturation = saturation
+        player.inventory.heldItemSlot = heldItemSlot
+        player.gameMode = gameMode
         player.foodLevel = hunger
         player.health = health
         player.exp = exp
@@ -118,6 +133,9 @@ data class PlayerDataModel(
         setInventory(InventoryType.ARMOR, player.inventory.armorContents)
         setInventory(InventoryType.REGULAR, player.inventory.contents)
 
+        saturation = player.saturation
+        heldItemSlot = player.inventory.heldItemSlot
+        absorption = player.absorptionAmount
         health = player.health
         hunger = player.foodLevel
         exp = player.exp
@@ -158,6 +176,10 @@ data class PlayerDataModel(
                     addProperty(TOTAL_EXP_FIELD, model.totalExp)
                     addProperty(LEVEL_FIELD, model.level)
                     addProperty(ONLINE_FIELD, model.online)
+                    addProperty(GAME_MODE_FIELD, model.gameMode.name)
+                    addProperty(HELD_ITEM_SLOT_FIELD, model.heldItemSlot)
+                    addProperty(SATURATION_FIELD, model.saturation)
+                    addProperty(ABSORPTION_FIELD, model.absorption)
 
                     add(POSITION_MAP_FIELD, positionMap)
                     add(INVENTORY_MAP_FIELD, inventoryMap)
@@ -217,7 +239,13 @@ data class PlayerDataModel(
                     get(CURRENT_SERVER_ID_FIELD)?.asString,
                     lastPositionMap,
                     lastInventoryMap,
+                    get(ABSORPTION_FIELD).asDouble,
                     get(HEALTH_FIELD).asDouble,
+                    GameMode.valueOf(get(GAME_MODE_FIELD).asString),
+                    get(SATURATION_FIELD).asFloat,
+                    get(SATURATED_REGEN_RATE_FIELD).asInt,
+                    get(UNSATURATED_REGEN_RATE_FIELD).asInt,
+                    get(HELD_ITEM_SLOT_FIELD).asInt,
                     get(HUNGER_FIELD).asInt,
                     get(EXP_FIELD).asFloat,
                     get(TOTAL_EXP_FIELD).asInt,
