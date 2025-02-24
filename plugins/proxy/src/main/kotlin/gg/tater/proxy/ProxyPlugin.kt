@@ -102,7 +102,7 @@ class ProxyPlugin @Inject constructor(
                     }
 
                     player.sendResourcePackOffer(
-                        proxy.createResourcePackBuilder("https://tp.oneblock.is/request/${player.uniqueId}/${textureApiKey}")
+                        proxy.createResourcePackBuilder("https://tp.oneblock.is/pack/${player.uniqueId}/${textureApiKey}")
                             .setId(player.uniqueId)
                             .setHash(texturePackHash)
                             .setShouldForce(true)
