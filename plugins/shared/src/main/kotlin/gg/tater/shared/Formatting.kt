@@ -16,6 +16,11 @@ val DECIMAL_FORMAT = DecimalFormat("#,###.##")
 val MINI_MESSAGE = MiniMessage.miniMessage()
 
 private val DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yy")
+
 fun getFormattedDate(): String {
     return DATE_FORMAT.format(LocalDate.now())
+}
+
+fun hexToBytes(hex: String): ByteArray {
+    return hex.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
 }
