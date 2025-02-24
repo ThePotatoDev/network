@@ -92,8 +92,6 @@ class ProxyPlugin @Inject constructor(
                 val body = response.body ?: return
                 val texturePackHash = hexToBytes(body.string())
 
-                //cert.pem  chain.pem  fullchain.pem  privkey.pem
-
                 proxy.scheduler.buildTask(this, Runnable {
                     // Player already has pack applied
                     if (player.appliedResourcePacks.any { it.hash.contentEquals(texturePackHash) }) {
