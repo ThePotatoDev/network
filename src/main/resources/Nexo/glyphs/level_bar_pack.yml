@@ -1,0 +1,5 @@
+full_bar:
+  texture: level_bars/full
+  ascent: 10
+  height: 12
+  char: ꑐ

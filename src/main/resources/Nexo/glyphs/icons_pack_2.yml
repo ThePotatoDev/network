@@ -2,123 +2,154 @@ anchor:
   texture: icons_pack/anchor.png
   height: 9
   ascent: 8
+  char: ꐯ
 bomb:
   texture: icons_pack/icons_pack/bomb.png
   height: 9
   ascent: 8
+  char: ꐰ
 candy:
   texture: icons_pack/candy.png
   height: 9
   ascent: 8
+  char: ꐱ
 chest:
   texture: icons_pack/chest.png
   height: 9
   ascent: 8
+  char: ꐲ
 clover:
   texture: icons_pack/clover.png
   height: 9
   ascent: 8
+  char: ꐳ
 cog:
   texture: icons_pack/cog.png
   height: 9
   ascent: 8
+  char: ꐴ
 compass:
   texture: icons_pack/compass.png
   height: 9
   ascent: 8
+  char: ꐵ
 crystals:
   texture: icons_pack/crystals.png
   height: 9
   ascent: 8
+  char: ꐶ
 dialouge:
   texture: icons_pack/dialouge.png
   height: 9
   ascent: 8
+  char: ꐷ
 earth:
   texture: icons_pack/earth.png
   height: 9
   ascent: 8
+  char: ꐸ
 emerald:
   texture: icons_pack/emerald.png
   height: 9
   ascent: 8
+  char: ꐹ
 exclamation:
   texture: icons_pack/exclamation.png
   height: 9
   ascent: 8
+  char: ꐺ
 fire:
   texture: icons_pack/fire.png
   height: 9
   ascent: 8
+  char: ꐻ
 fish_grey:
   texture: icons_pack/fish_grey.png
   height: 9
   ascent: 8
+  char: ꐼ
 fish:
   texture: icons_pack/fish.png
   height: 9
   ascent: 8
+  char: ꐽ
 flag_white:
   texture: icons_pack/flag_white.png
   height: 9
   ascent: 8
+  char: ꐾ
 flag:
   texture: icons_pack/flag.png
   height: 9
   ascent: 8
+  char: ꐿ
 helmet:
   texture: icons_pack/helmet.png
   height: 9
   ascent: 8
+  char: ꑀ
 leaf:
   texture: icons_pack/leaf.png
   height: 9
   ascent: 8
+  char: ꑁ
 lightbulb:
   texture: icons_pack/lightbulb.png
   height: 9
   ascent: 8
+  char: ꑂ
 lock:
   texture: icons_pack/lock.png
   height: 9
   ascent: 8
+  char: ꑃ
 magnet:
   texture: icons_pack/magnet.png
   height: 9
   ascent: 8
+  char: ꑄ
 medal_bronze:
   texture: icons_pack/medal_bronze.png
   height: 9
   ascent: 8
+  char: ꑅ
 medal_gold:
   texture: icons_pack/medal_gold.png
   height: 9
   ascent: 8
+  char: ꑆ
 medal_silver:
   texture: icons_pack/medal_silver.png
   height: 9
   ascent: 8
+  char: ꑇ
 money:
   texture: icons_pack/money.png
   height: 9
   ascent: 8
-no:
+  char: ꑈ
+'false':
   texture: icons_pack/no.png
   height: 9
   ascent: 8
+  char: ꑉ
 palmtree:
   texture: icons_pack/palmtree.png
   height: 9
   ascent: 8
+  char: ꑊ
 seashell:
   texture: icons_pack/seashell.png
   height: 9
   ascent: 8
+  char: ꑋ
 starfish:
   texture: icons_pack/starfish.png
   height: 9
   ascent: 8
-yes:
+  char: ꑌ
+'true':
   texture: icons_pack/yes.png
   height: 9
   ascent: 8
+  char: ꑍ

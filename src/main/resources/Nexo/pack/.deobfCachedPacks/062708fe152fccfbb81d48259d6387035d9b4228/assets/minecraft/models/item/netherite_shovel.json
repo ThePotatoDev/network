@@ -1,0 +1,1 @@
+{"parent":"item/handheld","textures":{"layer0":"item/netherite_shovel"},"overrides":[{"predicate":{"custom_model_data":1000},"model":"nexo:789c1f09-0625-4382-a227-49bd7e512ec3"}]}

@@ -18,7 +18,7 @@ groups:
       &fVote for rewards! &#5E18BF&l/&#681AB5&lᴠ&#721CAB&lᴏ&#7C1EA0&lᴛ&#862096&lᴇ
       &fJoin our discord server! &#5E18BF&l/&#6419B9&lᴅ&#691AB3&lɪ&#6F1BAD&lꜱ&#751DA8&lᴄ&#7B1EA2&lᴏ&#801F9C&lʀ&#862096&lᴅ
 
-  format: '%prefix%%username%'
+  format: '%prefix%&e%username%'
   nametag:
     prefix: '%prefix%'
     suffix: '%suffix%'

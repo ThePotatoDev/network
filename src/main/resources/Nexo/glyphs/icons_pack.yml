@@ -2,119 +2,149 @@ anvil_icon:
   texture: icons_pack/anvil
   ascent: 10
   height: 12
+  char: ꐑ
 floating_island_icon:
   texture: icons_pack/floating_island
   ascent: 10
   height: 12
+  char: ꐒ
 heart_icon:
   texture: icons_pack/heart
   ascent: 10
   height: 12
+  char: ꐓ
 experience_orb_icon:
   texture: icons_pack/experience_orb
   ascent: 10
   height: 12
+  char: ꐔ
 judge_gavel_icon:
   texture: icons_pack/judge_gavel
   ascent: 10
   height: 12
+  char: ꐕ
 cave_icon:
   texture: icons_pack/cave
   ascent: 10
   height: 12
+  char: ꐖ
 chef_hat_icon:
   texture: icons_pack/chef_hat
   ascent: 10
   height: 12
+  char: ꐗ
 plant_icon:
   texture: icons_pack/plant
   ascent: 10
   height: 12
+  char: ꐘ
 trees_icon:
   texture: icons_pack/trees
   ascent: 10
   height: 12
+  char: ꐙ
 mana_icon:
   texture: icons_pack/mana
   ascent: 10
   height: 12
+  char: ꐚ
 coins_icon:
   texture: icons_pack/coins
   ascent: 10
   height: 12
+  char: ꐛ
 sword_icon:
   texture: icons_pack/sword
   ascent: 10
   height: 12
+  char: ꐜ
 shield_icon:
   texture: icons_pack/shield
   ascent: 10
   height: 12
+  char: ꐝ
 key_icon:
   texture: icons_pack/key
   ascent: 10
   height: 12
+  char: ꐞ
 skull_icon:
   texture: icons_pack/skull
   ascent: 10
   height: 12
+  char: ꐟ
 purple_orb_icon:
   texture: icons_pack/purple_orb
   ascent: 10
   height: 12
+  char: ꐠ
 star_icon:
   texture: icons_pack/star
   ascent: 10
   height: 12
+  char: ꐡ
 hourglass_icon:
   texture: icons_pack/hourglass
   ascent: 10
   height: 12
+  char: ꐢ
 crown_icon:
   texture: icons_pack/crown
   ascent: 10
   height: 12
+  char: ꐣ
 magnifying_glass_icon:
   texture: icons_pack/magnifying_glass
   ascent: 10
   height: 12
+  char: ꐤ
 book_icon:
   texture: icons_pack/book
   ascent: 10
   height: 12
+  char: ꐥ
 diamond_icon:
   texture: icons_pack/diamond
   ascent: 10
   height: 12
+  char: ꐦ
 sun_icon:
   texture: icons_pack/sun
   ascent: 10
   height: 12
+  char: ꐧ
 fountain_icon:
   texture: icons_pack/fountain
   ascent: 10
   height: 12
+  char: ꐨ
 wizard_tower_icon:
   texture: icons_pack/wizard_tower
   ascent: 10
   height: 12
+  char: ꐩ
 potion_icon:
   texture: icons_pack/potion
   ascent: 10
   height: 12
+  char: ꐪ
 house_icon:
   texture: icons_pack/house
   ascent: 10
   height: 12
+  char: ꐫ
 moon_icon:
   texture: icons_pack/moon
   ascent: 10
   height: 12
+  char: ꐬ
 scroll_icon:
   texture: icons_pack/scroll
   ascent: 10
   height: 12
+  char: ꐭ
 level_up_icon:
   texture: icons_pack/level_up
   ascent: 10
   height: 12
+  char: ꐮ

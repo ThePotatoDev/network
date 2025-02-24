@@ -1,0 +1,1 @@
+{"parent":"item/handheld","textures":{"layer0":"item/netherite_pickaxe"},"overrides":[{"predicate":{"custom_model_data":1000},"model":"nexo:be2838ca-7881-40a4-96c4-9fb8c8b18ca1"}]}
