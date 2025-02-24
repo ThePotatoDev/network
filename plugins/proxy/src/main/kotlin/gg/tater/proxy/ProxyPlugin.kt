@@ -1,6 +1,7 @@
 package gg.tater.proxy
 
 import com.google.inject.Inject
+import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.LoginEvent
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
@@ -59,6 +60,7 @@ class ProxyPlugin @Inject constructor(
         )
 
         const val TEXTURE_PACK_HEX_REQUEST_URL = "https://tp.oneblock.is/hash/{key}"
+        const val TEXTURE_PACK_DATA_REQUEST_URL = "https://tp.oneblock.is/pack/{playerId}/{key}"
         const val GROUP = "agones.dev"
         const val VERSION = "v1"
         const val NAMESPACE = "default"
@@ -179,7 +181,7 @@ class ProxyPlugin @Inject constructor(
         PlayerRedirectListener(proxy, redis).exec()
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.LAST)
     private fun onLogin(event: LoginEvent) {
         val player = event.player
 
@@ -189,15 +191,11 @@ class ProxyPlugin @Inject constructor(
                 .build()
         ).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
                 player.disconnect(ERROR_FETCHING_PACK_MESSAGE)
             }
 
             override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) {
-                    player.disconnect(ERROR_FETCHING_PACK_MESSAGE)
-                    return
-                }
-
                 val body = response.body ?: return
                 val texturePackHash = hexToBytes(body.string())
 
@@ -209,7 +207,11 @@ class ProxyPlugin @Inject constructor(
                     }
 
                     player.sendResourcePackOffer(
-                        proxy.createResourcePackBuilder("https://tp.oneblock.is/pack/${player.uniqueId}/${textureApiKey}")
+                        proxy.createResourcePackBuilder(
+                            TEXTURE_PACK_DATA_REQUEST_URL
+                                .replace("{playerId}", player.uniqueId.toString())
+                                .replace("{key}", textureApiKey)
+                        )
                             .setId(player.uniqueId)
                             .setHash(texturePackHash)
                             .setShouldForce(true)
@@ -221,7 +223,7 @@ class ProxyPlugin @Inject constructor(
         })
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.LATE)
     private fun onResourcePackOffer(event: PlayerResourcePackStatusEvent) {
         val status = event.status
         if (status != PlayerResourcePackStatusEvent.Status.ACCEPTED
