@@ -133,6 +133,9 @@ data class PlayerDataModel(
         setInventory(InventoryType.ARMOR, player.inventory.armorContents)
         setInventory(InventoryType.REGULAR, player.inventory.contents)
 
+        gameMode = player.gameMode
+        unsaturatedRegenRate = player.unsaturatedRegenRate
+        saturatedRegenRate = player.saturatedRegenRate
         saturation = player.saturation
         heldItemSlot = player.inventory.heldItemSlot
         absorption = player.absorptionAmount
@@ -180,6 +183,8 @@ data class PlayerDataModel(
                     addProperty(HELD_ITEM_SLOT_FIELD, model.heldItemSlot)
                     addProperty(SATURATION_FIELD, model.saturation)
                     addProperty(ABSORPTION_FIELD, model.absorption)
+                    addProperty(UNSATURATED_REGEN_RATE_FIELD, model.unsaturatedRegenRate)
+                    addProperty(SATURATED_REGEN_RATE_FIELD, model.saturatedRegenRate)
 
                     add(POSITION_MAP_FIELD, positionMap)
                     add(INVENTORY_MAP_FIELD, inventoryMap)
