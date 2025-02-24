@@ -1,7 +1,6 @@
 package gg.tater.proxy
 
 import com.google.inject.Inject
-import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.LoginEvent
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
@@ -36,8 +35,6 @@ import java.nio.file.Path
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
 
 @Plugin(id = "velocity", version = "1.0")
 class ProxyPlugin @Inject constructor(
@@ -59,8 +56,8 @@ class ProxyPlugin @Inject constructor(
                     "please contact support if this issue persists.", NamedTextColor.RED
         )
 
-        const val TEXTURE_PACK_HEX_REQUEST_URL = "https://tp.oneblock.is/hash/{key}"
-        const val TEXTURE_PACK_DATA_REQUEST_URL = "https://tp.oneblock.is/pack/{playerId}/{key}"
+        const val TEXTURE_PACK_HEX_REQUEST_URL = "https://tp.oneblock.is/request/hash/{key}"
+        const val TEXTURE_PACK_DATA_REQUEST_URL = "https://tp.oneblock.is/request/pack/{playerId}/{key}"
         const val GROUP = "agones.dev"
         const val VERSION = "v1"
         const val NAMESPACE = "default"
@@ -181,7 +178,7 @@ class ProxyPlugin @Inject constructor(
         PlayerRedirectListener(proxy, redis).exec()
     }
 
-    @Subscribe(order = PostOrder.LAST)
+    @Subscribe
     private fun onLogin(event: LoginEvent) {
         val player = event.player
 
@@ -199,31 +196,29 @@ class ProxyPlugin @Inject constructor(
                 val body = response.body ?: return
                 val texturePackHash = hexToBytes(body.string())
 
-                proxy.scheduler.buildTask(this, Runnable {
-                    // Player already has pack applied
-                    if (player.appliedResourcePacks.any { it.hash.contentEquals(texturePackHash) }) {
-                        logger.info("Player has most recent resource pack loaded, ignoring.")
-                        return@Runnable
-                    }
+                // Player already has pack applied
+                if (player.appliedResourcePacks.any { it.hash.contentEquals(texturePackHash) }) {
+                    logger.info("Player has most recent resource pack loaded, ignoring.")
+                    return
+                }
 
-                    player.sendResourcePackOffer(
-                        proxy.createResourcePackBuilder(
-                            TEXTURE_PACK_DATA_REQUEST_URL
-                                .replace("{playerId}", player.uniqueId.toString())
-                                .replace("{key}", textureApiKey)
-                        )
-                            .setId(player.uniqueId)
-                            .setHash(texturePackHash)
-                            .setShouldForce(true)
-                            .setPrompt(Component.text("Accept texture pack to play", NamedTextColor.GREEN))
-                            .build()
+                player.sendResourcePackOffer(
+                    proxy.createResourcePackBuilder(
+                        TEXTURE_PACK_DATA_REQUEST_URL
+                            .replace("{playerId}", player.uniqueId.toString())
+                            .replace("{key}", textureApiKey)
                     )
-                }).delay(1.seconds.toJavaDuration()).schedule()
+                        .setId(player.uniqueId)
+                        .setHash(texturePackHash)
+                        .setShouldForce(true)
+                        .setPrompt(Component.text("Accept texture pack to play", NamedTextColor.GREEN))
+                        .build()
+                )
             }
         })
     }
 
-    @Subscribe(order = PostOrder.LATE)
+    @Subscribe
     private fun onResourcePackOffer(event: PlayerResourcePackStatusEvent) {
         val status = event.status
         if (status != PlayerResourcePackStatusEvent.Status.ACCEPTED
