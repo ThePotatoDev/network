@@ -5,6 +5,7 @@ import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.getFormattedDate
+import gg.tater.shared.island.IslandService
 import gg.tater.shared.network.server.ServerDataService
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.PlayerService
@@ -23,17 +24,12 @@ import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.Style
-import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.megavex.scoreboardlibrary.api.ScoreboardLibrary
 import net.megavex.scoreboardlibrary.api.exception.NoPacketAdapterAvailableException
 import net.megavex.scoreboardlibrary.api.noop.NoopScoreboardLibrary
 import net.megavex.scoreboardlibrary.api.sidebar.Sidebar
 import net.megavex.scoreboardlibrary.api.sidebar.component.ComponentSidebarLayout
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
-import net.megavex.scoreboardlibrary.api.sidebar.component.animation.CollectionSidebarAnimation
-import net.megavex.scoreboardlibrary.api.sidebar.component.animation.SidebarAnimation
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
@@ -56,7 +52,6 @@ class PlayerController :
     private val handlers: MutableMap<PlayerPositionResolver.Type, PlayerPositionResolver> = mutableMapOf()
     private val sidebars: MutableMap<UUID, Pair<Sidebar, ComponentSidebarLayout>> = ConcurrentHashMap(WeakHashMap())
 
-    private lateinit var animation: SidebarAnimation<Component>
     private lateinit var scoreboardLibrary: ScoreboardLibrary
 
     override fun compute(name: String, uuid: UUID): RFuture<PlayerDataModel> {
@@ -79,7 +74,7 @@ class PlayerController :
     override fun transaction(data: PlayerDataModel, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         redis.client.apply {
             this.getMap<UUID, PlayerDataModel>(PLAYER_MAP_NAME)
-                .transactional(this, { map -> map[data.uuid] = data }, onSuccess, onFailure)
+                .transactional({ map -> map[data.uuid] = data }, onSuccess, onFailure)
         }
     }
 
@@ -198,43 +193,44 @@ class PlayerController :
                 it.message(null)
             }
             .bindWith(consumer)
-
-        this.animation =
-            createGradientAnimation(Component.text("ᴏɴᴇʙʟᴏᴄᴋ", Style.style(TextDecoration.BOLD)))
-
-        Schedulers.async().runRepeating(Runnable {
-            for (data in sidebars.values) {
-                animation.nextFrame()
-                data.second.apply(data.first)
-            }
-        }, 5L, 5L).bindWith(consumer)
     }
 
     private fun display(player: Player) {
         val eco = Services.load(PlayerEconomyService::class.java)
+        val islands = Services.load(IslandService::class.java)
+        val players = Services.load(PlayerService::class.java)
 
         val sidebar: Sidebar = scoreboardLibrary.createSidebar()
-        val data = redis.proxy().get()
 
-        val title = SidebarComponent.animatedLine(animation)
+        val title = SidebarComponent.staticLine(Component.text("ꑑ"))
         val lines = SidebarComponent.builder()
             .addStaticLine(Component.text(getFormattedDate(), NamedTextColor.GRAY))
             .addBlankLine()
-            .addStaticLine(
-                Component.text("• ʏᴏᴜ: ", NamedTextColor.GRAY)
-                    .append(Component.text(player.name, NamedTextColor.WHITE))
-            )
             .addDynamicLine {
-                val balance = eco.getSync(player.uniqueId)?.get(EconomyType.MONEY) ?: 0
-                Component.text("• ʙᴀʟᴀɴᴄᴇ: ", NamedTextColor.GRAY)
-                    .append(Component.text("$${DECIMAL_FORMAT.format(balance)}", NamedTextColor.WHITE))
+                val island = players.get(player.uniqueId)
+                    .get()
+                    .let { islands.getIslandFor(it)?.get() }
+
+                val level = island?.level ?: 0
+
+                Component.text("ꐡ ")
+                    .append(MINI_MESSAGE.deserialize("<gradient:#ECEAB0:#E0C909>Level: "))
+                    .append(Component.text("$level", NamedTextColor.WHITE))
             }
             .addDynamicLine {
-                Component.text("• ᴏɴʟɪɴᴇ: ", NamedTextColor.GRAY)
-                    .append(Component.text(data.players, NamedTextColor.WHITE))
+                Component.text("ꐢ ")
+                    .append(MINI_MESSAGE.deserialize("<gradient:#ECEAB0:#E0C909>Progress: "))
+                    .append(Component.text("None", NamedTextColor.WHITE))
             }
             .addBlankLine()
-            .addStaticLine(MINI_MESSAGE.deserialize("<gradient:#8A15B1:#AE07B7>ᴡᴡᴡ.ᴏɴᴇʙʟᴏᴄᴋ.ɪꜱ"))
+            .addDynamicLine {
+                val balance = eco.getSync(player.uniqueId)?.get(EconomyType.MONEY) ?: 0
+                Component.text("ꐛ ")
+                    .append(MINI_MESSAGE.deserialize("<gradient:#ECEAB0:#E0C909>Coins: "))
+                    .append(Component.text(DECIMAL_FORMAT.format(balance), NamedTextColor.WHITE))
+            }
+            .addBlankLine()
+            .addStaticLine(MINI_MESSAGE.deserialize("<gradient:#ECEAB0:#E0C909>ᴘʟᴀʏ.ᴏɴᴇʙʟᴏᴄᴋ.ɪꜱ"))
             .build()
 
         val layout = ComponentSidebarLayout(title, lines)
@@ -242,20 +238,5 @@ class PlayerController :
         sidebar.addPlayer(player)
 
         sidebars[player.uniqueId] = Pair(sidebar, layout)
-    }
-
-    private fun createGradientAnimation(text: Component): SidebarAnimation<Component> {
-        val step = 1f / 8f
-
-        val textPlaceholder = Placeholder.component("text", text)
-        val frames: MutableList<Component> = ArrayList((2f / step).toInt())
-
-        var phase = -1f
-        while (phase < 1) {
-            frames.add(MINI_MESSAGE.deserialize("<gradient:#8A15B1:#AE07B7:$phase><text>", textPlaceholder))
-            phase += step
-        }
-
-        return CollectionSidebarAnimation(frames)
     }
 }

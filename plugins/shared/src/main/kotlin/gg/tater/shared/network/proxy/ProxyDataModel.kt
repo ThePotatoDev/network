@@ -1,4 +1,4 @@
-package gg.tater.shared.network
+package gg.tater.shared.network.proxy
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter

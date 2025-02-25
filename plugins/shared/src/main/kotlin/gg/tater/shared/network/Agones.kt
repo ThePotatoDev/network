@@ -8,7 +8,7 @@ import java.io.IOException
 
 class Agones(private val client: OkHttpClient) {
 
-    companion object {
+    private companion object {
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaTypeOrNull()
 
         private val BASE_CALLBACK = object : Callback {

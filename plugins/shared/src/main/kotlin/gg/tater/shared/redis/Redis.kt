@@ -8,12 +8,13 @@ import gg.tater.shared.annotation.InvocationContextType
 import gg.tater.shared.annotation.Mapping
 import gg.tater.shared.annotation.Message
 import gg.tater.shared.findAnnotatedClasses
-import gg.tater.shared.network.ProxyDataModel
+import gg.tater.shared.network.proxy.ProxyDataModel
 import gg.tater.shared.network.server.ServerDataModel
 import gg.tater.shared.network.server.ServerState
 import gg.tater.shared.network.server.ServerType
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
+import me.lucko.helper.Services
 import me.lucko.helper.promise.ThreadContext
 import org.redisson.Redisson
 import org.redisson.api.*
@@ -256,7 +257,6 @@ class Redis(credential: Credential) {
  */
 @InvocationContext(type = InvocationContextType.ASYNC)
 fun <K, V> RMap<K, V>.transactional(
-    client: RedissonClient,
     operation: (RMap<K, V>) -> Unit,
     onSuccess: () -> Unit = {},
     onFailure: (Exception) -> Unit = {}
@@ -265,7 +265,7 @@ fun <K, V> RMap<K, V>.transactional(
         throw Exception("You must be in an async context to create transactions!")
     }
 
-    val transaction = client.createTransaction(TransactionOptions.defaults())
+    val transaction = Services.load(Redis::class.java).client.createTransaction(TransactionOptions.defaults())
     val transactionalMap = transaction.getMap<K, V>(this.name)
 
     try {

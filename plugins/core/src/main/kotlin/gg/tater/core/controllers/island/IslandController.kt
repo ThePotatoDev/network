@@ -238,7 +238,7 @@ class IslandController : IslandService {
         onFailure: (Exception) -> Unit
     ) {
         redis.client.apply {
-            this.getMap<UUID, Island>(ISLAND_MAP_NAME).transactional(this, operation, onSuccess, onFailure)
+            this.getMap<UUID, Island>(ISLAND_MAP_NAME).transactional(operation, onSuccess, onFailure)
         }
     }
 }

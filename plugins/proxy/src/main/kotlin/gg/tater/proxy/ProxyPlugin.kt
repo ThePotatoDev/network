@@ -14,7 +14,7 @@ import gg.tater.proxy.listener.IslandPlacementListener
 import gg.tater.proxy.listener.PlayerRedirectListener
 import gg.tater.shared.hexToBytes
 import gg.tater.shared.network.Agones
-import gg.tater.shared.network.ProxyDataModel
+import gg.tater.shared.network.proxy.ProxyDataModel
 import gg.tater.shared.network.server.ServerDataModel
 import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.redis.Redis
@@ -182,40 +182,42 @@ class ProxyPlugin @Inject constructor(
     private fun onLogin(event: LoginEvent) {
         val player = event.player
 
-        http.newCall(
-            Request.Builder()
-                .url(TEXTURE_PACK_HEX_REQUEST_URL.replace("{key}", textureApiKey))
-                .build()
-        ).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
-                player.disconnect(ERROR_FETCHING_PACK_MESSAGE)
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val body = response.body ?: return
-                val texturePackHash = hexToBytes(body.string())
-
-                // Player already has pack applied
-                if (player.appliedResourcePacks.any { it.hash.contentEquals(texturePackHash) }) {
-                    logger.info("Player has most recent resource pack loaded, ignoring.")
-                    return
+        proxy.scheduler.buildTask(this, Runnable {
+            http.newCall(
+                Request.Builder()
+                    .url(TEXTURE_PACK_HEX_REQUEST_URL.replace("{key}", textureApiKey))
+                    .build()
+            ).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    e.printStackTrace()
+                    player.disconnect(ERROR_FETCHING_PACK_MESSAGE)
                 }
 
-                player.sendResourcePackOffer(
-                    proxy.createResourcePackBuilder(
-                        TEXTURE_PACK_DATA_REQUEST_URL
-                            .replace("{playerId}", player.uniqueId.toString())
-                            .replace("{key}", textureApiKey)
+                override fun onResponse(call: Call, response: Response) {
+                    val body = response.body ?: return
+                    val texturePackHash = hexToBytes(body.string())
+
+                    // Player already has pack applied
+                    if (player.appliedResourcePacks.any { it.hash.contentEquals(texturePackHash) }) {
+                        logger.info("Player has most recent resource pack loaded, ignoring.")
+                        return
+                    }
+
+                    player.sendResourcePackOffer(
+                        proxy.createResourcePackBuilder(
+                            TEXTURE_PACK_DATA_REQUEST_URL
+                                .replace("{playerId}", player.uniqueId.toString())
+                                .replace("{key}", textureApiKey)
+                        )
+                            .setId(player.uniqueId)
+                            .setHash(texturePackHash)
+                            .setShouldForce(true)
+                            .setPrompt(Component.text("Accept texture pack to play", NamedTextColor.GREEN))
+                            .build()
                     )
-                        .setId(player.uniqueId)
-                        .setHash(texturePackHash)
-                        .setShouldForce(true)
-                        .setPrompt(Component.text("Accept texture pack to play", NamedTextColor.GREEN))
-                        .build()
-                )
-            }
-        })
+                }
+            })
+        }).delay(1L, TimeUnit.SECONDS).schedule()
     }
 
     @Subscribe

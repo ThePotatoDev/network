@@ -9,14 +9,14 @@ groups:
 - name: default
   headers:
     - |
-      \n&#5E18BF&lᴏ&#6419B9&lɴ&#691AB3&lᴇ&#6F1BAD&lʙ&#751DA8&lʟ&#7B1EA2&lᴏ&#801F9C&lᴄ&#862096&lᴋ
+      \nꑑ
   footers:
     - |
       
       &fᴘɪɴɢ: %ping%   ┃   &fᴏɴʟɪɴᴇ: %players_online%
       
-      &fVote for rewards! &#5E18BF&l/&#681AB5&lᴠ&#721CAB&lᴏ&#7C1EA0&lᴛ&#862096&lᴇ
-      &fJoin our discord server! &#5E18BF&l/&#6419B9&lᴅ&#691AB3&lɪ&#6F1BAD&lꜱ&#751DA8&lᴄ&#7B1EA2&lᴏ&#801F9C&lʀ&#862096&lᴅ
+      &fVote for rewards! &#FDF145&l/&#F5EE7B&lv&#ECEAB0&lo&#E6DA5D&lt&#E0C909&le
+      &fJoin our discord server! &#FDF145&l/&#F7EF69&ld&#F2EC8C&li&#ECEAB0&ls&#E9E286&lc&#E6DA5D&lo&#E3D133&lr&#E0C909&ld
 
   format: '%prefix%&e%username%'
   nametag:

@@ -24,10 +24,11 @@ class Island(
     var warps: MutableMap<String, WrappedPosition> = mutableMapOf(),
     var currentServerId: String? = null,
     var lastActivity: Instant = Instant.now(),
-    var spawn: WrappedPosition = WrappedPosition(ServerType.SERVER.spawn!!)
+    var spawn: WrappedPosition = WrappedPosition(ServerType.SERVER.spawn!!),
+    var level: Int = 1
 ) {
 
-    companion object {
+    private companion object {
         const val ID_FIELD = "id"
         const val OWNER_UUID_FIELD = "uuid"
         const val OWNER_NAME_FIELD = "name"
@@ -38,6 +39,7 @@ class Island(
         const val SPAWN_FIELD = "spawn"
         const val SETTINGS_FIELD = "settings"
         const val WARPS_FIELD = "warps"
+        const val LEVEL_FIELD = "level"
     }
 
     enum class Role(val hierarchy: Int, val friendly: String) {
@@ -109,6 +111,7 @@ class Island(
                 addProperty(OWNER_NAME_FIELD, model.ownerName)
                 addProperty(LAST_ACTIVITY_FIELD, model.lastActivity.toEpochMilli())
                 addProperty(SPAWN_FIELD, Json.INSTANCE.toJson(model.spawn))
+                addProperty(LEVEL_FIELD, model.level)
 
                 model.currentServerId?.let { addProperty(CURRENT_SERVER_ID_FIELD, it) }
 
@@ -162,6 +165,7 @@ class Island(
                 val lastActivity = Instant.ofEpochMilli(get(LAST_ACTIVITY_FIELD).asLong)
                 val spawn = Json.INSTANCE.fromJson(get(SPAWN_FIELD).asString, WrappedPosition::class.java)
                 val currentServer = get(CURRENT_SERVER_ID_FIELD)?.asString
+                val level = get(LEVEL_FIELD).asInt
 
                 val members = mutableMapOf<UUID, Role>()
                 val flags = mutableMapOf<FlagType, Role>()
@@ -206,7 +210,8 @@ class Island(
                     warps,
                     currentServer,
                     lastActivity,
-                    spawn
+                    spawn,
+                    level
                 )
             }
         }
