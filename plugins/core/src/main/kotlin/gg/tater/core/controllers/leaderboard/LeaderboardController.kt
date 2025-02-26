@@ -3,6 +3,7 @@ package gg.tater.core.controllers.leaderboard
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.leaderboard.Leaderboard
 import gg.tater.shared.leaderboard.LeaderboardService
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
@@ -13,7 +14,8 @@ import java.util.concurrent.CompletionStage
 import java.util.concurrent.TimeUnit
 
 @Controller(
-    id = "leaderboard-controller"
+    id = "leaderboard-controller",
+    ignoredBinds = [ServerType.HUB]
 )
 class LeaderboardController : LeaderboardService {
 

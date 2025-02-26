@@ -10,8 +10,8 @@ import gg.tater.core.controllers.island.listener.IslandDeleteRequestListener
 import gg.tater.core.controllers.island.listener.IslandPlacementRequestListener
 import gg.tater.core.controllers.island.listener.IslandUpdateRequestListener
 import gg.tater.core.controllers.island.subcommand.*
-import gg.tater.shared.annotation.Controller
 import gg.tater.shared.UUID_REGEX
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.IslandService.Companion.ISLAND_INVITES_MAP_NAME
@@ -44,7 +44,8 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
 @Controller(
-    id = "island-controller"
+    id = "island-controller",
+    ignoredBinds = [ServerType.HUB]
 )
 class IslandController : IslandService {
 

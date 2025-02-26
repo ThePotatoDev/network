@@ -2,6 +2,7 @@ package gg.tater.core.controllers.player.auction
 
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.DECIMAL_FORMAT
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.auction.AuctionHouseService
 import gg.tater.shared.player.auction.gui.AuctionHouseGui
 import gg.tater.shared.player.auction.model.AuctionHouseCategory
@@ -17,7 +18,10 @@ import org.redisson.api.map.event.EntryExpiredListener
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-@Controller(id = "auction-house-controller")
+@Controller(
+    id = "auction-house-controller",
+    ignoredBinds = [ServerType.HUB]
+)
 class AuctionHouseController : AuctionHouseService {
 
     private companion object {

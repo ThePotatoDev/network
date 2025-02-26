@@ -40,7 +40,7 @@ tasks.shadowJar {
         val destinationDirs = listOf(
             file("../../servers/server/src/main/docker/plugins"),
             file("../../servers/spawn/src/main/docker/plugins"),
-//            file("../../servers/limbo/src/main/docker/plugins")
+            file("../../servers/hub/src/main/docker/plugins")
         )
 
         destinationDirs.forEach { destinationDir ->

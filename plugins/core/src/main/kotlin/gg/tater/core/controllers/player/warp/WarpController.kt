@@ -1,6 +1,7 @@
 package gg.tater.core.controllers.player.warp
 
 import gg.tater.shared.annotation.Controller
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.warp.WarpGui
 import gg.tater.shared.player.warp.WarpService
 import gg.tater.shared.player.warp.WarpType
@@ -10,7 +11,8 @@ import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 
 @Controller(
-    id = "warp-controller"
+    id = "warp-controller",
+    ignoredBinds = [ServerType.HUB]
 )
 class WarpController : WarpService {
 

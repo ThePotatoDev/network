@@ -27,8 +27,8 @@ spec:
             app: hub
         spec:
           containers:
-            - name: proxy
-              image: proxy:latest
+            - name: hub
+              image: hub:latest
               imagePullPolicy: IfNotPresent
               resources:
                 requests:

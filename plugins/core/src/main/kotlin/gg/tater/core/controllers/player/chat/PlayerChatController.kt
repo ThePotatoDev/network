@@ -22,7 +22,9 @@ import net.luckperms.api.LuckPermsProvider
 import org.bukkit.Bukkit
 import org.bukkit.event.EventPriority
 
-@Controller(id = "player-chat-controller")
+@Controller(
+    id = "player-chat-controller"
+)
 class PlayerChatController : TerminableModule {
 
     private companion object {

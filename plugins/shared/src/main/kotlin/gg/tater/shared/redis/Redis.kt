@@ -25,6 +25,7 @@ import org.redisson.client.protocol.Encoder
 import org.redisson.config.Config
 import java.io.IOException
 import java.nio.charset.StandardCharsets
+import java.util.concurrent.CompletionStage
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 
@@ -143,10 +144,27 @@ class Redis(credential: Credential) {
      * @return The server data model in READY or ALLOCATED state with the least used memory.
      * @throws IllegalStateException if no servers are available for the specified type.
      */
+    @InvocationContext(InvocationContextType.ASYNC)
     fun getReadyServer(type: ServerType): ServerDataModel {
         return servers().values.filter { it.type == type && (it.state == ServerState.READY || it.state == ServerState.ALLOCATED) }
             .minByOrNull { it.getUsedMemory() }
             ?: throw IllegalStateException("No servers available for type $type")
+    }
+
+    /**
+     * Retrieves a server entity asynchronously that is either READY or ALLOCATED.
+     *
+     * @param type The type of server to query.
+     * @return The server data model in READY or ALLOCATED state with the least used memory.
+     * @throws IllegalStateException if no servers are available for the specified type.
+     */
+    fun getReadyServerAsync(type: ServerType): CompletionStage<ServerDataModel> {
+        return servers().readAllValuesAsync()
+            .thenApplyAsync { it.filter { server -> server.type == type && (server.state == ServerState.READY || server.state == ServerState.ALLOCATED) } }
+            .thenApplyAsync {
+                it.minByOrNull { server -> server.getUsedMemory() }
+                    ?: throw IllegalStateException("No servers available for type $type")
+            }
     }
 
     /**

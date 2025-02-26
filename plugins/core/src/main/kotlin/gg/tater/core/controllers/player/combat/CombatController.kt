@@ -5,6 +5,7 @@ import de.oliver.fancynpcs.api.Npc
 import de.oliver.fancynpcs.api.NpcData
 import de.oliver.fancynpcs.api.utils.SkinFetcher
 import gg.tater.shared.annotation.Controller
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.combat.CombatService
 import gg.tater.shared.player.combat.model.CombatLogEntry
 import gg.tater.shared.redis.Redis
@@ -27,7 +28,8 @@ import java.util.concurrent.TimeUnit
 @Suppress("DEPRECATION")
 @Controller(
     id = "combat-controller",
-    requiredPlugins = ["FancyNpcs"]
+    requiredPlugins = ["FancyNpcs"],
+    ignoredBinds = [ServerType.HUB]
 )
 class CombatController : CombatService {
 

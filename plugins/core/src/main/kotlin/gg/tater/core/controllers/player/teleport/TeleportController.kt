@@ -2,6 +2,7 @@ package gg.tater.core.controllers.player.teleport
 
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.network.server.ServerDataService
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.combat.CombatService
 import gg.tater.shared.player.teleport.TeleportRequest
 import gg.tater.shared.player.teleport.message.TeleportRequestMessage
@@ -13,7 +14,8 @@ import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.Bukkit
 
 @Controller(
-    id = "teleport-controller"
+    id = "teleport-controller",
+    ignoredBinds = [ServerType.HUB]
 )
 class TeleportController : TerminableModule {
 

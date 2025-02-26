@@ -29,7 +29,10 @@ import org.bukkit.event.player.PlayerArmorStandManipulateEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 
-@Controller(id = "spawn-controller")
+@Controller(
+    id = "spawn-controller",
+    ignoredBinds = [ServerType.SPAWN]
+)
 class SpawnController : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {

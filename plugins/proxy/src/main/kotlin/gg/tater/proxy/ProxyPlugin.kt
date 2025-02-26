@@ -6,12 +6,11 @@ import com.velocitypowered.api.event.connection.LoginEvent
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
 import com.velocitypowered.api.event.player.PlayerResourcePackStatusEvent
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
-import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
-import com.velocitypowered.api.proxy.server.PingOptions
 import com.velocitypowered.api.proxy.server.ServerInfo
+import gg.tater.proxy.command.HubCommand
 import gg.tater.proxy.listener.IslandPlacementListener
 import gg.tater.proxy.listener.PlayerRedirectListener
 import gg.tater.shared.hexToBytes
@@ -87,6 +86,13 @@ class ProxyPlugin @Inject constructor(
         this.redis = Redis(credential).apply {
             servers().clear() //TODO() This is a debug, REMOVE before prod (Need a better way to remove old servers)
         }
+
+        val commands = proxy.commandManager
+        commands.register(
+            commands.metaBuilder("hub")
+                .plugin(this)
+                .build(), HubCommand(redis, proxy)
+        )
 
         val client: ApiClient =
             Config.fromConfig(if (env.get("ENV").equals("dev")) "$dir/config_dev" else "$dir/config_local")
@@ -240,7 +246,7 @@ class ProxyPlugin @Inject constructor(
 
     @Subscribe
     private fun onPlayerChooseServer(event: PlayerChooseInitialServerEvent) {
-        val server = redis.getReadyServer(ServerType.SPAWN)
+        val server = redis.getReadyServer(ServerType.HUB)
         val info = proxy.getServer(server.id).orElse(null)
         event.setInitialServer(info)
     }

@@ -7,6 +7,7 @@ PROJECT_ROOT=$1
 kubectl delete fleet server
 kubectl delete fleet proxy
 kubectl delete fleet spawn
+kubectl delete fleet hub
 
 # Wait for 2 seconds
 sleep 2
@@ -15,6 +16,7 @@ sleep 2
 docker build -t server:latest "$PROJECT_ROOT/servers/server/src/main/docker"
 docker build -t proxy:latest "$PROJECT_ROOT/servers/proxy/src/main/docker"
 docker build -t spawn:latest "$PROJECT_ROOT/servers/spawn/src/main/docker"
+docker build -t hub:latest "$PROJECT_ROOT/servers/hub/src/main/docker"
 
 # Apply Kubernetes configurations
 cd "$PROJECT_ROOT/servers/server/src/main/helm"
@@ -24,4 +26,7 @@ cd "$PROJECT_ROOT/servers/proxy/src/main/helm"
 kubectl apply -f fleet_local.yaml
 
 cd "$PROJECT_ROOT/servers/spawn/src/main/helm"
+kubectl apply -f fleet_local.yaml
+
+cd "$PROJECT_ROOT/servers/hub/src/main/helm"
 kubectl apply -f fleet_local.yaml

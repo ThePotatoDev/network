@@ -1,6 +1,7 @@
 package gg.tater.core.controllers.player.kit
 
 import gg.tater.shared.annotation.Controller
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.kit.KitDataModel
 import gg.tater.shared.player.kit.KitPlayerDataModel
 import gg.tater.shared.player.kit.KitService
@@ -15,7 +16,10 @@ import org.bukkit.inventory.ItemStack
 import org.redisson.api.RFuture
 import java.util.*
 
-@Controller(id = "kit-controller")
+@Controller(
+    id = "kit-controller",
+    ignoredBinds = [ServerType.HUB]
+)
 class KitController : KitService {
 
     companion object {

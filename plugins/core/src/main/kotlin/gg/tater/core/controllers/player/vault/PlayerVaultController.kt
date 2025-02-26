@@ -2,6 +2,7 @@ package gg.tater.core.controllers.player.vault
 
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.annotation.Controller
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.vault.VaultDataModel
 import gg.tater.shared.player.vault.VaultService
 import gg.tater.shared.player.vault.gui.VaultGuiItem
@@ -21,7 +22,10 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.redisson.api.RFuture
 import java.util.*
 
-@Controller(id = "player-vault-controller")
+@Controller(
+    id = "player-vault-controller",
+    ignoredBinds = [ServerType.HUB]
+)
 class PlayerVaultController : VaultService {
 
     private companion object {

@@ -7,6 +7,7 @@ import gg.tater.shared.annotation.Controller
 import gg.tater.shared.getFormattedDate
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.network.server.ServerDataService
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.PlayerService.Companion.PLAYER_MAP_NAME
@@ -41,7 +42,10 @@ import org.redisson.api.RFuture
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-@Controller(id = "player-controller")
+@Controller(
+    id = "player-controller",
+    ignoredBinds = [ServerType.HUB]
+)
 class PlayerController :
     PlayerService {
 
