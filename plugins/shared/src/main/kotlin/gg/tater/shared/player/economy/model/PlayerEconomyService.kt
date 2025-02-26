@@ -1,4 +1,4 @@
-package gg.tater.shared.player.economy
+package gg.tater.shared.player.economy.model
 
 import me.lucko.helper.terminable.module.TerminableModule
 import org.redisson.api.RFuture

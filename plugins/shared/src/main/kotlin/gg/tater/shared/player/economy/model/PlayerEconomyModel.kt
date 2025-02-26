@@ -1,4 +1,4 @@
-package gg.tater.shared.player.economy
+package gg.tater.shared.player.economy.model
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter

@@ -7,8 +7,8 @@ import gg.tater.shared.player.auction.model.AuctionHouseCategory
 import gg.tater.shared.player.auction.model.AuctionHouseItem
 import gg.tater.shared.player.auction.model.AuctionHouseScope
 import gg.tater.shared.player.auction.model.AuctionHouseSort
-import gg.tater.shared.player.economy.EconomyType
-import gg.tater.shared.player.economy.PlayerEconomyService
+import gg.tater.shared.player.economy.model.EconomyType
+import gg.tater.shared.player.economy.model.PlayerEconomyService
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder

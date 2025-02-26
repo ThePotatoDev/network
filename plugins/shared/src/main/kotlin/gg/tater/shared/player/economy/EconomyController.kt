@@ -1,12 +1,11 @@
-package gg.tater.core.controllers.player.economy
+package gg.tater.shared.player.economy
 
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.network.server.ServerType
-import gg.tater.shared.player.economy.EconomyType
-import gg.tater.shared.player.economy.PlayerEconomyModel
-import gg.tater.shared.player.economy.PlayerEconomyService
-import gg.tater.shared.player.economy.leaderboard.PlayerBalanceLeaderboard
+import gg.tater.shared.player.economy.model.EconomyType
+import gg.tater.shared.player.economy.model.PlayerEconomyModel
+import gg.tater.shared.player.economy.model.PlayerEconomyService
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Commands
 import me.lucko.helper.Services
@@ -19,39 +18,34 @@ import java.util.*
     id = "economy-controller",
     ignoredBinds = [ServerType.HUB]
 )
-class EconomyController : PlayerEconomyService {
-
-    private companion object {
-        const val ECONOMY_MAP_NAME = "economy"
-    }
+class EconomyController(private val mapName: String) : PlayerEconomyService {
 
     private val redis = Services.load(Redis::class.java)
 
     override fun compute(uuid: UUID): RFuture<PlayerEconomyModel> {
-        return redis.client.getMap<UUID, PlayerEconomyModel>(ECONOMY_MAP_NAME)
+        return redis.client.getMap<UUID, PlayerEconomyModel>(mapName)
             .computeIfAbsentAsync(uuid) {
                 PlayerEconomyModel(uuid)
             }
     }
 
     override fun get(uuid: UUID): RFuture<PlayerEconomyModel> {
-        return redis.client.getMap<UUID, PlayerEconomyModel>(ECONOMY_MAP_NAME)
+        return redis.client.getMap<UUID, PlayerEconomyModel>(mapName)
             .getAsync(uuid)
     }
 
     override fun getSync(uuid: UUID): PlayerEconomyModel? {
-        return redis.client.getMap<UUID, PlayerEconomyModel>(ECONOMY_MAP_NAME)[uuid]
+        return redis.client.getMap<UUID, PlayerEconomyModel>(mapName)[uuid]
     }
 
     override fun save(uuid: UUID, eco: PlayerEconomyModel): RFuture<Boolean> {
-        return redis.client.getMap<UUID, PlayerEconomyModel>(ECONOMY_MAP_NAME)
+        return redis.client.getMap<UUID, PlayerEconomyModel>(mapName)
             .fastPutAsync(uuid, eco)
     }
 
     override fun setup(consumer: TerminableConsumer) {
         Services.provide(PlayerEconomyService::class.java, this)
         val perms = LuckPermsProvider.get()
-        consumer.bindModule(PlayerBalanceLeaderboard())
 
         Commands.create()
             .assertPlayer()

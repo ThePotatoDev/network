@@ -7,8 +7,8 @@ import gg.tater.shared.island.IslandService
 import gg.tater.shared.network.server.ONEBLOCK_GAMEMODE_SERVERS
 import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerService
-import gg.tater.shared.player.economy.EconomyType
-import gg.tater.shared.player.economy.PlayerEconomyService
+import gg.tater.shared.player.economy.model.EconomyType
+import gg.tater.shared.player.economy.model.PlayerEconomyService
 import gg.tater.shared.scoreboard.ScoreboardEntry
 import me.lucko.helper.Events
 import me.lucko.helper.Services
