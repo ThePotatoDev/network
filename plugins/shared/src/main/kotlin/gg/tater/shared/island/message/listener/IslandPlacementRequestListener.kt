@@ -4,23 +4,21 @@ import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI
 import com.infernalsuite.aswm.api.loaders.SlimeLoader
 import com.infernalsuite.aswm.api.world.SlimeWorld
 import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap
+import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.island.message.placement.IslandPlacementResponse
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.server.ServerDataService
-import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
-class IslandPlacementRequestListener(
-    private val api: AdvancedSlimePaperAPI,
+class IslandPlacementRequestListener<T : Island>(
     private val loader: SlimeLoader,
     private val template: SlimeWorld,
     private val properties: SlimePropertyMap,
@@ -29,11 +27,13 @@ class IslandPlacementRequestListener(
 ) : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {
+        val api = AdvancedSlimePaperAPI.instance()
+
         redis.listen<IslandPlacementRequest> {
             // Make sure the server name matches, ignore it otherwise
             if (it.server != server) return@listen
 
-            val islands: IslandService<*> = Services.load(IslandService::class.java)
+            val islands: IslandService<T> = Services.load(IslandService::class.java) as IslandService<T>
 
             /**
              * Acquire a semaphore for this server with a
@@ -72,19 +72,7 @@ class IslandPlacementRequestListener(
                     return@listen
                 }
 
-                val spawn = ServerType.SERVER.spawn
-
-                // If the player is on the same server teleport them to spawn location
-                player.teleportAsync(
-                    Location(
-                        Bukkit.getWorld(worldName),
-                        spawn!!.x,
-                        spawn.y,
-                        spawn.z,
-                        spawn.yaw,
-                        spawn.pitch
-                    )
-                )
+                //TODO: handle teleport if on matching server already
             }
         }
     }

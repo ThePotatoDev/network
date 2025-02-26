@@ -1,15 +1,16 @@
 package gg.tater.oneblock.scoreboard
 
+import gg.tater.oneblock.island.OneBlockIsland
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.getFormattedDate
 import gg.tater.shared.island.IslandService
-import gg.tater.shared.server.model.ONEBLOCK_GAMEMODE_SERVERS
-import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.economy.model.EconomyType
 import gg.tater.shared.player.economy.model.PlayerEconomyService
 import gg.tater.shared.scoreboard.ScoreboardEntry
+import gg.tater.shared.server.model.ONEBLOCK_GAMEMODE_SERVERS
+import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Events
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
@@ -30,7 +31,8 @@ class OneBlockMainScoreboard(private val library: ScoreboardLibrary) : Scoreboar
 
     override fun display(player: Player) {
         val eco = Services.load(PlayerEconomyService::class.java)
-        val islands = Services.load(IslandService::class.java)
+        val islands: IslandService<OneBlockIsland> =
+            Services.load(IslandService::class.java) as IslandService<OneBlockIsland>
         val players = Services.load(PlayerService::class.java)
 
         val sidebar: Sidebar = library.createSidebar()

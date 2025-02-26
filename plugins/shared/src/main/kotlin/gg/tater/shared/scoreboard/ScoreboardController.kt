@@ -14,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin
 @Controller(
     id = "scoreboard-controller"
 )
-class ScoreboardController(val plugin: JavaPlugin) : TerminableModule {
+class ScoreboardController(private val plugin: JavaPlugin) : TerminableModule {
 
     private lateinit var library: ScoreboardLibrary
 

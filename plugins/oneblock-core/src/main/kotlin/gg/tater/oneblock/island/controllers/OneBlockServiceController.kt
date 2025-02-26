@@ -68,7 +68,7 @@ class OneBlockServiceController : IslandService<OneBlockIsland>(GameModeType.ONE
 
         val players = Services.load(PlayerService::class.java)
         player.islandId = newIsland.id
-        player.setDefaultSpawn(ServerType.SERVER)
+        player.setDefaultSpawn(ServerType.ONEBLOCK_SERVER)
 
         players.transaction(
             player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME),

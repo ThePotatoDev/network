@@ -11,12 +11,14 @@ object Json {
     private val BUILDER: GsonBuilder = GsonBuilder()
 
     init {
-        for (clazz in findAnnotatedClasses(JsonAdapter::class)) {
+        for (clazz in findAllAnnotatedClasses(JsonAdapter::class)) {
             val meta = clazz.findAnnotation<JsonAdapter>() ?: continue
 
             if (meta.target.findAnnotation<Mapping>() == null) {
-                println("Class ${meta.target.simpleName} must be annotated with @Mapping before registering it with @JsonAdapter " +
-                        "if you do not want to lose the reference!")
+                println(
+                    "Class ${meta.target.simpleName} must be annotated with @Mapping before registering it with @JsonAdapter " +
+                            "if you do not want to lose the reference!"
+                )
                 continue
             }
 

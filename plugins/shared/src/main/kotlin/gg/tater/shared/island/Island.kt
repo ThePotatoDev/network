@@ -2,7 +2,6 @@ package gg.tater.shared.island
 
 import com.google.gson.*
 import gg.tater.shared.Json
-import gg.tater.shared.JsonAdapter
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.setting.model.IslandSettingType
 import gg.tater.shared.player.position.WrappedPosition
@@ -10,7 +9,7 @@ import java.lang.reflect.Type
 import java.time.Instant
 import java.util.*
 
-abstract class Island(
+open class Island(
     val id: UUID,
     val ownerId: UUID,
     val ownerName: String,
@@ -91,7 +90,6 @@ abstract class Island(
         return id == (other as Island).id
     }
 
-    @JsonAdapter(Island::class)
     class Adapter : JsonSerializer<Island>, JsonDeserializer<Island> {
         override fun serialize(
             model: Island,
@@ -192,7 +190,7 @@ abstract class Island(
                     warps[name] = pos
                 }
 
-                object : Island(
+                Island(
                     id,
                     ownerId,
                     ownerName,
@@ -203,9 +201,7 @@ abstract class Island(
                     currentServer,
                     lastActivity,
                     spawn
-                ) {
-
-                }
+                )
             }
         }
     }

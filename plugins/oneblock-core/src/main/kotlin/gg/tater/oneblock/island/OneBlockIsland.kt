@@ -6,16 +6,20 @@ import gg.tater.shared.island.Island
 import java.lang.reflect.Type
 import java.util.*
 
-class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String) : Island(id, ownerId, ownerName) {
+class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String, var level: Int = 1) : Island(id, ownerId, ownerName) {
 
     private companion object {
-
+        const val LEVEL_FIELD = "island_level"
     }
 
     @JsonAdapter(OneBlockIsland::class)
     class Adapter : JsonSerializer<OneBlockIsland>, JsonDeserializer<OneBlockIsland> {
+        private val baseAdapter = Island.Adapter()
+
         override fun serialize(island: OneBlockIsland, type: Type, context: JsonSerializationContext): JsonElement {
-            TODO("Not yet implemented")
+            return (baseAdapter.serialize(island, type, context) as JsonObject).apply {
+                addProperty(LEVEL_FIELD, island.level)
+            }
         }
 
         override fun deserialize(
@@ -23,7 +27,9 @@ class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String) : Island(id, ow
             type: Type,
             context: JsonDeserializationContext
         ): OneBlockIsland {
-            TODO("Not yet implemented")
+            val island = baseAdapter.deserialize(element, type, context)
+            val level = (element as JsonObject).get(LEVEL_FIELD).asInt
+            return OneBlockIsland(island.id, island.ownerId, island.ownerName, level)
         }
     }
 }

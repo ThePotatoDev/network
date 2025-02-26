@@ -11,8 +11,8 @@ import kotlin.reflect.full.primaryConstructor
 
 abstract class GameServerPlugin : ExtendedJavaPlugin() {
 
-    fun initControllers(serverType: ServerType) {
-        for (clazz in findAnnotatedClasses(Controller::class)) {
+    fun initControllers(serverType: ServerType, packages: List<String>) {
+        for (clazz in findAnnotatedClasses(Controller::class, packages)) {
             val meta = clazz.findAnnotation<Controller>() ?: continue
             if (meta.ignoredBinds.contains(serverType)) continue
 

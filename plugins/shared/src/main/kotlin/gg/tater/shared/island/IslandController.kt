@@ -2,18 +2,49 @@ package gg.tater.shared.island
 
 import com.infernalsuite.aswm.api.loaders.SlimeLoader
 import com.infernalsuite.aswm.api.world.SlimeWorld
+import com.infernalsuite.aswm.api.world.properties.SlimeProperties
+import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap
 import gg.tater.shared.island.command.IslandSubCommand
 import gg.tater.shared.island.command.base.*
+import gg.tater.shared.island.flag.IslandFlagController
 import gg.tater.shared.island.gui.IslandControlGui
+import gg.tater.shared.island.message.listener.IslandDeleteRequestListener
+import gg.tater.shared.island.message.listener.IslandPlacementRequestListener
+import gg.tater.shared.island.message.listener.IslandUpdateRequestListener
+import gg.tater.shared.island.setting.IslandSettingController
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.server.ServerDataService
 import me.lucko.helper.Commands
 import me.lucko.helper.Services
+import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule
 
 abstract class IslandController<T : Island> : TerminableModule {
 
+    val properties = SlimePropertyMap().apply {
+        setValue(SlimeProperties.SPAWN_X, 0)
+        setValue(SlimeProperties.SPAWN_Y, 101)
+        setValue(SlimeProperties.SPAWN_Z, 0)
+        setValue(SlimeProperties.PVP, false)
+        setValue(SlimeProperties.ALLOW_ANIMALS, true)
+        setValue(SlimeProperties.ALLOW_MONSTERS, true)
+    }
+
     private val commands: MutableMap<String, IslandSubCommand<T>> = mutableMapOf()
+
+    fun registerBaseSettings(consumer: TerminableConsumer) {
+        consumer.bindModule(IslandSettingController())
+    }
+
+    fun registerBaseFlags(consumer: TerminableConsumer) {
+        consumer.bindModule(IslandFlagController())
+    }
+
+    fun registerBaseListeners(consumer: TerminableConsumer) {
+        consumer.bindModule(IslandPlacementRequestListener<T>(loader(), template(), properties))
+        consumer.bindModule(IslandUpdateRequestListener<T>())
+        consumer.bindModule(IslandDeleteRequestListener<T>())
+    }
 
     fun registerBaseSubCommands() {
         registerSubCommand(IslandAddWarpSubCommand())

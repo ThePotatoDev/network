@@ -3,10 +3,9 @@ package gg.tater.oneblock.island.controllers
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI
 import com.infernalsuite.aswm.api.loaders.SlimeLoader
 import com.infernalsuite.aswm.api.world.SlimeWorld
-import com.infernalsuite.aswm.api.world.properties.SlimeProperties
-import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap
 import com.infernalsuite.aswm.loaders.redis.RedisLoader
 import gg.tater.oneblock.island.OneBlockIsland
+import gg.tater.oneblock.island.subcommand.OneBlockPhasesSubCommand
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.island.IslandController
 import gg.tater.shared.redis.Redis
@@ -20,28 +19,22 @@ import me.lucko.helper.terminable.TerminableConsumer
 )
 class OneBlockIslandController : IslandController<OneBlockIsland>() {
 
-    private companion object {
-        val PROPERTIES = SlimePropertyMap().apply {
-            setValue(SlimeProperties.SPAWN_X, 0)
-            setValue(SlimeProperties.SPAWN_Y, 101)
-            setValue(SlimeProperties.SPAWN_Z, 0)
-            setValue(SlimeProperties.PVP, false)
-            setValue(SlimeProperties.ALLOW_ANIMALS, true)
-            setValue(SlimeProperties.ALLOW_MONSTERS, true)
-        }
-    }
-
     private lateinit var loader: SlimeLoader
     private lateinit var template: SlimeWorld
 
     override fun setup(consumer: TerminableConsumer) {
         val credential = Services.load(Redis.Credential::class.java)
 
+        registerSubCommand(OneBlockPhasesSubCommand())
         registerBaseSubCommands()
+
+        registerBaseListeners(consumer)
+        registerBaseFlags(consumer)
+        registerBaseSettings(consumer)
         registerMainCommand("island", "is", "ob", "oneblock")
 
         this.loader = RedisLoader("redis://:${credential.password}@${credential.address}:${credential.port}")
-        this.template = AdvancedSlimePaperAPI.instance().readWorld(loader, "island_world_template", false, PROPERTIES)
+        this.template = AdvancedSlimePaperAPI.instance().readWorld(loader, "island_world_template", false, properties)
     }
 
     override fun loader(): SlimeLoader {

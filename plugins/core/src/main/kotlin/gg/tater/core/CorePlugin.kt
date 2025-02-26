@@ -1,22 +1,16 @@
 package gg.tater.core
 
-import gg.tater.shared.annotation.Controller
-import gg.tater.shared.findAnnotatedClasses
 import gg.tater.shared.network.Agones
+import gg.tater.shared.plugin.GameServerPlugin
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.server.ServerDataService
 import gg.tater.shared.server.model.toServerType
 import io.github.cdimascio.dotenv.Dotenv
-import me.lucko.helper.Helper
 import me.lucko.helper.Services
-import me.lucko.helper.plugin.ExtendedJavaPlugin
-import me.lucko.helper.terminable.module.TerminableModule
 import okhttp3.OkHttpClient
 import org.bukkit.Bukkit
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.primaryConstructor
 
-class CorePlugin : ExtendedJavaPlugin(), ServerDataService {
+class CorePlugin : GameServerPlugin(), ServerDataService {
 
     private lateinit var serverId: String
 
@@ -51,21 +45,7 @@ class CorePlugin : ExtendedJavaPlugin(), ServerDataService {
         )
 
         val serverType = serverId.toServerType()
-
-        for (clazz in findAnnotatedClasses(Controller::class)) {
-            val meta = clazz.findAnnotation<Controller>() ?: continue
-            if (meta.ignoredBinds.contains(serverType)) continue
-
-            if (meta.requiredPlugins.isNotEmpty() && meta.requiredPlugins.any { plugin ->
-                    !Helper.plugins().isPluginEnabled(plugin)
-                }) {
-                logger.info("Could not enable controller: ${clazz.simpleName}. Required plugins not present.")
-                return
-            }
-
-            bindModule(clazz.primaryConstructor?.call() as TerminableModule)
-            logger.info("Bound controller as module: ${clazz.simpleName}")
-        }
+        initControllers(serverType, listOf("gg.tater.shared"))
     }
 
     override fun id(): String {
