@@ -29,7 +29,7 @@ enum class WarpType(
         15,
         ItemStackBuilder.of(Material.END_STONE)
             .name("&bPlanets Warp &7(Click)"),
-        ServerType.PLANET,
+        ServerType.ONEBLOCK_PLANET,
         listOf(
             "&7&oProgress your way through planets",
             "&7&othrough mining to unlock",

@@ -1,5 +1,6 @@
 package gg.tater.shared.player.warp
 
+import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerRedirectRequest
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.getCurrentServerType
@@ -37,7 +38,7 @@ class WarpGui(
 
                                 // If the player is already on the warp's server
                                 if (player.getCurrentServerType() == warp.serverType) {
-                                    val position = ServerType.ONEBLOCK_SPAWN!!
+                                    val position = ServerType.ONEBLOCK_SPAWN.spawn!!
 
                                     val location = Location(
                                         Bukkit.getWorld("world"),
@@ -52,7 +53,7 @@ class WarpGui(
                                         location
                                     )
                                 } else {
-                                    player.setSpawn(serverType, ServerType.ONEBLOCK_SPAWN!!)
+                                    player.setSpawn(serverType, ServerType.ONEBLOCK_SPAWN.spawn!!)
 
                                     Schedulers.async().run {
                                         players.transaction(

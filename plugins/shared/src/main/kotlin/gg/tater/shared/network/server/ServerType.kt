@@ -8,7 +8,7 @@ enum class ServerType(val spawn: WrappedPosition? = null) {
     ONEBLOCK_SPAWN(WrappedPosition(0.574, 64.0, 0.353, 179.1F, -0.8F)),
     ONEBLOCK_PVP,
     ONEBLOCK_PLANET,
-    HUB
+    HUB(WrappedPosition(30.538, 99.0, 124.574, 179.8F, -1.4F))
 
 }
 

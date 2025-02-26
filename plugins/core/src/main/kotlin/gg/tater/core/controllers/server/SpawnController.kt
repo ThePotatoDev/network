@@ -31,7 +31,7 @@ import org.bukkit.event.weather.WeatherChangeEvent
 
 @Controller(
     id = "spawn-controller",
-    ignoredBinds = [ServerType.ONEBLOCK_SPAWN]
+    ignoredBinds = [ServerType.HUB]
 )
 class SpawnController : TerminableModule {
 
