@@ -13,7 +13,9 @@ import gg.tater.shared.server.model.GameModeType
 import gg.tater.shared.server.model.ServerDataModel
 import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Services
+import me.lucko.helper.promise.ThreadContext
 import me.lucko.helper.terminable.TerminableConsumer
+import org.bukkit.entity.Player
 import org.redisson.api.RFuture
 import org.redisson.api.RMap
 import java.util.*
@@ -21,7 +23,7 @@ import java.util.*
 @Controller(
     id = "oneblock-service-controller"
 )
-class OneBlockServiceController : IslandService<OneBlockIsland>(GameModeType.ONEBLOCK) {
+class OneBlockIslandServiceController : IslandService<OneBlockIsland>(GameModeType.ONEBLOCK) {
 
     private companion object {
         val ISLAND_MAP_NAME = "${GameModeType.ONEBLOCK.id}_islands"
@@ -85,6 +87,34 @@ class OneBlockServiceController : IslandService<OneBlockIsland>(GameModeType.ONE
             })
     }
 
+    override fun directToOccupiedServer(sender: Player, island: OneBlockIsland) {
+        if (ThreadContext.forCurrentThread() != ThreadContext.ASYNC) {
+            throw IllegalStateException("This method must be called asynchronously.")
+        }
+
+        val redis = Services.load(Redis::class.java)
+
+        // If the island is already placed on a server, teleport the player to the server
+        val currentServerId = island.currentServerId
+        var server: ServerDataModel?
+
+        if (currentServerId != null) {
+            server = redis.getServer(currentServerId).get()
+
+            // If the server is not online, place the island on a fresh server
+            if (server == null) {
+                server = redis.getServer(ServerType.ONEBLOCK_SERVER) ?: return
+            }
+        } else {
+            // If everything else fails to check, place the island on a fresh server
+            server = redis.getServer(ServerType.ONEBLOCK_SERVER) ?: return
+        }
+
+        redis.publish(IslandPlacementRequest.of(sender, island, server))
+        island.currentServerId = server.id
+        save(island)
+    }
+
     override fun transaction(
         operation: (RMap<UUID, OneBlockIsland>) -> Unit,
         onSuccess: () -> Unit,
@@ -96,6 +126,6 @@ class OneBlockServiceController : IslandService<OneBlockIsland>(GameModeType.ONE
     }
 
     override fun setup(consumer: TerminableConsumer) {
-        Services.provide(IslandService::class.java, this)
+        Services.provide(OneBlockIslandServiceController::class.java, this)
     }
 }

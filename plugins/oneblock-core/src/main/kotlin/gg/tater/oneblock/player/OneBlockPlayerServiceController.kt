@@ -8,7 +8,7 @@ import me.lucko.helper.terminable.TerminableConsumer
 import org.redisson.api.RFuture
 import java.util.*
 
-class OneBlockPlayerController : IslandPlayerService<OneBlockPlayer> {
+class OneBlockPlayerServiceController : IslandPlayerService<OneBlockPlayer> {
 
     private companion object {
         const val PLAYER_MAP_NAME = "oneblock_players"
@@ -24,15 +24,15 @@ class OneBlockPlayerController : IslandPlayerService<OneBlockPlayer> {
         TODO("Not yet implemented")
     }
 
-    override fun setup(p0: TerminableConsumer) {
-        TODO("Not yet implemented")
-    }
-
     override fun transaction(data: OneBlockPlayer, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         TODO("Not yet implemented")
     }
 
     override fun save(data: OneBlockPlayer): RFuture<Boolean> {
-        TODO("Not yet implemented")
+        TODO()
+    }
+
+    override fun setup(consumer: TerminableConsumer) {
+        Services.provide(OneBlockPlayerServiceController::class.java, this)
     }
 }
