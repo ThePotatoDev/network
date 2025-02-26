@@ -1,10 +1,11 @@
 package gg.tater.core
 
 import gg.tater.shared.network.Agones
+import gg.tater.shared.player.pm.PlayerPrivateMessageController
 import gg.tater.shared.plugin.GameServerPlugin
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.server.ServerDataService
-import gg.tater.shared.server.model.toServerType
+import gg.tater.shared.server.ServerStatusController
 import io.github.cdimascio.dotenv.Dotenv
 import me.lucko.helper.Services
 import okhttp3.OkHttpClient
@@ -44,8 +45,8 @@ class CorePlugin : GameServerPlugin(), ServerDataService {
             )
         )
 
-        val serverType = serverId.toServerType()
-        initControllers(serverType, listOf("gg.tater.shared"))
+        useController(null, PlayerPrivateMessageController::class)
+        useController(null, ServerStatusController::class)
     }
 
     override fun id(): String {

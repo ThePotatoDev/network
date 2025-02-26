@@ -1,21 +1,19 @@
 package gg.tater.shared.plugin
 
 import gg.tater.shared.annotation.Controller
-import gg.tater.shared.findAnnotatedClasses
-import gg.tater.shared.server.model.ServerType
+import gg.tater.shared.server.model.GameModeType
 import me.lucko.helper.Helper
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import me.lucko.helper.terminable.module.TerminableModule
+import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.primaryConstructor
 
 abstract class GameServerPlugin : ExtendedJavaPlugin() {
 
-    fun initControllers(serverType: ServerType, packages: List<String>) {
-        for (clazz in findAnnotatedClasses(Controller::class, packages)) {
+    fun useController(mode: GameModeType?, vararg controllers: KClass<*>) {
+        for (clazz in controllers) {
             val meta = clazz.findAnnotation<Controller>() ?: continue
-            if (meta.ignoredBinds.contains(serverType)) continue
-
             if (meta.requiredPlugins.isNotEmpty() && meta.requiredPlugins.any { plugin ->
                     !Helper.plugins().isPluginEnabled(plugin)
                 }) {
@@ -23,7 +21,14 @@ abstract class GameServerPlugin : ExtendedJavaPlugin() {
                 return
             }
 
-            bindModule(clazz.primaryConstructor?.call() as TerminableModule)
+            val constructor = clazz.primaryConstructor!!
+            val instance = (if (constructor.parameters.size == 1) {
+                constructor.call(mode)
+            } else {
+                constructor.call()
+            }) as TerminableModule
+
+            bindModule(instance)
             logger.info("Bound controller as module: ${clazz.simpleName}")
         }
     }

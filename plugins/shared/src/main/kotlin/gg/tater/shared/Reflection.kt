@@ -3,10 +3,10 @@ package gg.tater.shared
 import io.github.classgraph.ClassGraph
 import kotlin.reflect.KClass
 
-fun findAnnotatedClasses(annotation: KClass<out Annotation>, packages: List<String>): List<KClass<*>> {
+fun findAnnotatedClasses(annotation: KClass<out Annotation>): List<KClass<*>> {
     return ClassGraph()
         .enableAnnotationInfo()
-        .acceptPackages(*packages.toTypedArray())
+        .acceptPackages("gg.tater")
         .scan()
         .getClassesWithAnnotation(annotation.java)
         .loadClasses()

@@ -1,13 +1,13 @@
 package gg.tater.shared.player.auction
 
-import gg.tater.shared.annotation.Controller
 import gg.tater.shared.DECIMAL_FORMAT
-import gg.tater.shared.server.model.ServerType
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.player.auction.gui.AuctionHouseGui
 import gg.tater.shared.player.auction.model.AuctionHouseCategory
 import gg.tater.shared.player.auction.model.AuctionHouseItem
 import gg.tater.shared.player.auction.model.AuctionHouseSort
 import gg.tater.shared.redis.Redis
+import gg.tater.shared.server.model.GameModeType
 import me.lucko.helper.Commands
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
@@ -18,12 +18,12 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Controller(
-    id = "auction-house-controller",
-    ignoredBinds = [ServerType.HUB]
+    id = "auction-house-controller"
 )
-class AuctionHouseController(private val mapName: String) : AuctionHouseService {
+class AuctionHouseController(mode: GameModeType) : AuctionHouseService {
 
-    private val expiredAuctionsMapName = "${mapName}_expired_auctions"
+    private val mapName = "${mode.id}_auctions"
+    private val expiredAuctionsMapName = "${mode.id}_expired_auctions"
 
     private val redis = Services.load(Redis::class.java)
 

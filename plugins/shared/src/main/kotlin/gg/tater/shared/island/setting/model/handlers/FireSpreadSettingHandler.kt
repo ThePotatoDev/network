@@ -1,6 +1,6 @@
 package gg.tater.shared.island.setting.model.handlers
 
-import gg.tater.shared.island.IslandService
+import gg.tater.shared.island.cache.IslandWorldCacheService
 import gg.tater.shared.island.setting.model.IslandSettingHandler
 import gg.tater.shared.island.setting.model.IslandSettingType
 import me.lucko.helper.Events
@@ -18,8 +18,8 @@ class FireSpreadSettingHandler : IslandSettingHandler() {
             .handler {
                 val block = it.ignitingBlock ?: return@handler
                 val world = block.location.world
-                val islands = Services.load(IslandService::class.java)
-                val island = islands.getIsland(world) ?: return@handler
+                val cache = Services.load(IslandWorldCacheService::class.java)
+                val island = cache.getIsland(world) ?: return@handler
 
                 val enabled = island.isSettingEnabled(IslandSettingType.FIRE_SPREAD)
                 if (enabled) return@handler

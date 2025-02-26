@@ -5,7 +5,6 @@ import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.flag.model.FlagType
-import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Item
@@ -22,9 +21,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta
 import java.util.*
 
-class IslandMemberGui(
+class IslandMemberGui<T: Island>(
     player: Player,
-    private val island: Island,
+    private val island: T,
     private val offline: Map<UUID, Pair<String, String>>
 ) :
     PaginatedGui(
@@ -90,11 +89,11 @@ class IslandMemberGui(
             return lore
         }
 
-        private fun getItems(
+        private fun <T: Island> getItems(
             gui: PaginatedGui,
-            island: Island,
+            island: T,
             offline: Map<UUID, Pair<String, String>>,
-            islands: IslandService = Services.load(IslandService::class.java)
+            islands: IslandService<T> = Services.load(IslandService::class.java) as IslandService<T>
         ): List<Item> {
             val player = gui.player
 

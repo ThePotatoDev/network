@@ -4,17 +4,20 @@ plugins {
     id("net.minecrell.plugin-yml.paper") version "0.6.0"
 }
 
-group = "gg.tater"
-version = "1.0-SNAPSHOT"
+repositories {
+    flatDir {
+        dirs("libs")
+    }
+}
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
-    compileOnly("me.lucko:helper:5.6.14")
-    compileOnly("net.luckperms:api:5.4")
     api(project(":plugins:shared"))
 
-    implementation("org.redisson:redisson:3.36.0")
-    implementation(kotlin("reflect"))
+    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("me.lucko:helper:5.6.14")
+    compileOnly("org.redisson:redisson:3.36.0")
+    compileOnly(kotlin("reflect"))
+
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     val scoreboardLibraryVersion = "2.2.1"
@@ -28,7 +31,7 @@ kotlin {
 }
 
 tasks.shadowJar {
-    archiveBaseName.set("core")
+    archiveBaseName.set("oneblock-core")
     archiveClassifier.set("")
     archiveVersion.set("")
 
@@ -61,9 +64,14 @@ paper {
     foliaSupported = false
     apiVersion = "1.20"
     serverDependencies {
+        register("Core") {
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+            required = true
+        }
+
         register("LuckPerms") {
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-            required = false
+            required = true
         }
 
         register("helper") {
@@ -72,7 +80,7 @@ paper {
 
         register("SlimeWorldPlugin") {
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-            required = false
+            required = true
         }
     }
 }

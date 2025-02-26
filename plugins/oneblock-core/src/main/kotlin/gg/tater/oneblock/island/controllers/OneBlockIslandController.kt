@@ -9,13 +9,11 @@ import gg.tater.oneblock.island.subcommand.OneBlockPhasesSubCommand
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.island.IslandController
 import gg.tater.shared.redis.Redis
-import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 
 @Controller(
-    id = "oneblock-island-controller",
-    ignoredBinds = [ServerType.HUB]
+    id = "oneblock-island-controller"
 )
 class OneBlockIslandController : IslandController<OneBlockIsland>() {
 

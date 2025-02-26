@@ -1,8 +1,8 @@
 package gg.tater.shared.island.flag.model.handlers
 
+import gg.tater.shared.island.cache.IslandWorldCacheService
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.flag.model.IslandFlagHandler
-import gg.tater.shared.island.IslandService
 import me.lucko.helper.Events
 import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
@@ -28,8 +28,8 @@ class UseLeversFlagHandler : IslandFlagHandler {
             .handler {
                 val player = it.player
                 val world = player.world
-                val islands = Services.load(IslandService::class.java)
-                val island = islands.getIsland(world) ?: return@handler
+                val cache = Services.load(IslandWorldCacheService::class.java)
+                val island = cache.getIsland(world) ?: return@handler
 
                 if (island.canInteract(player.uniqueId, FlagType.USE_LEVERS)) return@handler
 

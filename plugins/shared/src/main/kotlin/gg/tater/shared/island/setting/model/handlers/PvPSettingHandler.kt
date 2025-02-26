@@ -1,6 +1,6 @@
 package gg.tater.shared.island.setting.model.handlers
 
-import gg.tater.shared.island.IslandService
+import gg.tater.shared.island.cache.IslandWorldCacheService
 import gg.tater.shared.island.setting.model.IslandSettingHandler
 import gg.tater.shared.island.setting.model.IslandSettingType
 import me.lucko.helper.Events
@@ -21,8 +21,8 @@ class PvPSettingHandler : IslandSettingHandler() {
             .handler {
                 val entity = it.entity
                 val world = entity.location.world
-                val islands = Services.load(IslandService::class.java)
-                val island = islands.getIsland(world) ?: return@handler
+                val cache = Services.load(IslandWorldCacheService::class.java)
+                val island = cache.getIsland(world) ?: return@handler
 
                 val enabled = island.isSettingEnabled(IslandSettingType.PVP)
                 if (enabled) return@handler
@@ -37,8 +37,8 @@ class PvPSettingHandler : IslandSettingHandler() {
                 if (hitEntity !is Player) return@handler
 
                 val world = hitEntity.world
-                val islands = Services.load(IslandService::class.java)
-                val island = islands.getIsland(world) ?: return@handler
+                val cache = Services.load(IslandWorldCacheService::class.java)
+                val island = cache.getIsland(world) ?: return@handler
 
                 val enabled = island.isSettingEnabled(IslandSettingType.PVP)
                 if (enabled) return@handler

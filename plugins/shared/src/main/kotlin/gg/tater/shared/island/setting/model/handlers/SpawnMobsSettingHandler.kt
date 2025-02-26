@@ -1,6 +1,6 @@
 package gg.tater.shared.island.setting.model.handlers
 
-import gg.tater.shared.island.IslandService
+import gg.tater.shared.island.cache.IslandWorldCacheService
 import gg.tater.shared.island.setting.model.IslandSettingHandler
 import gg.tater.shared.island.setting.model.IslandSettingType
 import me.lucko.helper.Events
@@ -19,8 +19,8 @@ class SpawnMobsSettingHandler : IslandSettingHandler() {
             .filter { it.entity is Mob }
             .handler {
                 val world = it.location.world
-                val islands = Services.load(IslandService::class.java)
-                val island = islands.getIsland(world) ?: return@handler
+                val cache = Services.load(IslandWorldCacheService::class.java)
+                val island = cache.getIsland(world) ?: return@handler
 
                 val enabled = island.isSettingEnabled(IslandSettingType.SPAWN_MOBS)
                 if (enabled) return@handler

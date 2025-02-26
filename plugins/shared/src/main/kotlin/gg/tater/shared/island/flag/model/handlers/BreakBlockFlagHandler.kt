@@ -1,8 +1,8 @@
 package gg.tater.shared.island.flag.model.handlers
 
+import gg.tater.shared.island.cache.IslandWorldCacheService
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.flag.model.IslandFlagHandler
-import gg.tater.shared.island.IslandService
 import me.lucko.helper.Events
 import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
@@ -22,11 +22,11 @@ class BreakBlockFlagHandler : IslandFlagHandler {
         Events.subscribe(BlockBreakEvent::class.java, EventPriority.HIGHEST)
             .filter(EventFilters.ignoreCancelled())
             .handler {
-                val islands = Services.load(IslandService::class.java)
+                val cache = Services.load(IslandWorldCacheService::class.java)
                 val player = it.player
                 val world = player.world
 
-                val island = islands.getIsland(world) ?: return@handler
+                val island = cache.getIsland(world) ?: return@handler
                 if (island.canInteract(player.uniqueId, FlagType.BREAK_BLOCKS)) return@handler
 
                 it.isCancelled = true

@@ -6,13 +6,14 @@ dependencies {
     compileOnly(kotlin("reflect"))
     compileOnly("me.lucko:helper:5.6.14")
     compileOnly("de.oliver:FancyHolograms:2.4.2")
+    compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
+    compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
     implementation("io.github.classgraph:classgraph:4.8.179")
-    implementation("net.kyori:adventure-text-minimessage:4.17.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     val scoreboardLibraryVersion = "2.2.1"
     compileOnly("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
-    runtimeOnly("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
-    runtimeOnly("net.megavex:scoreboard-library-modern:$scoreboardLibraryVersion:mojmap")
+    compileOnly("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
+    compileOnly("net.megavex:scoreboard-library-modern:$scoreboardLibraryVersion:mojmap")
 }
