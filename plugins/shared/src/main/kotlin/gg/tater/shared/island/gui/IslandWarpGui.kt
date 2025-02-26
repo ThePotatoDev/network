@@ -3,7 +3,6 @@ package gg.tater.shared.island.gui
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
-import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.server.ServerDataService
 import gg.tater.shared.server.model.ServerType

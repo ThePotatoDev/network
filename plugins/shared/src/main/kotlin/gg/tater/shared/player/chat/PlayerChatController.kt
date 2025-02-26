@@ -2,14 +2,12 @@ package gg.tater.shared.player.chat
 
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.annotation.Controller
-import gg.tater.shared.server.model.ONEBLOCK_GAMEMODE_SERVERS
-import gg.tater.shared.server.ServerDataService
-import gg.tater.shared.server.model.toServerType
-import gg.tater.shared.player.PlayerService
-import gg.tater.shared.player.chat.color.ChatColorGui
 import gg.tater.shared.player.chat.message.ChatMessagePart
 import gg.tater.shared.player.chat.message.ChatMessageRequest
 import gg.tater.shared.redis.Redis
+import gg.tater.shared.server.ServerDataService
+import gg.tater.shared.server.model.ONEBLOCK_GAMEMODE_SERVERS
+import gg.tater.shared.server.model.toServerType
 import io.papermc.paper.event.player.AsyncChatEvent
 import me.lucko.helper.Commands
 import me.lucko.helper.Events
@@ -73,7 +71,6 @@ class PlayerChatController : TerminableModule {
         Events.subscribe(AsyncChatEvent::class.java, EventPriority.HIGHEST)
             .filter(EventFilters.ignoreCancelled())
             .handler {
-                val players = Services.load(PlayerService::class.java)
                 val player = it.player
                 val user = perms.userManager.getUser(player.uniqueId)
                 val group = perms.groupManager.getGroup(user?.primaryGroup ?: "default")
@@ -100,26 +97,26 @@ class PlayerChatController : TerminableModule {
                 request.setPart(ChatMessagePart.TEXT, text)
                 request.setPart(ChatMessagePart.PREFIX, prefix!!)
 
-                val data = players.get(player.uniqueId).get()
-
-                if (data.chatColor != null) {
-                    val color = data.chatColor!!
-                    request.setPart(ChatMessagePart.START_CHAT_COLOR, color.startColor)
-                    request.setPart(ChatMessagePart.END_CHAT_COLOR, color.endColor)
-                }
+//                val data = players.get(player.uniqueId).get()
+//
+//                if (data.chatColor != null) {
+//                    val color = data.chatColor!!
+//                    request.setPart(ChatMessagePart.START_CHAT_COLOR, color.startColor)
+//                    request.setPart(ChatMessagePart.END_CHAT_COLOR, color.endColor)
+//                }
 
                 redis.publish(request)
             }
             .bindWith(consumer)
 
-        Commands.create()
-            .assertPlayer()
-            .handler {
-                val players = Services.load(PlayerService::class.java)
-                val sender = it.sender()
-                players.get(sender.uniqueId).thenAccept { player -> ChatColorGui(sender, player).open() }
-            }
-            .registerAndBind(consumer, "chatcolor", "cc")
+//        Commands.create()
+//            .assertPlayer()
+//            .handler {
+//                val players = Services.load(PlayerService::class.java)
+//                val sender = it.sender()
+//                players.get(sender.uniqueId).thenAccept { player -> ChatColorGui(sender, player).open() }
+//            }
+//            .registerAndBind(consumer, "chatcolor", "cc")
 
         Commands.create()
             .assertPlayer()

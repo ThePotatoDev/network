@@ -2,7 +2,6 @@ package gg.tater.hub
 
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.server.model.ServerType
-import gg.tater.shared.player.PlayerService
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder

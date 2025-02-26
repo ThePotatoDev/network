@@ -5,7 +5,6 @@ import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.getFormattedDate
 import gg.tater.shared.island.IslandService
-import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.economy.model.EconomyType
 import gg.tater.shared.player.economy.model.PlayerEconomyService
 import gg.tater.shared.scoreboard.ScoreboardEntry

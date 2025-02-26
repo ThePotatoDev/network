@@ -1,9 +1,9 @@
 package gg.tater.oneblock
 
 import gg.tater.oneblock.island.controllers.OneBlockIslandController
-import gg.tater.oneblock.island.controllers.OneBlockIslandServiceController
+import gg.tater.oneblock.island.controllers.OneBlockIslandService
 import gg.tater.oneblock.planet.PlanetController
-import gg.tater.oneblock.player.OneBlockPlayerServiceController
+import gg.tater.oneblock.player.OneBlockPlayerService
 import gg.tater.oneblock.spawn.OneBlockSpawnController
 import gg.tater.shared.player.auction.AuctionHouseController
 import gg.tater.shared.plugin.GameServerPlugin
@@ -17,8 +17,8 @@ class OneBlockCorePlugin : GameServerPlugin() {
     override fun enable() {
         val serverType = Services.load(ServerDataService::class.java).serverType()
 
-        useController(null, OneBlockIslandServiceController::class)
-        useController(null, OneBlockPlayerServiceController::class)
+        useController(null, OneBlockIslandService::class)
+        useController(null, OneBlockPlayerService::class)
 
         // Bind non-data related controllers if on a OneBlock server
         if (ONEBLOCK_GAMEMODE_SERVERS.contains(serverType)) {

@@ -1,11 +1,11 @@
 package gg.tater.oneblock.island.controllers
 
 import gg.tater.oneblock.island.OneBlockIsland
+import gg.tater.oneblock.player.OneBlockPlayerService
+import gg.tater.oneblock.player.model.OneBlockPlayer
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
-import gg.tater.shared.player.PlayerDataModel
-import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.redis.transactional
@@ -23,7 +23,7 @@ import java.util.*
 @Controller(
     id = "oneblock-service-controller"
 )
-class OneBlockIslandServiceController : IslandService<OneBlockIsland>(GameModeType.ONEBLOCK) {
+class OneBlockIslandService : IslandService<OneBlockIsland, OneBlockPlayer>(GameModeType.ONEBLOCK) {
 
     private companion object {
         val ISLAND_MAP_NAME = "${GameModeType.ONEBLOCK.id}_islands"
@@ -37,7 +37,7 @@ class OneBlockIslandServiceController : IslandService<OneBlockIsland>(GameModeTy
             .readAllValuesAsync()
     }
 
-    override fun getIslandFor(player: PlayerDataModel): RFuture<OneBlockIsland?>? {
+    override fun getIslandFor(player: OneBlockPlayer): RFuture<OneBlockIsland?>? {
         if (player.islandId == null) return null
         return redis.client.getMap<UUID, OneBlockIsland>(ISLAND_MAP_NAME)
             .getAsync(player.islandId)
@@ -63,12 +63,12 @@ class OneBlockIslandServiceController : IslandService<OneBlockIsland>(GameModeTy
             .putAsync(uuid, uuid)
     }
 
-    override fun createFor(player: PlayerDataModel, server: ServerDataModel) {
+    override fun createFor(player: OneBlockPlayer, server: ServerDataModel) {
         val newIsland = OneBlockIsland(UUID.randomUUID(), player.uuid, player.name)
         newIsland.currentServerId = server.id
         save(newIsland)
 
-        val players = Services.load(PlayerService::class.java)
+        val players = Services.load(OneBlockPlayerService::class.java)
         player.islandId = newIsland.id
         player.setDefaultSpawn(ServerType.ONEBLOCK_SERVER)
 
@@ -126,6 +126,6 @@ class OneBlockIslandServiceController : IslandService<OneBlockIsland>(GameModeTy
     }
 
     override fun setup(consumer: TerminableConsumer) {
-        Services.provide(OneBlockIslandServiceController::class.java, this)
+        Services.provide(OneBlockIslandService::class.java, this)
     }
 }

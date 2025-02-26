@@ -12,7 +12,6 @@ import gg.tater.shared.island.message.listener.IslandDeleteRequestListener
 import gg.tater.shared.island.message.listener.IslandPlacementRequestListener
 import gg.tater.shared.island.message.listener.IslandUpdateRequestListener
 import gg.tater.shared.island.setting.IslandSettingController
-import gg.tater.shared.player.PlayerService
 import gg.tater.shared.server.ServerDataService
 import me.lucko.helper.Commands
 import me.lucko.helper.Services

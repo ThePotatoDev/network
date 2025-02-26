@@ -1,7 +1,6 @@
 package gg.tater.shared.player.pm
 
 import gg.tater.shared.annotation.Controller
-import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.pm.listener.PlayerPrivateMessageRequestListener
 import gg.tater.shared.player.pm.listener.PlayerPrivateMessageResponseListener
 import gg.tater.shared.player.pm.model.PlayerPrivateMessageRequest
@@ -46,8 +45,6 @@ class PlayerPrivateMessageController : PrivateMessageService {
                     return@handler
                 }
 
-                val players = Services.load(PlayerService::class.java)
-
                 val sender = it.sender()
                 val target = it.arg(0).parseOrFail(String::class.java)
                 val message = it.args().drop(1).joinToString(" ")
@@ -55,17 +52,6 @@ class PlayerPrivateMessageController : PrivateMessageService {
                 perms.userManager.lookupUniqueId(target).thenAcceptAsync { targetId ->
                     if (targetId == null) {
                         it.reply("&cThat player does not exist.")
-                        return@thenAcceptAsync
-                    }
-
-                    val data = players.get(targetId).get()
-                    if (data == null) {
-                        it.reply("&cCould not find player data.")
-                        return@thenAcceptAsync
-                    }
-
-                    if (!data.online) {
-                        it.reply("&cThat player is not online.")
                         return@thenAcceptAsync
                     }
 
@@ -84,22 +70,10 @@ class PlayerPrivateMessageController : PrivateMessageService {
 
                 val sender = it.sender()
                 val message = it.args().joinToString(" ")
-                val players = Services.load(PlayerService::class.java)
 
                 get(sender.uniqueId).thenAcceptAsync { targetId ->
                     if (targetId == null) {
                         it.reply("&cYou have no one to reply to.")
-                        return@thenAcceptAsync
-                    }
-
-                    val data = players.get(targetId).get()
-                    if (data == null) {
-                        it.reply("&cCould not find player data.")
-                        return@thenAcceptAsync
-                    }
-
-                    if (!data.online) {
-                        it.reply("&cThat player is not online.")
                         return@thenAcceptAsync
                     }
 

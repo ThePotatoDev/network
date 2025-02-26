@@ -4,7 +4,6 @@ import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.command.IslandSubCommand
 import gg.tater.shared.island.flag.IslandFlagGui
-import gg.tater.shared.player.PlayerService
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext

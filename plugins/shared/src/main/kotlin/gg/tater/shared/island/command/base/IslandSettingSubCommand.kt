@@ -4,7 +4,6 @@ import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.command.IslandSubCommand
 import gg.tater.shared.island.setting.IslandSettingGui
-import gg.tater.shared.player.PlayerService
 import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
 import org.bukkit.entity.Player

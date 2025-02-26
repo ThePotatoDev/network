@@ -2,7 +2,6 @@ package gg.tater.oneblock.spawn
 
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.player.PlayerRedirectRequest
-import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.server.ServerDataService

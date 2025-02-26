@@ -8,7 +8,7 @@ import me.lucko.helper.terminable.TerminableConsumer
 import org.redisson.api.RFuture
 import java.util.*
 
-class OneBlockPlayerServiceController : IslandPlayerService<OneBlockPlayer> {
+class OneBlockPlayerService : IslandPlayerService<OneBlockPlayer> {
 
     private companion object {
         const val PLAYER_MAP_NAME = "oneblock_players"
@@ -33,6 +33,6 @@ class OneBlockPlayerServiceController : IslandPlayerService<OneBlockPlayer> {
     }
 
     override fun setup(consumer: TerminableConsumer) {
-        Services.provide(OneBlockPlayerServiceController::class.java, this)
+        Services.provide(OneBlockPlayerService::class.java, this)
     }
 }

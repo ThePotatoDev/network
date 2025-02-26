@@ -4,7 +4,7 @@ import com.google.gson.*
 import java.lang.reflect.Type
 import java.util.*
 
-open class IslandPlayer(val uuid: UUID, val name: String, val islandId: UUID?) {
+open class IslandPlayer(val uuid: UUID, val name: String, var islandId: UUID?) {
 
     private companion object {
         const val UUID_FIELD = "uuid"

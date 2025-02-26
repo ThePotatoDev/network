@@ -1,6 +1,7 @@
 package gg.tater.core
 
 import gg.tater.shared.network.Agones
+import gg.tater.shared.player.BasePlayerController
 import gg.tater.shared.player.pm.PlayerPrivateMessageController
 import gg.tater.shared.plugin.GameServerPlugin
 import gg.tater.shared.redis.Redis
@@ -45,6 +46,7 @@ class CorePlugin : GameServerPlugin(), ServerDataService {
             )
         )
 
+        useController(null, BasePlayerController::class)
         useController(null, PlayerPrivateMessageController::class)
         useController(null, ServerStatusController::class)
     }
