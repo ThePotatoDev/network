@@ -3,10 +3,16 @@ package gg.tater.oneblock.island
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter
 import gg.tater.shared.island.Island
+import gg.tater.shared.position.WrappedPosition
 import java.lang.reflect.Type
 import java.util.*
 
-class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String, var level: Int = 1) : Island(id, ownerId, ownerName) {
+class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String, var level: Int = 1) : Island(
+    id,
+    ownerId,
+    ownerName,
+    spawn = WrappedPosition(0.0, 80.0, 0.0, 0F, 0F)
+) {
 
     private companion object {
         const val LEVEL_FIELD = "island_level"
