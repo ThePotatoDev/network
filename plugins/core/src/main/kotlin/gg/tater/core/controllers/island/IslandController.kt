@@ -23,8 +23,10 @@ import gg.tater.shared.island.setting.IslandSettingController
 import gg.tater.shared.network.server.ServerDataModel
 import gg.tater.shared.network.server.ServerDataService
 import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.network.server.toServerType
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.PlayerService
+import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.redis.transactional
 import me.lucko.helper.Commands
@@ -44,8 +46,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
 @Controller(
-    id = "island-controller",
-    ignoredBinds = [ServerType.HUB]
+    id = "island-controller"
 )
 class IslandController : IslandService {
 
@@ -63,6 +64,9 @@ class IslandController : IslandService {
     }
 
     private val redis = Services.load(Redis::class.java)
+    private val serverType = Services.load(ServerDataService::class.java)
+        .id()
+        .toServerType()
 
     private val commands: MutableMap<String, IslandSubCommand> = mutableMapOf()
 
@@ -82,6 +86,11 @@ class IslandController : IslandService {
     private lateinit var api: AdvancedSlimePaperAPI
 
     override fun setup(consumer: TerminableConsumer) {
+        Services.provide(IslandService::class.java, this)
+
+        // If server type is hub, just provide the service
+        if (serverType == ServerType.HUB) return
+
         val credential = Services.load(Redis.Credential::class.java)
 
         consumer.bindModule(IslandSettingController())
@@ -165,8 +174,6 @@ class IslandController : IslandService {
                 command.handle(it)
             }
             .registerAndBind(consumer, "is", "island")
-
-        Services.provide(IslandService::class.java, this)
     }
 
     override fun getIsland(world: World): Island? {
@@ -204,6 +211,30 @@ class IslandController : IslandService {
     override fun addInvite(uuid: UUID, island: Island): RFuture<Boolean> {
         return redis.client.getListMultimapCache<UUID, UUID>(ISLAND_INVITES_MAP_NAME)
             .putAsync(uuid, uuid)
+    }
+
+    override fun createFor(player: PlayerDataModel, server: ServerDataModel) {
+        val newIsland = Island(UUID.randomUUID(), player.uuid, player.name)
+        newIsland.currentServerId = server.id
+        save(newIsland)
+
+        val players = Services.load(PlayerService::class.java)
+        player.islandId = newIsland.id
+        player.setDefaultSpawn(ServerType.SERVER)
+
+        players.transaction(
+            player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME),
+            onSuccess = {
+                redis.publish(
+                    IslandPlacementRequest(
+                        server.id,
+                        player.uuid,
+                        newIsland.id,
+                        player.name,
+                        true
+                    )
+                )
+            })
     }
 
     override fun directToOccupiedServer(sender: Player, island: Island): Boolean {

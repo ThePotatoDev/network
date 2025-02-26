@@ -9,7 +9,6 @@ import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.player.position.WrappedPosition
 import me.lucko.helper.serialize.Serializers
 import org.bukkit.GameMode
-import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.lang.reflect.Type

@@ -72,7 +72,7 @@ class BasePlayerController :
                 val uuid = it.uniqueId
                 val name = it.name
 
-                val player = get(uuid).get()
+                val player = compute(name, uuid).get()
                 player.currentServerId = server
                 player.online = true
                 player.name = name
@@ -80,17 +80,6 @@ class BasePlayerController :
                 save(player)
             }
             .bindWith(consumer)
-
-        Commands.create()
-            .assertPlayer()
-            .assertPermission("server.createdata")
-            .handler {
-                val sender = it.sender()
-
-                compute(sender.name, sender.uniqueId)
-                it.reply("Computed data")
-            }
-            .registerAndBind(consumer, "createdata")
 
         Commands.create()
             .assertPlayer()

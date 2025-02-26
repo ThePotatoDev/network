@@ -4,20 +4,26 @@ import gg.tater.shared.annotation.Controller
 import gg.tater.shared.network.server.ServerType
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
+import me.lucko.helper.event.filter.EventFilters
+import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.entity.EntityType
+import org.bukkit.event.EventPriority
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.weather.WeatherChangeEvent
+import org.bukkit.inventory.ItemStack
 
 @Controller(
     id = "hub-controller",
@@ -41,9 +47,26 @@ class HubController : TerminableModule {
                 it.pitch
             )
         }
+
+        val SERVER_ITEM_BUILDER: ItemStack = ItemStackBuilder.of(Material.CLOCK)
+            .name("&aServer Menu &7(Right-Click)")
+            .lore("&7&oRight-Click to join a server!")
+            .build()
     }
 
     override fun setup(consumer: TerminableConsumer) {
+        Events.subscribe(PlayerInteractEvent::class.java, EventPriority.HIGHEST)
+            .filter(EventFilters.ignoreCancelled())
+            .handler {
+                val action = it.action
+                if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return@handler
+                val hand = it.hand ?: return@handler
+                val stack = it.player.inventory.getItem(hand)
+                if (stack != SERVER_ITEM_BUILDER) return@handler
+                HubServerGui(it.player).open()
+            }
+            .bindWith(consumer)
+
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
                 val player = it.player
@@ -55,6 +78,8 @@ class HubController : TerminableModule {
                     player.health = 20.0
                     player.foodLevel = 20
                     player.gameMode = GameMode.ADVENTURE
+
+                    player.inventory.setItem(4, SERVER_ITEM_BUILDER)
                 }, 2L)
             }
             .bindWith(consumer)
