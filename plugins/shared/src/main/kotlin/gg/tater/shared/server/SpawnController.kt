@@ -1,11 +1,11 @@
-package gg.tater.core.controllers.server
+package gg.tater.shared.server
 
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.player.PlayerRedirectRequest
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
-import gg.tater.shared.server.ServerDataService
+import gg.tater.shared.server.model.GameModeType
 import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Commands
 import me.lucko.helper.Events
@@ -32,7 +32,7 @@ import org.bukkit.event.weather.WeatherChangeEvent
     id = "spawn-controller",
     ignoredBinds = [ServerType.HUB]
 )
-class SpawnController : TerminableModule {
+class SpawnController(mode: GameModeType) : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {
         val redis = Services.load(Redis::class.java)

@@ -1,4 +1,4 @@
-package gg.tater.core.controllers.server.hub
+package gg.tater.hub
 
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.server.model.ServerType
