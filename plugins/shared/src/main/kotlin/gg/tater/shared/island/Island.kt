@@ -4,7 +4,7 @@ import com.google.gson.*
 import gg.tater.shared.Json
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.setting.model.IslandSettingType
-import gg.tater.shared.player.position.WrappedPosition
+import gg.tater.shared.position.WrappedPosition
 import java.lang.reflect.Type
 import java.time.Instant
 import java.util.*

@@ -1,4 +1,4 @@
-package gg.tater.shared.player.position
+package gg.tater.shared.position
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter

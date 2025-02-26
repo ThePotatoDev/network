@@ -4,7 +4,7 @@ import com.google.gson.*
 import gg.tater.shared.Json
 import gg.tater.shared.JsonAdapter
 import gg.tater.shared.annotation.Mapping
-import gg.tater.shared.player.position.WrappedPosition
+import gg.tater.shared.position.WrappedPosition
 import java.lang.reflect.Type
 import java.util.*
 

@@ -1,6 +1,6 @@
 package gg.tater.shared.server.model
 
-import gg.tater.shared.player.position.WrappedPosition
+import gg.tater.shared.position.WrappedPosition
 
 enum class ServerType(val spawn: WrappedPosition? = null) {
 

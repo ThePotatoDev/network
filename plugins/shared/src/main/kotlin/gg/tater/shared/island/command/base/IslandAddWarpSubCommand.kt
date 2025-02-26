@@ -3,7 +3,7 @@ package gg.tater.shared.island.command.base
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.command.IslandSubCommand
-import gg.tater.shared.player.position.WrappedPosition
+import gg.tater.shared.position.WrappedPosition
 import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
 import org.bukkit.entity.Player
