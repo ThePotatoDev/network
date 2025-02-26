@@ -21,8 +21,8 @@ class CorePlugin : ExtendedJavaPlugin(), ServerDataService {
 
     override fun enable() {
         Services.provide(CorePlugin::class.java, this)
-        val client = Services.provide(OkHttpClient::class.java, OkHttpClient())
-        val actions = Services.provide(Agones::class.java, Agones(client))
+        val actions =
+            Services.provide(Agones::class.java, Agones(Services.provide(OkHttpClient::class.java, OkHttpClient())))
 
         val server = actions.getGameServerId()
         if (server == null) {
@@ -35,15 +35,19 @@ class CorePlugin : ExtendedJavaPlugin(), ServerDataService {
         Services.provide(ServerDataService::class.java, this)
 
         val env = Dotenv.load()
-        val credential = Redis.Credential(
-            env.get("REDIS_USERNAME"),
-            env.get("REDIS_PASSWORD"),
-            env.get("REDIS_ADDRESS"),
-            env.get("REDIS_PORT").toInt()
-        )
 
-        Services.provide(Redis.Credential::class.java, credential)
-        val redis = Services.provide(Redis::class.java, Redis(credential))
+        Services.provide(
+            Redis::class.java, Redis(
+                Services.provide(
+                    Redis.Credential::class.java, Redis.Credential(
+                        env.get("REDIS_USERNAME"),
+                        env.get("REDIS_PASSWORD"),
+                        env.get("REDIS_ADDRESS"),
+                        env.get("REDIS_PORT").toInt()
+                    )
+                )
+            )
+        )
 
         for (clazz in findAnnotatedClasses(Controller::class)) {
             val meta = clazz.findAnnotation<Controller>() ?: continue
@@ -58,10 +62,6 @@ class CorePlugin : ExtendedJavaPlugin(), ServerDataService {
             bindModule(clazz.primaryConstructor?.call() as TerminableModule)
             logger.info("Bound controller as module: ${clazz.simpleName}")
         }
-
-        bind(AutoCloseable {
-            redis.servers().remove(server)
-        })
     }
 
     override fun id(): String {

@@ -1,0 +1,86 @@
+npcs:
+  41e8ebc3-df19-42b2-9f6d-634d07924d66:
+    name: AuctionHouse
+    creator: 1cefe447-9e20-4765-842f-56eca509015a
+    displayName: <empty>
+    type: PLAYER
+    location:
+      world: world
+      x: 8.437412348047133
+      y: 64.0
+      z: 0.5019208421054046
+      yaw: 89.09332
+      pitch: 2.9500837
+    showInTab: false
+    spawnEntity: true
+    collidable: true
+    glowing: false
+    glowingColor: white
+    turnToPlayer: false
+    interactionCooldown: 0.0
+    scale: 1.0
+    skin:
+      mirrorSkin: false
+    actions:
+      RIGHT_CLICK:
+        '1':
+          action: player_command
+          value: ah
+      ANY_CLICK:
+        '1':
+          action: player_command
+          value: ah
+  4fd187df-d0ba-4434-aad2-9b4f6d742f8f:
+    name: Vaults
+    creator: 1cefe447-9e20-4765-842f-56eca509015a
+    displayName: <empty>
+    type: PLAYER
+    location:
+      world: world
+      x: 7.561288718302462
+      y: 64.0
+      z: -5.495847493080246
+      yaw: 44.84874
+      pitch: -0.6500122
+    showInTab: false
+    spawnEntity: true
+    collidable: true
+    glowing: false
+    glowingColor: white
+    turnToPlayer: false
+    interactionCooldown: 0.0
+    scale: 1.0
+    skin:
+      mirrorSkin: false
+    actions:
+      RIGHT_CLICK:
+        '1':
+          action: player_command
+          value: pv
+  3675c02c-14ac-4558-93cf-dd6059d86a50:
+    name: PlayerShops
+    creator: 1cefe447-9e20-4765-842f-56eca509015a
+    displayName: <empty>
+    type: PLAYER
+    location:
+      world: world
+      x: 7.530219252091992
+      y: 64.0
+      z: 5.468382811104152
+      yaw: 131.55022
+      pitch: 3.2499962
+    showInTab: false
+    spawnEntity: true
+    collidable: true
+    glowing: false
+    glowingColor: white
+    turnToPlayer: false
+    interactionCooldown: 0.0
+    scale: 1.0
+    skin:
+      mirrorSkin: false
+    actions:
+      RIGHT_CLICK:
+        '1':
+          action: player_command
+          value: pshops

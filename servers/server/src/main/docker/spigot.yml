@@ -40,7 +40,7 @@ messages:
   outdated-server: Outdated server! I'm still on {0}
   restart: Server is restarting
 advancements:
-  disable-saving: false
+  disable-saving: true
   disabled:
   - minecraft:story/disabled
 commands:
@@ -171,8 +171,8 @@ world-settings:
     zombie-aggressive-towards-villager: true
     enable-zombie-pigmen-portal-spawns: true
 players:
-  disable-saving: false
+  disable-saving: true
 config-version: 12
 stats:
-  disable-saving: false
+  disable-saving: true
   forced-stats: {}

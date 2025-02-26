@@ -15,5 +15,5 @@ include("servers:server")
 include("servers:spawn")
 include("servers:proxy")
 include("servers")
-include("servers:duel")
-findProject(":servers:duel")?.name = "duel"
+include("servers:hub")
+findProject(":servers:hub")?.name = "hub"

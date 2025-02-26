@@ -6,6 +6,7 @@ enum class ServerType(val spawn: WrappedPosition? = null) {
 
     SERVER(WrappedPosition(0.0, 101.0, 0.0, 45F, -1.7F)),
     SPAWN(WrappedPosition(0.574, 64.0, 0.353, 179.1F, -0.8F)),
+    HUB(),
     PVP(),
     PLANET(),
     DUEL

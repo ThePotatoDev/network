@@ -1,0 +1,54 @@
+apiVersion: agones.dev/v1
+kind: Fleet
+metadata:
+  name: proxy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: proxy
+    spec:
+      health:
+        disabled: false
+        initialDelaySeconds: 30
+        periodSeconds: 60
+      sdkServer:
+        logLevel: Info
+        grpcPort: 9357
+        httpPort: 9358
+      ports:
+        - name: default
+          protocol: TCP
+          containerPort: 25565
+      template:
+        metadata:
+          labels:
+            app: proxy
+        spec:
+          nodeSelector:
+            regular-server: "true"  # Ensures the fleet spawns only on labeled nodes
+          containers:
+            - name: proxy
+              image: ghcr.io/thepotatodev/proxy:latest
+              imagePullPolicy: Always
+              resources:
+                requests:
+                  cpu: "500m"
+                  memory: "512Mi"
+                limits:
+                  cpu: "500m"
+          imagePullSecrets:
+            - name: drs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy-load-balancer
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 25565
+      targetPort: 25565
+  selector:
+    app: proxy

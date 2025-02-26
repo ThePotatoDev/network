@@ -1,0 +1,2 @@
+feature-flags:
+  disable-holograms-for-bedrock-players: false # Do not show holograms to bedrock players

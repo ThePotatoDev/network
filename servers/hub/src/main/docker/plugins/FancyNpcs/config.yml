@@ -1,0 +1,17 @@
+language: default # Language to use for translatable messages.
+skip_invisible_npcs: true # Whether invisible NPCs should not be sent to the player.
+disable_interaction_cooldown_message: false # Whether interaction cooldown messages are disabled.
+mute_version_notification: false # Whether version notifications are muted.
+enable_autosave: true # Whether autosave is enabled.
+autosave_interval: 15 # The interval at which autosave is performed in minutes.
+npc_update_interval: 30
+register_commands: true # Whether the plugin should register its commands.
+turn_to_player_distance: 5 # The distance at which NPCs turn to the player.
+visibility_distance: 20 # The distance at which NPCs are visible.
+remove_npcs_from_playerlist_delay: 2000 # The delay in ticks to remove NPCs from the player list. Increase this value if you have problems with skins not loading correctly when joining or switching worlds. You can set it to -1, if you don't have any npcs using the show_in_tab feature.
+blocked_commands: # The commands that are blocked for NPCs in the message.
+  - op
+  - ban
+max-npcs: # The maximum number of NPCs per permission. (for the 'player-npcs' feature flag only)
+  - fancynpcs.max-npcs.5: 5
+  - fancynpcs.max-npcs.10: 10

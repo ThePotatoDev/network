@@ -1,0 +1,2 @@
+feature-flags:
+  player-npcs: false # Every player can only manage the npcs they have created

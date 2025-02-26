@@ -242,6 +242,16 @@ class Redis(credential: Credential) {
     fun servers(): RMap<String, ServerDataModel> {
         return client.getMap(SERVER_MAP_NAME)
     }
+
+    /**
+     * Deletes a server entry from the server map.
+     *
+     * @return The map containing server data models.
+     */
+    fun deleteServer(id: String): RFuture<ServerDataModel> {
+        return client.getMap<String, ServerDataModel>(SERVER_MAP_NAME)
+            .removeAsync(id)
+    }
 }
 
 /**
@@ -249,7 +259,6 @@ class Redis(credential: Credential) {
  * This will wait for the operation to complete before continuing.
  * Must be invoked in an async context.
  *
- * @param client The Redisson client used to create the transaction.
  * @param operation The operation to perform within the transaction.
  * @param onSuccess Callback to execute if the transaction is committed successfully.
  * @param onFailure Callback to execute if the transaction fails and is rolled back.

@@ -6,9 +6,11 @@ import com.velocitypowered.api.event.connection.LoginEvent
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
 import com.velocitypowered.api.event.player.PlayerResourcePackStatusEvent
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
+import com.velocitypowered.api.proxy.server.PingOptions
 import com.velocitypowered.api.proxy.server.ServerInfo
 import gg.tater.proxy.listener.IslandPlacementListener
 import gg.tater.proxy.listener.PlayerRedirectListener
@@ -165,7 +167,7 @@ class ProxyPlugin @Inject constructor(
 
                     proxy.unregisterServer(info)
                     removals.add(name)
-                    redis.servers().removeAsync(name)
+                    redis.deleteServer(name)
 
                     logger.info("Unregistered $name")
                 }
