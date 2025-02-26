@@ -1,12 +1,12 @@
 package gg.tater.oneblock.island.controllers
 
 import gg.tater.oneblock.island.OneBlockIsland
+import gg.tater.oneblock.player.OneBlockPlayer
 import gg.tater.oneblock.player.OneBlockPlayerService
-import gg.tater.oneblock.player.model.OneBlockPlayer
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
-import gg.tater.shared.player.position.PlayerPositionResolver
+import gg.tater.shared.position.WrappedPosition
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.redis.transactional
 import gg.tater.shared.server.model.GameModeType
@@ -70,10 +70,9 @@ class OneBlockIslandService : IslandService<OneBlockIsland, OneBlockPlayer>(Game
 
         val players = Services.load(OneBlockPlayerService::class.java)
         player.islandId = newIsland.id
-        player.setDefaultSpawn(ServerType.ONEBLOCK_SERVER)
 
         players.transaction(
-            player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME),
+            player.setNextServerSpawnPos(ServerType.ONEBLOCK_SERVER, newIsland.spawn),
             onSuccess = {
                 redis.publish(
                     IslandPlacementRequest(

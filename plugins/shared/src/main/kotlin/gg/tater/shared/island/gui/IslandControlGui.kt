@@ -104,7 +104,7 @@ class IslandControlGui<T : Island>(
                     " "
                 )
                 .build {
-                    IslandWarpGui(player, island, redis, server).open()
+                    IslandWarpGui(player, island).open()
                 })
 
         setItem(

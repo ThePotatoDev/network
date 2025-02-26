@@ -3,7 +3,6 @@ package gg.tater.shared.island
 import gg.tater.shared.annotation.InvocationContext
 import gg.tater.shared.annotation.InvocationContextType
 import gg.tater.shared.island.player.IslandPlayer
-import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.server.model.GameModeType
 import gg.tater.shared.server.model.ServerDataModel
 import me.lucko.helper.terminable.module.TerminableModule
@@ -12,7 +11,7 @@ import org.redisson.api.RFuture
 import org.redisson.api.RMap
 import java.util.*
 
-abstract class IslandService<T : Island, K: IslandPlayer>(val mode: GameModeType) : TerminableModule {
+abstract class IslandService<T : Island, K : IslandPlayer>(val mode: GameModeType) : TerminableModule {
 
     abstract fun getIslandFor(player: K): RFuture<T?>?
 

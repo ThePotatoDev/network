@@ -2,12 +2,11 @@ package gg.tater.shared.player.vault
 
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.annotation.Controller
-import gg.tater.shared.server.model.GameModeType
-import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.player.vault.gui.VaultGuiItem
 import gg.tater.shared.player.vault.gui.VaultItemGui
 import gg.tater.shared.player.vault.gui.VaultSelectionGui
 import gg.tater.shared.redis.Redis
+import gg.tater.shared.server.model.GameModeType
 import me.lucko.helper.Commands
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
@@ -22,8 +21,7 @@ import org.redisson.api.RFuture
 import java.util.*
 
 @Controller(
-    id = "player-vault-controller",
-    ignoredBinds = [ServerType.HUB]
+    id = "player-vault-controller"
 )
 class VaultController(mode: GameModeType) : VaultService {
 

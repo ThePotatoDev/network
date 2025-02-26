@@ -5,6 +5,7 @@ import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.flag.model.FlagType
+import gg.tater.shared.island.player.IslandPlayer
 import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Item
@@ -21,14 +22,15 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta
 import java.util.*
 
-class IslandMemberGui<T: Island>(
+class IslandMemberGui<T : Island, K : IslandPlayer>(
     player: Player,
     private val island: T,
-    private val offline: Map<UUID, Pair<String, String>>
+    private val offline: Map<UUID, Pair<String, String>>,
+    private val islands: IslandService<T, K> = Services.load(IslandService::class.java) as IslandService<T, K>
 ) :
     PaginatedGui(
         {
-            getItems(it, island, offline)
+            getItems(it, island, offline, islands)
         },
         player, BUILDER
     ) {
@@ -89,11 +91,11 @@ class IslandMemberGui<T: Island>(
             return lore
         }
 
-        private fun <T: Island> getItems(
+        private fun <T : Island, K : IslandPlayer> getItems(
             gui: PaginatedGui,
             island: T,
             offline: Map<UUID, Pair<String, String>>,
-            islands: IslandService<T> = Services.load(IslandService::class.java) as IslandService<T>
+            islands: IslandService<T, K> = Services.load(IslandService::class.java) as IslandService<T, K>
         ): List<Item> {
             val player = gui.player
 
@@ -135,7 +137,7 @@ class IslandMemberGui<T: Island>(
                             island.setRoleFor(member.key, currentRole.next())
 
                             islands.transaction({ map -> map[island.id] = island }, onSuccess = {
-                                gui.updateContent(getItems(gui, island, offline))
+                                gui.updateContent(getItems(gui, island, offline, islands))
                                 gui.redraw()
                             })
                         }

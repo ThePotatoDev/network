@@ -3,8 +3,10 @@ package gg.tater.shared.island.command.base
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.command.IslandSubCommand
+import gg.tater.shared.island.player.IslandPlayer
+import gg.tater.shared.island.player.IslandPlayerService
+import gg.tater.shared.island.player.position.PositionDirector
 import gg.tater.shared.island.setting.model.IslandSettingType
-import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.server.ServerDataService
 import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Services
@@ -14,16 +16,16 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-class IslandVisitSubCommand<T : Island> : IslandSubCommand<T> {
+class IslandVisitSubCommand<T : Island, K : IslandPlayer> : IslandSubCommand<T> {
 
     override fun id(): String {
         return "visit"
     }
 
     override fun handle(context: CommandContext<Player>) {
-        val players: PlayerService = Services.load(PlayerService::class.java)
-        val islands: IslandService<T> =
-            Services.load(IslandService::class.java) as IslandService<T>
+        val players: IslandPlayerService<K> = Services.load(IslandPlayerService::class.java) as IslandPlayerService<K>
+        val islands: IslandService<T, K> =
+            Services.load(IslandService::class.java) as IslandService<T, K>
 
         val server = Services.load(ServerDataService::class.java).id()
 
@@ -86,10 +88,12 @@ class IslandVisitSubCommand<T : Island> : IslandSubCommand<T> {
                 return@thenAcceptAsync
             }
 
-            data.setSpawn(ServerType.SERVER, island.spawn)
-
             players.transaction(
-                data.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_VISIT),
+                data.setNextServerSpawnPos(
+                    ServerType.ONEBLOCK_SERVER,
+                    PositionDirector.TELEPORT_ISLAND_SPAWN,
+                    island.spawn
+                ),
                 onSuccess = {
                     islands.directToOccupiedServer(sender, island)
                 })

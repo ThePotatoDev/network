@@ -1,6 +1,6 @@
 package gg.tater.oneblock.player
 
-import gg.tater.oneblock.player.model.OneBlockPlayer
+import gg.tater.shared.island.player.IslandPlayer
 import gg.tater.shared.island.player.IslandPlayerService
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services
@@ -24,7 +24,7 @@ class OneBlockPlayerService : IslandPlayerService<OneBlockPlayer> {
         TODO("Not yet implemented")
     }
 
-    override fun transaction(data: OneBlockPlayer, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+    override fun transaction(data: IslandPlayer, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         TODO("Not yet implemented")
     }
 

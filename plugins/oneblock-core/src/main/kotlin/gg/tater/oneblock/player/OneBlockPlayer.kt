@@ -1,4 +1,4 @@
-package gg.tater.oneblock.player.model
+package gg.tater.oneblock.player
 
 import com.google.gson.*
 import gg.tater.shared.JsonAdapter

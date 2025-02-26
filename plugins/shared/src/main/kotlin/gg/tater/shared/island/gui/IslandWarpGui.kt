@@ -3,7 +3,9 @@ package gg.tater.shared.island.gui
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
-import gg.tater.shared.player.position.PlayerPositionResolver
+import gg.tater.shared.island.player.IslandPlayer
+import gg.tater.shared.island.player.IslandPlayerService
+import gg.tater.shared.island.player.position.PositionDirector
 import gg.tater.shared.server.ServerDataService
 import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Services
@@ -21,13 +23,15 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-class IslandWarpGui<T : Island>(
+class IslandWarpGui<T : Island, K : IslandPlayer>(
     opener: Player,
-    private val island: T
+    private val island: T,
+    private val players: IslandPlayerService<K> = Services.load(IslandPlayerService::class.java) as IslandPlayerService<K>,
+    private val islands: IslandService<T, K> = Services.load(IslandService::class.java) as IslandService<T, K>
 ) :
     PaginatedGui(
         {
-            getItems(it, opener, island)
+            getItems(it, opener, island, islands, players)
         }, opener,
         BUILDER
     ) {
@@ -68,13 +72,13 @@ class IslandWarpGui<T : Island>(
                     .maskedIndexesImmutable
             )
 
-        private fun <T : Island> getItems(
+        private fun <T : Island, K : IslandPlayer> getItems(
             gui: PaginatedGui,
             opener: Player,
             island: T,
-            server: String = Services.load(ServerDataService::class.java).id(),
-            players: PlayerService = Services.load(PlayerService::class.java),
-            islands: IslandService<T> = Services.load(IslandService::class.java) as IslandService<T>
+            players: IslandPlayerService<K>,
+            islands: IslandService<T, K>,
+            server: String = Services.load(ServerDataService::class.java).id()
         ): List<Item> {
             return island.warps.map {
                 val name = it.key
@@ -111,10 +115,12 @@ class IslandWarpGui<T : Island>(
 
                         val uuid = opener.uniqueId
                         players.get(uuid).thenAcceptAsync { player ->
-                            player.setSpawn(ServerType.SERVER, warp)
-
                             players.transaction(
-                                player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_WARP),
+                                player.setNextServerSpawnPos(
+                                    ServerType.ONEBLOCK_SERVER,
+                                    PositionDirector.TELEPORT_ISLAND_WARP,
+                                    warp
+                                ),
                                 onSuccess = {
                                     islands.directToOccupiedServer(opener, island)
                                 })

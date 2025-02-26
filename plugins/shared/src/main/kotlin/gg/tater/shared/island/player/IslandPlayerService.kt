@@ -12,6 +12,6 @@ interface IslandPlayerService<T : IslandPlayer> : TerminableModule {
 
     fun save(data: T): RFuture<Boolean>
 
-    fun transaction(data: T, onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {})
+    fun transaction(data: IslandPlayer, onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {})
 
 }
