@@ -9,4 +9,10 @@ dependencies {
     implementation("io.github.classgraph:classgraph:4.8.179")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
+    val scoreboardLibraryVersion = "2.2.1"
+    compileOnly("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
+    runtimeOnly("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
+    runtimeOnly("net.megavex:scoreboard-library-modern:$scoreboardLibraryVersion:mojmap")
 }

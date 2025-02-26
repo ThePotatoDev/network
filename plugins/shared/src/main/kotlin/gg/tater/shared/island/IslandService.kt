@@ -2,7 +2,7 @@ package gg.tater.shared.island
 
 import gg.tater.shared.annotation.InvocationContext
 import gg.tater.shared.annotation.InvocationContextType
-import gg.tater.shared.network.server.ServerDataModel
+import gg.tater.shared.server.model.ServerDataModel
 import gg.tater.shared.player.PlayerDataModel
 import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.World

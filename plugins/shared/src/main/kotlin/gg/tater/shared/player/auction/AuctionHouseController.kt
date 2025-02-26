@@ -2,7 +2,7 @@ package gg.tater.shared.player.auction
 
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.DECIMAL_FORMAT
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.player.auction.gui.AuctionHouseGui
 import gg.tater.shared.player.auction.model.AuctionHouseCategory
 import gg.tater.shared.player.auction.model.AuctionHouseItem
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit
 )
 class AuctionHouseController(private val mapName: String) : AuctionHouseService {
 
-    private val expiredAuctionsSetName = "${mapName}_expired_auctions"
+    private val expiredAuctionsMapName = "${mapName}_expired_auctions"
 
     private val redis = Services.load(Redis::class.java)
 
@@ -40,17 +40,17 @@ class AuctionHouseController(private val mapName: String) : AuctionHouseService 
     }
 
     override fun saveExpired(uuid: UUID, item: AuctionHouseItem): RFuture<Boolean> {
-        return redis.client.getListMultimap<UUID, AuctionHouseItem>(mapName)
+        return redis.client.getListMultimap<UUID, AuctionHouseItem>(expiredAuctionsMapName)
             .putAsync(uuid, item)
     }
 
     override fun removeExpired(uuid: UUID, item: AuctionHouseItem): RFuture<Long> {
-        return redis.client.getListMultimap<UUID, AuctionHouseItem>(mapName)
+        return redis.client.getListMultimap<UUID, AuctionHouseItem>(expiredAuctionsMapName)
             .fastRemoveAsync(uuid, item.id)
     }
 
     override fun getExpired(uuid: UUID): RFuture<Collection<AuctionHouseItem>> {
-        return redis.client.getListMultimap<UUID, AuctionHouseItem>(mapName)
+        return redis.client.getListMultimap<UUID, AuctionHouseItem>(expiredAuctionsMapName)
             .getAllAsync(uuid)
     }
 

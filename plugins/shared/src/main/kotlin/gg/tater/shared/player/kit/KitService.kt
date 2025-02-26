@@ -1,5 +1,6 @@
 package gg.tater.shared.player.kit
 
+import gg.tater.shared.player.kit.model.KitPlayerDataModel
 import me.lucko.helper.terminable.module.TerminableModule
 import org.redisson.api.RFuture
 import java.util.*

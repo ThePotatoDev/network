@@ -4,7 +4,7 @@ import com.google.gson.*
 import gg.tater.shared.JsonAdapter
 import gg.tater.shared.annotation.Mapping
 import gg.tater.shared.annotation.Message
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.server.model.ServerType
 import java.lang.reflect.Type
 import java.util.*
 

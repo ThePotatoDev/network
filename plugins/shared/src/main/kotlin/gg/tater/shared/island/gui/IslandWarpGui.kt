@@ -3,8 +3,7 @@ package gg.tater.shared.island.gui
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
-import gg.tater.shared.network.server.ServerType
-import gg.tater.shared.player.PlayerDataModel
+import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
@@ -22,7 +21,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import java.util.*
 
 class IslandWarpGui(
     opener: Player,

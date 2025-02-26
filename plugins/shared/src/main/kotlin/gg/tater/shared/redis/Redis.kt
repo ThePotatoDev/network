@@ -8,10 +8,10 @@ import gg.tater.shared.annotation.InvocationContextType
 import gg.tater.shared.annotation.Mapping
 import gg.tater.shared.annotation.Message
 import gg.tater.shared.findAnnotatedClasses
-import gg.tater.shared.network.proxy.ProxyDataModel
-import gg.tater.shared.network.server.ServerDataModel
-import gg.tater.shared.network.server.ServerState
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.proxy.ProxyDataModel
+import gg.tater.shared.server.model.ServerDataModel
+import gg.tater.shared.server.model.ServerState
+import gg.tater.shared.server.model.ServerType
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import me.lucko.helper.Services

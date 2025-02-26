@@ -1,6 +1,6 @@
 package gg.tater.shared.annotation
 
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.server.model.ServerType
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)

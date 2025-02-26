@@ -17,3 +17,5 @@ include("servers:proxy")
 include("servers")
 include("servers:hub")
 findProject(":servers:hub")?.name = "hub"
+include("plugins:hub")
+findProject(":plugins:hub")?.name = "hub"

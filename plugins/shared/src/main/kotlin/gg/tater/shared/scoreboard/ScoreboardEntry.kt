@@ -1,6 +1,6 @@
 package gg.tater.shared.scoreboard
 
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.entity.Player
 

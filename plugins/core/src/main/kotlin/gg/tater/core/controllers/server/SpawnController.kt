@@ -1,13 +1,12 @@
 package gg.tater.core.controllers.server
 
 import gg.tater.shared.annotation.Controller
-import gg.tater.shared.network.server.ServerDataService
-import gg.tater.shared.network.server.ServerType
 import gg.tater.shared.player.PlayerRedirectRequest
 import gg.tater.shared.player.PlayerService
-import gg.tater.shared.player.combat.CombatService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
+import gg.tater.shared.server.ServerDataService
+import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Commands
 import me.lucko.helper.Events
 import me.lucko.helper.Services
@@ -36,7 +35,6 @@ import org.bukkit.event.weather.WeatherChangeEvent
 class SpawnController : TerminableModule {
 
     override fun setup(consumer: TerminableConsumer) {
-        val combat = Services.load(CombatService::class.java)
         val redis = Services.load(Redis::class.java)
         val id = Services.load(ServerDataService::class.java).id()
 
@@ -50,11 +48,6 @@ class SpawnController : TerminableModule {
             .handler {
                 val sender = it.sender()
                 val players: PlayerService = Services.load(PlayerService::class.java)
-
-                if (combat.isInCombat(sender.uniqueId)) {
-                    it.reply("&cYou cannot go to spawn while in combat!")
-                    return@handler
-                }
 
                 players.get(sender.uniqueId).thenAcceptAsync { player ->
                     if (player == null) {

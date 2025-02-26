@@ -6,9 +6,6 @@ import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI
 import com.infernalsuite.aswm.api.world.properties.SlimeProperties
 import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap
 import com.infernalsuite.aswm.loaders.redis.RedisLoader
-import gg.tater.core.controllers.island.listener.IslandDeleteRequestListener
-import gg.tater.core.controllers.island.listener.IslandPlacementRequestListener
-import gg.tater.core.controllers.island.listener.IslandUpdateRequestListener
 import gg.tater.core.controllers.island.subcommand.*
 import gg.tater.shared.UUID_REGEX
 import gg.tater.shared.annotation.Controller
@@ -18,17 +15,20 @@ import gg.tater.shared.island.IslandService.Companion.ISLAND_INVITES_MAP_NAME
 import gg.tater.shared.island.IslandService.Companion.ISLAND_MAP_NAME
 import gg.tater.shared.island.flag.IslandFlagController
 import gg.tater.shared.island.gui.IslandControlGui
+import gg.tater.shared.island.message.listener.IslandDeleteRequestListener
+import gg.tater.shared.island.message.listener.IslandPlacementRequestListener
+import gg.tater.shared.island.message.listener.IslandUpdateRequestListener
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.island.setting.IslandSettingController
-import gg.tater.shared.network.server.ServerDataModel
-import gg.tater.shared.network.server.ServerDataService
-import gg.tater.shared.network.server.ServerType
-import gg.tater.shared.network.server.toServerType
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.redis.transactional
+import gg.tater.shared.server.ServerDataService
+import gg.tater.shared.server.model.ServerDataModel
+import gg.tater.shared.server.model.ServerType
+import gg.tater.shared.server.model.toServerType
 import me.lucko.helper.Commands
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
@@ -119,7 +119,7 @@ class IslandController : IslandService {
             RedisLoader("redis://:${credential.password}@${credential.address}:${credential.port}")
         val template = api.readWorld(loader, "island_world_template", false, PROPERTIES)
 
-        consumer.bindModule(IslandPlacementRequestListener(api, loader, template))
+        consumer.bindModule(IslandPlacementRequestListener(api, loader, template, PROPERTIES))
         consumer.bindModule(IslandUpdateRequestListener(cache))
         consumer.bindModule(IslandDeleteRequestListener(cache))
 

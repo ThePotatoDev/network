@@ -1,7 +1,7 @@
 package gg.tater.core.controllers.island.subcommand
 
 import gg.tater.shared.island.IslandService
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services

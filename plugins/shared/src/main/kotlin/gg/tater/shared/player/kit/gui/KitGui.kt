@@ -1,8 +1,8 @@
 package gg.tater.shared.player.kit.gui
 
 import gg.tater.shared.ARROW_TEXT
-import gg.tater.shared.player.kit.KitDataModel
-import gg.tater.shared.player.kit.KitPlayerDataModel
+import gg.tater.shared.player.kit.model.KitDataModel
+import gg.tater.shared.player.kit.model.KitPlayerDataModel
 import gg.tater.shared.player.kit.KitService
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services

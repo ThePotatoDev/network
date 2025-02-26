@@ -3,8 +3,8 @@ package gg.tater.core.controllers.island.subcommand
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.setting.model.IslandSettingType
-import gg.tater.shared.network.server.ServerDataService
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.server.ServerDataService
+import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import me.lucko.helper.Services

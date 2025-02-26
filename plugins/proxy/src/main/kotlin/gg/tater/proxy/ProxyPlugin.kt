@@ -15,9 +15,9 @@ import gg.tater.proxy.listener.IslandPlacementListener
 import gg.tater.proxy.listener.PlayerRedirectListener
 import gg.tater.shared.hexToBytes
 import gg.tater.shared.network.Agones
-import gg.tater.shared.network.proxy.ProxyDataModel
-import gg.tater.shared.network.server.ServerDataModel
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.proxy.ProxyDataModel
+import gg.tater.shared.server.model.ServerDataModel
+import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.redis.Redis
 import io.github.cdimascio.dotenv.Dotenv
 import io.kubernetes.client.openapi.ApiClient

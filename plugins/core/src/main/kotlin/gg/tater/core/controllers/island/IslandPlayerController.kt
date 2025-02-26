@@ -1,9 +1,9 @@
 package gg.tater.core.controllers.island
 
 import gg.tater.shared.annotation.Controller
-import gg.tater.shared.network.server.ServerDataService
-import gg.tater.shared.network.server.ServerType
-import gg.tater.shared.network.server.toServerType
+import gg.tater.shared.server.ServerDataService
+import gg.tater.shared.server.model.ServerType
+import gg.tater.shared.server.model.toServerType
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.player.position.resolver.*

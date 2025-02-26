@@ -5,7 +5,7 @@ import gg.tater.shared.JsonAdapter
 import gg.tater.shared.annotation.Mapping
 import gg.tater.shared.annotation.Message
 import gg.tater.shared.island.Island
-import gg.tater.shared.network.server.ServerDataModel
+import gg.tater.shared.server.model.ServerDataModel
 import org.bukkit.entity.Player
 import java.lang.reflect.Type
 import java.util.*

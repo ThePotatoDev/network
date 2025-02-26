@@ -1,6 +1,6 @@
 package gg.tater.shared.player.position
 
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.player.PlayerDataModel
 import org.bukkit.Location
 import java.util.concurrent.CompletableFuture

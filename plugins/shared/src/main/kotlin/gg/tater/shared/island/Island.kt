@@ -6,9 +6,8 @@ import gg.tater.shared.JsonAdapter
 import gg.tater.shared.annotation.Mapping
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.setting.model.IslandSettingType
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.player.position.WrappedPosition
-import gg.tater.shared.redis.Redis
 import java.lang.reflect.Type
 import java.time.Instant
 import java.util.*

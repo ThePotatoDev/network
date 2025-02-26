@@ -1,6 +1,6 @@
 package gg.tater.shared.player.position.resolver
 
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.player.PlayerDataModel
 import gg.tater.shared.player.position.PlayerPositionResolver
 import org.bukkit.Bukkit

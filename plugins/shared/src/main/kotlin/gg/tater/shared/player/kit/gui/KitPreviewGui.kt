@@ -1,6 +1,6 @@
 package gg.tater.shared.player.kit.gui
 
-import gg.tater.shared.player.kit.KitDataModel
+import gg.tater.shared.player.kit.model.KitDataModel
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Gui
 import me.lucko.helper.menu.Item

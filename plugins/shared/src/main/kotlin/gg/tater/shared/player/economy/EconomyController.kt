@@ -2,7 +2,8 @@ package gg.tater.shared.player.economy
 
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.annotation.Controller
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.server.model.GameModeType
+import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.player.economy.model.EconomyType
 import gg.tater.shared.player.economy.model.PlayerEconomyModel
 import gg.tater.shared.player.economy.model.PlayerEconomyService
@@ -18,7 +19,9 @@ import java.util.*
     id = "economy-controller",
     ignoredBinds = [ServerType.HUB]
 )
-class EconomyController(private val mapName: String) : PlayerEconomyService {
+class EconomyController(mode: GameModeType) : PlayerEconomyService {
+
+    private val mapName = "${mode.id}_economy"
 
     private val redis = Services.load(Redis::class.java)
 

@@ -3,8 +3,8 @@ package gg.tater.core
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.findAnnotatedClasses
 import gg.tater.shared.network.Agones
-import gg.tater.shared.network.server.ServerDataService
-import gg.tater.shared.network.server.toServerType
+import gg.tater.shared.server.ServerDataService
+import gg.tater.shared.server.model.toServerType
 import gg.tater.shared.redis.Redis
 import io.github.cdimascio.dotenv.Dotenv
 import me.lucko.helper.Helper

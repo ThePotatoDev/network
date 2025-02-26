@@ -1,7 +1,7 @@
 package gg.tater.core.controllers.server.hub
 
 import gg.tater.shared.annotation.Controller
-import gg.tater.shared.network.server.ServerType
+import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
 import me.lucko.helper.event.filter.EventFilters

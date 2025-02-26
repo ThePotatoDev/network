@@ -1,7 +1,7 @@
 package gg.tater.shared.player
 
 import gg.tater.shared.annotation.Controller
-import gg.tater.shared.network.server.ServerDataService
+import gg.tater.shared.server.ServerDataService
 import gg.tater.shared.player.PlayerService.Companion.PLAYER_MAP_NAME
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.redis.transactional
