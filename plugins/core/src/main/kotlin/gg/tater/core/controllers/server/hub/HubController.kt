@@ -22,10 +22,10 @@ import org.bukkit.event.weather.WeatherChangeEvent
 @Controller(
     id = "hub-controller",
     ignoredBinds = [
-        ServerType.ONEBLOCK_SERVER,
-        ServerType.ONEBLOCK_SPAWN,
-        ServerType.ONEBLOCK_PVP,
-        ServerType.ONEBLOCK_PLANET
+        ServerType.SERVER,
+        ServerType.SPAWN,
+        ServerType.PVP,
+        ServerType.PLANET
     ]
 )
 class HubController : TerminableModule {

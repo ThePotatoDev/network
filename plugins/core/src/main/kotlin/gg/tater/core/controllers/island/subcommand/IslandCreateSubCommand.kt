@@ -32,7 +32,7 @@ class IslandCreateSubCommand(private val redis: Redis) : IslandSubCommand {
                 return@thenAcceptAsync
             }
 
-            val server = redis.getServer(ServerType.ONEBLOCK_SERVER)
+            val server = redis.getServer(ServerType.SERVER)
             if (server == null) {
                 context.reply("&cCould not find server.")
                 return@thenAcceptAsync
@@ -45,7 +45,7 @@ class IslandCreateSubCommand(private val redis: Redis) : IslandSubCommand {
             islands.save(newIsland)
 
             player.islandId = newIsland.id
-            player.setDefaultSpawn(ServerType.ONEBLOCK_SERVER)
+            player.setDefaultSpawn(ServerType.SERVER)
 
             players.transaction(
                 player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME),

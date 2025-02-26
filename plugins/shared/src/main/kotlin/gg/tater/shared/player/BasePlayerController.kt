@@ -1,9 +1,7 @@
-package gg.tater.core.controllers.player
+package gg.tater.shared.player
 
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.network.server.ServerDataService
-import gg.tater.shared.player.PlayerDataModel
-import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.PlayerService.Companion.PLAYER_MAP_NAME
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.redis.transactional
@@ -23,7 +21,7 @@ import java.util.*
 @Controller(
     id = "player-controller"
 )
-class PlayerController :
+class BasePlayerController :
     PlayerService {
 
     private val server = Services.load(ServerDataService::class.java).id()

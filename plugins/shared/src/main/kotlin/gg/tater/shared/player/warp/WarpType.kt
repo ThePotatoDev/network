@@ -15,21 +15,21 @@ enum class WarpType(
         11,
         ItemStackBuilder.of(Material.DIAMOND_SWORD)
             .name("&cPvP Warp &7(Click)"),
-        ServerType.ONEBLOCK_PVP,
+        ServerType.PVP,
         listOf("&7&oFight to the death versus players!", "&7&oMay only the best survive.")
     ),
     SPAWN(
         13,
         ItemStackBuilder.of(Material.REDSTONE_LAMP)
             .name("&3Spawn Warp &7(Click)"),
-        ServerType.ONEBLOCK_SPAWN,
+        ServerType.SPAWN,
         listOf("&7&oInteract with players", "&7&oand use various npcs.")
     ),
     PLANETS(
         15,
         ItemStackBuilder.of(Material.END_STONE)
             .name("&bPlanets Warp &7(Click)"),
-        ServerType.ONEBLOCK_PLANET,
+        ServerType.PLANET,
         listOf(
             "&7&oProgress your way through planets",
             "&7&othrough mining to unlock",

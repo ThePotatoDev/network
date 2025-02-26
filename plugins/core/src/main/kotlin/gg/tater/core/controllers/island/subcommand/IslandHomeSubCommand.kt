@@ -50,7 +50,7 @@ class IslandHomeSubCommand: IslandSubCommand {
                 return@thenAcceptAsync
             }
 
-            player.setSpawn(ServerType.ONEBLOCK_SERVER, island.spawn)
+            player.setSpawn(ServerType.SERVER, island.spawn)
 
             // If they are already set to teleport home, direct immediately
             if (player.getCurrentPositionResolver() == PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME) {

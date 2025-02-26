@@ -84,7 +84,7 @@ class IslandVisitSubCommand : IslandSubCommand {
                 return@thenAcceptAsync
             }
 
-            data.setSpawn(ServerType.ONEBLOCK_SERVER, island.spawn)
+            data.setSpawn(ServerType.SERVER, island.spawn)
 
             players.transaction(
                 data.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_VISIT),

@@ -63,7 +63,7 @@ class SpawnController : TerminableModule {
                     }
 
                     it.reply("&a&oTeleporting you to spawn...")
-                    val spawn = ServerType.ONEBLOCK_SPAWN.spawn
+                    val spawn = ServerType.SPAWN.spawn
 
                     // If they are already on a spawn server, just teleport them to location
                     if (id.contains("spawn")) {
@@ -80,11 +80,11 @@ class SpawnController : TerminableModule {
                         return@thenAcceptAsync
                     }
 
-                    player.setDefaultSpawn(ServerType.ONEBLOCK_SPAWN)
+                    player.setDefaultSpawn(ServerType.SPAWN)
                     player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_SPAWN)
 
                     players.transaction(player, onSuccess = {
-                        redis.publish(PlayerRedirectRequest(player.uuid, ServerType.ONEBLOCK_SPAWN))
+                        redis.publish(PlayerRedirectRequest(player.uuid, ServerType.SPAWN))
                     })
                 }
             }
