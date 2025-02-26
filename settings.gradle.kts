@@ -5,7 +5,6 @@ plugins {
 rootProject.name = "network"
 
 include("plugins")
-include("plugins:oneblock")
 include("plugins:proxy")
 findProject("plugins:proxy")?.name = "proxy"
 include("plugins:shared")

@@ -19,7 +19,7 @@ open class Island(
     var warps: MutableMap<String, WrappedPosition> = mutableMapOf(),
     var currentServerId: String? = null,
     var lastActivity: Instant = Instant.now(),
-    var spawn: WrappedPosition? = null
+    var spawn: WrappedPosition
 ) {
 
     private companion object {
