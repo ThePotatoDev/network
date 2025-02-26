@@ -33,7 +33,7 @@ class IslandPlacementRequestListener(
             // Make sure the server name matches, ignore it otherwise
             if (it.server != server) return@listen
 
-            val islands: IslandService = Services.load(IslandService::class.java)
+            val islands: IslandService<*> = Services.load(IslandService::class.java)
 
             /**
              * Acquire a semaphore for this server with a

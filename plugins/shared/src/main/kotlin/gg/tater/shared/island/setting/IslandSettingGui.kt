@@ -17,11 +17,11 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 
-class IslandSettingGui(
+class IslandSettingGui<T : Island>(
     player: Player,
-    private val redis: Redis,
-    private val island: Island,
-    private val islands: IslandService = Services.load(IslandService::class.java)
+    private val island: T,
+    private val redis: Redis = Services.load(Redis::class.java),
+    private val islands: IslandService<T> = Services.load(IslandService::class.java) as IslandService<T>
 ) : Gui(player, 4, "Island Settings") {
 
     companion object {

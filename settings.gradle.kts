@@ -5,7 +5,7 @@ plugins {
 rootProject.name = "network"
 
 include("plugins")
-include("plugins:core")
+include("plugins:oneblock")
 include("plugins:proxy")
 findProject("plugins:proxy")?.name = "proxy"
 include("plugins:shared")
@@ -19,3 +19,7 @@ include("servers:hub")
 findProject(":servers:hub")?.name = "hub"
 include("plugins:hub")
 findProject(":plugins:hub")?.name = "hub"
+include("plugins:core")
+findProject(":plugins:core")?.name = "core"
+include("plugins:oneblock-core")
+findProject(":plugins:oneblock-core")?.name = "oneblock-core"

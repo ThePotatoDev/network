@@ -3,10 +3,10 @@ package gg.tater.shared.island.gui
 import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
-import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
-import gg.tater.shared.redis.Redis
+import gg.tater.shared.server.ServerDataService
+import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Item
@@ -22,15 +22,13 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-class IslandWarpGui(
+class IslandWarpGui<T : Island>(
     opener: Player,
-    private val island: Island,
-    private val redis: Redis,
-    private val server: String
+    private val island: T
 ) :
     PaginatedGui(
         {
-            getItems(it, opener, island, redis, server)
+            getItems(it, opener, island)
         }, opener,
         BUILDER
     ) {
@@ -71,14 +69,13 @@ class IslandWarpGui(
                     .maskedIndexesImmutable
             )
 
-        private fun getItems(
+        private fun <T : Island> getItems(
             gui: PaginatedGui,
             opener: Player,
-            island: Island,
-            redis: Redis,
-            server: String,
+            island: T,
+            server: String = Services.load(ServerDataService::class.java).id(),
             players: PlayerService = Services.load(PlayerService::class.java),
-            islands: IslandService = Services.load(IslandService::class.java)
+            islands: IslandService<T> = Services.load(IslandService::class.java) as IslandService<T>
         ): List<Item> {
             return island.warps.map {
                 val name = it.key

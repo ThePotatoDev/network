@@ -16,11 +16,11 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-class IslandFlagGui(
+class IslandFlagGui<T : Island>(
     player: Player,
-    private val island: Island,
-    private val redis: Redis,
-    private val islands: IslandService = Services.load(IslandService::class.java)
+    private val island: T,
+    private val redis: Redis = Services.load(Redis::class.java),
+    private val islands: IslandService<T> = Services.load(IslandService::class.java) as IslandService<T>
 ) :
     Gui(player, 5, "Island Flags") {
 

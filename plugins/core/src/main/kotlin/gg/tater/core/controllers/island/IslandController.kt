@@ -1,18 +1,12 @@
 package gg.tater.core.controllers.island
 
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI
 import com.infernalsuite.aswm.api.world.properties.SlimeProperties
 import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap
 import com.infernalsuite.aswm.loaders.redis.RedisLoader
 import gg.tater.core.controllers.island.subcommand.*
-import gg.tater.shared.UUID_REGEX
 import gg.tater.shared.annotation.Controller
-import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
-import gg.tater.shared.island.IslandService.Companion.ISLAND_INVITES_MAP_NAME
-import gg.tater.shared.island.IslandService.Companion.ISLAND_MAP_NAME
 import gg.tater.shared.island.flag.IslandFlagController
 import gg.tater.shared.island.gui.IslandControlGui
 import gg.tater.shared.island.message.listener.IslandDeleteRequestListener
@@ -26,42 +20,22 @@ import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.redis.transactional
 import gg.tater.shared.server.ServerDataService
+import gg.tater.shared.server.model.GameModeType
 import gg.tater.shared.server.model.ServerDataModel
 import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.server.model.toServerType
 import me.lucko.helper.Commands
-import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
-import me.lucko.helper.promise.ThreadContext
 import me.lucko.helper.terminable.TerminableConsumer
-import org.bukkit.Bukkit
-import org.bukkit.World
-import org.bukkit.entity.Player
+import me.lucko.helper.terminable.module.TerminableModule
 import org.redisson.api.RFuture
 import org.redisson.api.RMap
-import java.time.Duration
-import java.time.Instant
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
 
 @Controller(
     id = "island-controller"
 )
-class IslandController : IslandService {
-
-    companion object {
-        val SCHEDULER: ScheduledExecutorService = Executors.newScheduledThreadPool(5)
-
-        val PROPERTIES = SlimePropertyMap().apply {
-            setValue(SlimeProperties.SPAWN_X, 0)
-            setValue(SlimeProperties.SPAWN_Y, 101)
-            setValue(SlimeProperties.SPAWN_Z, 0)
-            setValue(SlimeProperties.PVP, false)
-            setValue(SlimeProperties.ALLOW_ANIMALS, true)
-            setValue(SlimeProperties.ALLOW_MONSTERS, true)
-        }
-    }
+class IslandController : TerminableModule {
 
     private val redis = Services.load(Redis::class.java)
     private val serverType = Services.load(ServerDataService::class.java)
@@ -70,24 +44,9 @@ class IslandController : IslandService {
 
     private val commands: MutableMap<String, IslandSubCommand> = mutableMapOf()
 
-    /**
-     * Store islands temporarily when needed in runtime by world name for usage
-     * on main thread without impacting main thread continually w/redis actions
-     */
-    private val cache = CacheBuilder.newBuilder()
-        .refreshAfterWrite(Duration.ofMinutes(1L))
-        .build(CacheLoader.asyncReloading(object : CacheLoader<String, Island>() {
-            override fun load(worldName: String): Island {
-                val islandId = UUID.fromString(worldName)
-                return getIsland(islandId).get()!!
-            }
-        }, SCHEDULER))
-
     private lateinit var api: AdvancedSlimePaperAPI
 
     override fun setup(consumer: TerminableConsumer) {
-        Services.provide(IslandService::class.java, this)
-
         // If server type is hub, just provide the service
         if (serverType == ServerType.HUB) return
 
@@ -120,32 +79,8 @@ class IslandController : IslandService {
         val template = api.readWorld(loader, "island_world_template", false, PROPERTIES)
 
         consumer.bindModule(IslandPlacementRequestListener(api, loader, template, PROPERTIES))
-        consumer.bindModule(IslandUpdateRequestListener(cache))
-        consumer.bindModule(IslandDeleteRequestListener(cache))
-
-        Schedulers.async().runRepeating(Runnable {
-            for (world in api.loadedWorlds) {
-                val worldName = world.name
-                val islandId = UUID.fromString(worldName)
-                val island = getIsland(islandId).get() ?: continue
-                val lastActive = island.lastActivity
-
-                // If 30 seconds of inactivity have not passed, continue to next
-                if (Instant.now().isBefore(lastActive.plusSeconds(30L))) continue
-
-                val bukkitWorld = Bukkit.getWorld(worldName) ?: continue
-                val empty = bukkitWorld.players.size <= 0
-
-                island.lastActivity = Instant.now()
-                save(island)
-
-                // If the island still has players present on it, keep it loaded
-                if (!empty) continue
-
-                Schedulers.sync().run { Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "swm unload $worldName") }
-                println("Unloading island $worldName due to inactivity.")
-            }
-        }, 20L, 20L).bindWith(consumer)
+        consumer.bindModule(IslandUpdateRequestListener())
+        consumer.bindModule(IslandDeleteRequestListener())
 
         Commands.create()
             .assertPlayer()
@@ -174,103 +109,5 @@ class IslandController : IslandService {
                 command.handle(it)
             }
             .registerAndBind(consumer, "is", "island")
-    }
-
-    override fun getIsland(world: World): Island? {
-        val name = world.name
-        if (!name.matches(UUID_REGEX)) return null
-        return cache.get(name)
-    }
-
-    override fun all(): RFuture<Collection<Island>> {
-        return Services.load(Redis::class.java).client.getMap<UUID, Island>(ISLAND_MAP_NAME)
-            .readAllValuesAsync()
-    }
-
-    override fun getIslandFor(player: PlayerDataModel): RFuture<Island?>? {
-        if (player.islandId == null) return null
-        return redis.client.getMap<UUID, Island>(ISLAND_MAP_NAME)
-            .getAsync(player.islandId)
-    }
-
-    override fun getIsland(islandId: UUID): RFuture<Island?> {
-        return redis.client.getMap<UUID, Island>(ISLAND_MAP_NAME)
-            .getAsync(islandId)
-    }
-
-    override fun save(island: Island): RFuture<Boolean> {
-        return redis.client.getMap<UUID, Island>(ISLAND_MAP_NAME)
-            .fastPutAsync(island.id, island)
-    }
-
-    override fun hasInvite(uuid: UUID, island: Island): RFuture<Boolean> {
-        return redis.client.getListMultimapCache<UUID, UUID>(ISLAND_INVITES_MAP_NAME)
-            .containsEntryAsync(uuid, uuid)
-    }
-
-    override fun addInvite(uuid: UUID, island: Island): RFuture<Boolean> {
-        return redis.client.getListMultimapCache<UUID, UUID>(ISLAND_INVITES_MAP_NAME)
-            .putAsync(uuid, uuid)
-    }
-
-    override fun createFor(player: PlayerDataModel, server: ServerDataModel) {
-        val newIsland = Island(UUID.randomUUID(), player.uuid, player.name)
-        newIsland.currentServerId = server.id
-        save(newIsland)
-
-        val players = Services.load(PlayerService::class.java)
-        player.islandId = newIsland.id
-        player.setDefaultSpawn(ServerType.SERVER)
-
-        players.transaction(
-            player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME),
-            onSuccess = {
-                redis.publish(
-                    IslandPlacementRequest(
-                        server.id,
-                        player.uuid,
-                        newIsland.id,
-                        player.name,
-                        true
-                    )
-                )
-            })
-    }
-
-    override fun directToOccupiedServer(sender: Player, island: Island): Boolean {
-        if (ThreadContext.forCurrentThread() != ThreadContext.ASYNC) {
-            throw IllegalStateException("This method must be called asynchronously.")
-        }
-
-        // If the island is already placed on a server, teleport the player to the server
-        val currentServerId = island.currentServerId
-        var server: ServerDataModel?
-
-        if (currentServerId != null) {
-            server = redis.getServer(currentServerId).get()
-
-            // If the server is not online, place the island on a fresh server
-            if (server == null) {
-                server = redis.getServer(ServerType.SERVER) ?: return false
-            }
-        } else {
-            // If everything else fails to check, place the island on a fresh server
-            server = redis.getServer(ServerType.SERVER) ?: return false
-        }
-
-        redis.publish(IslandPlacementRequest.of(sender, island, server))
-        island.currentServerId = server.id
-        save(island)
-        return true
-    }
-
-    override fun transaction(
-        operation: (RMap<UUID, Island>) -> Unit,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
-        redis.client.apply {
-            this.getMap<UUID, Island>(ISLAND_MAP_NAME).transactional(operation, onSuccess, onFailure)
-        }
     }
 }

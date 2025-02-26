@@ -22,11 +22,6 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     api(project(":plugins:shared"))
-
-    val scoreboardLibraryVersion = "2.2.1"
-    implementation("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
-    runtimeOnly("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
-    runtimeOnly("net.megavex:scoreboard-library-modern:$scoreboardLibraryVersion:mojmap")
 }
 
 tasks.shadowJar {

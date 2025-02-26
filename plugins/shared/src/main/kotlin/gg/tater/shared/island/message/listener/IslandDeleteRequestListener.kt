@@ -1,10 +1,9 @@
 package gg.tater.shared.island.message.listener
 
-import com.google.common.cache.LoadingCache
-import gg.tater.shared.island.Island
+import gg.tater.shared.island.cache.IslandWorldCacheService
 import gg.tater.shared.island.message.IslandDeleteRequest
-import gg.tater.shared.server.ServerDataService
 import gg.tater.shared.redis.Redis
+import gg.tater.shared.server.ServerDataService
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
@@ -12,7 +11,7 @@ import me.lucko.helper.terminable.module.TerminableModule
 import org.bukkit.Bukkit
 
 class IslandDeleteRequestListener(
-    private val cache: LoadingCache<String, Island>,
+    private val cache: IslandWorldCacheService<*> = Services.load(IslandWorldCacheService::class.java),
     private val redis: Redis = Services.load(Redis::class.java),
     private val server: String = Services.load(ServerDataService::class.java).id()
 ) : TerminableModule {
