@@ -37,7 +37,7 @@ class WarpGui(
 
                                 // If the player is already on the warp's server
                                 if (player.getCurrentServerType() == warp.serverType) {
-                                    val position = serverType.spawn!!
+                                    val position = ServerType.ONEBLOCK_SPAWN!!
 
                                     val location = Location(
                                         Bukkit.getWorld("world"),
@@ -52,7 +52,7 @@ class WarpGui(
                                         location
                                     )
                                 } else {
-                                    player.setSpawn(serverType, serverType.spawn!!)
+                                    player.setSpawn(serverType, ServerType.ONEBLOCK_SPAWN!!)
 
                                     Schedulers.async().run {
                                         players.transaction(

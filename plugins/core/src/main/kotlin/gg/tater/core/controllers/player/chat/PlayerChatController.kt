@@ -2,6 +2,9 @@ package gg.tater.core.controllers.player.chat
 
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.annotation.Controller
+import gg.tater.shared.network.server.ONEBLOCK_GAMEMODE_SERVERS
+import gg.tater.shared.network.server.ServerDataService
+import gg.tater.shared.network.server.getServerTypeFromId
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.chat.color.ChatColorGui
 import gg.tater.shared.player.chat.message.ChatMessagePart
@@ -27,23 +30,20 @@ import org.bukkit.event.EventPriority
 )
 class PlayerChatController : TerminableModule {
 
-    private companion object {
-        const val CHAT_COOLDOWN_ID = "chat_cooldown"
-    }
-
     override fun setup(consumer: TerminableConsumer) {
         val perms = LuckPermsProvider.get()
         val redis = Services.load(Redis::class.java)
+        val serverId = Services.load(ServerDataService::class.java).id()
 
         redis.listen<ChatMessageRequest> {
-            var targets = it.targets
+            var targetPlayers = it.targetPlayers
 
             // If targets are null, it's a global message
-            if (targets == null) {
-                targets = Bukkit.getOnlinePlayers().map { player -> player.uniqueId }.toMutableSet()
+            if (targetPlayers == null) {
+                targetPlayers = Bukkit.getOnlinePlayers().map { player -> player.uniqueId }.toMutableSet()
             }
 
-            for (target in targets) {
+            for (target in targetPlayers) {
                 val player = Bukkit.getPlayer(target) ?: continue
                 if (it.permission != null && !player.hasPermission(it.permission!!)) continue
 
@@ -85,7 +85,13 @@ class PlayerChatController : TerminableModule {
                     return@handler
                 }
 
-                val request = ChatMessageRequest(null, null)
+                val serverType = getServerTypeFromId(serverId)
+
+                val request: ChatMessageRequest = if (ONEBLOCK_GAMEMODE_SERVERS.contains(serverType)) {
+                    ChatMessageRequest(null, null, ONEBLOCK_GAMEMODE_SERVERS)
+                } else {
+                    ChatMessageRequest(null, null, setOf(serverType))
+                }
 
                 val prefix = group.cachedData.metaData.prefix
                 val text = LegacyComponentSerializer.legacyAmpersand().serialize(it.message())

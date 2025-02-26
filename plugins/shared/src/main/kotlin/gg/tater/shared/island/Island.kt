@@ -24,7 +24,7 @@ class Island(
     var warps: MutableMap<String, WrappedPosition> = mutableMapOf(),
     var currentServerId: String? = null,
     var lastActivity: Instant = Instant.now(),
-    var spawn: WrappedPosition = WrappedPosition(ServerType.SERVER.spawn!!),
+    var spawn: WrappedPosition = WrappedPosition(ServerType.ONEBLOCK_SERVER.spawn!!),
     var level: Int = 1
 ) {
 

@@ -117,7 +117,7 @@ class IslandWarpGui(
 
                         val uuid = opener.uniqueId
                         players.get(uuid).thenAcceptAsync { player ->
-                            player.setSpawn(ServerType.SERVER, warp)
+                            player.setSpawn(ServerType.ONEBLOCK_SERVER, warp)
 
                             players.transaction(
                                 player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_WARP),

@@ -220,11 +220,11 @@ class IslandController : IslandService {
 
             // If the server is not online, place the island on a fresh server
             if (server == null) {
-                server = redis.getServer(ServerType.SERVER) ?: return false
+                server = redis.getServer(ServerType.ONEBLOCK_SERVER) ?: return false
             }
         } else {
             // If everything else fails to check, place the island on a fresh server
-            server = redis.getServer(ServerType.SERVER) ?: return false
+            server = redis.getServer(ServerType.ONEBLOCK_SERVER) ?: return false
         }
 
         redis.publish(IslandPlacementRequest.of(sender, island, server))

@@ -71,7 +71,7 @@ class IslandPlacementRequestListener(
                     return@listen
                 }
 
-                val spawn = ServerType.SERVER.spawn
+                val spawn = ServerType.ONEBLOCK_SERVER.spawn
 
                 // If the player is on the same server teleport them to spawn location
                 player.teleportAsync(

@@ -4,21 +4,24 @@ import com.google.gson.*
 import gg.tater.shared.JsonAdapter
 import gg.tater.shared.annotation.Mapping
 import gg.tater.shared.annotation.Message
+import gg.tater.shared.network.server.ServerType
 import java.lang.reflect.Type
 import java.util.*
 
 @Mapping("chat_message_req")
 @Message("chat_messages")
 class ChatMessageRequest(
-    val targets: MutableSet<UUID>?,
+    val targetPlayers: MutableSet<UUID>?,
     var permission: String?,
-    val parts: MutableMap<ChatMessagePart, String> = mutableMapOf()
+    val targetServers: Set<ServerType>,
+    val parts: MutableMap<ChatMessagePart, String> = mutableMapOf(),
 ) {
 
     companion object {
-        private const val TARGETS_FIELD = "targets"
+        private const val TARGET_PLAYERS_FIELD = "target_players"
         private const val PERMISSION_FIELD = "permission"
         private const val PARTS_FIELD = "parts"
+        private const val TARGET_SERVERS_FIELD = "target_servers"
     }
 
     fun hasSpecialColor(): Boolean {
@@ -43,11 +46,15 @@ class ChatMessageRequest(
             return JsonObject().apply {
                 val parts = JsonObject()
 
-                if (model.targets != null) {
-                    add(TARGETS_FIELD, JsonArray().apply {
-                        model.targets.forEach { add(it.toString()) }
+                if (model.targetPlayers != null) {
+                    add(TARGET_PLAYERS_FIELD, JsonArray().apply {
+                        model.targetPlayers.forEach { add(it.toString()) }
                     })
                 }
+
+                add(TARGET_SERVERS_FIELD, JsonArray().apply {
+                    model.targetServers.forEach { add(it.name) }
+                })
 
                 model.permission?.let { addProperty(PERMISSION_FIELD, it) }
 
@@ -66,18 +73,21 @@ class ChatMessageRequest(
         ): ChatMessageRequest {
             return (element as JsonObject).run {
                 val parts: MutableMap<ChatMessagePart, String> = mutableMapOf()
-                var targets: MutableSet<UUID>? = null
+                val targetServers: MutableSet<ServerType> = mutableSetOf()
+                var targetPlayers: MutableSet<UUID>? = null
 
-                if (has(TARGETS_FIELD)) {
-                    targets = mutableSetOf()
-                    get(TARGETS_FIELD).asJsonArray.forEach { targets.add(UUID.fromString(it.asString)) }
+                if (has(TARGET_PLAYERS_FIELD)) {
+                    targetPlayers = mutableSetOf()
+                    get(TARGET_PLAYERS_FIELD).asJsonArray.forEach { targetPlayers.add(UUID.fromString(it.asString)) }
                 }
+
+                get(TARGET_SERVERS_FIELD).asJsonArray.forEach { targetServers.add(ServerType.valueOf(it.asString)) }
 
                 get(PARTS_FIELD).asJsonObject.entrySet()
                     .forEach { parts[ChatMessagePart.valueOf(it.key)] = it.value.asString }
 
                 val permission = get(PERMISSION_FIELD)?.asString
-                val request = ChatMessageRequest(targets, permission, parts)
+                val request = ChatMessageRequest(targetPlayers, permission, targetServers, parts)
 
                 request
             }
