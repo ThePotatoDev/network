@@ -12,8 +12,8 @@ enum class ServerType(val spawn: WrappedPosition? = null) {
 
 }
 
-fun getServerTypeFromId(id: String): ServerType {
-    val split = id.split("-")[0]
+fun String.toServerType(): ServerType {
+    val split = this.split("-")[0]
     return ServerType.valueOf(split.uppercase())
 }
 

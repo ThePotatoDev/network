@@ -4,7 +4,7 @@ import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.network.server.ONEBLOCK_GAMEMODE_SERVERS
 import gg.tater.shared.network.server.ServerDataService
-import gg.tater.shared.network.server.getServerTypeFromId
+import gg.tater.shared.network.server.toServerType
 import gg.tater.shared.player.PlayerService
 import gg.tater.shared.player.chat.color.ChatColorGui
 import gg.tater.shared.player.chat.message.ChatMessagePart
@@ -85,7 +85,7 @@ class PlayerChatController : TerminableModule {
                     return@handler
                 }
 
-                val serverType = getServerTypeFromId(serverId)
+                val serverType = serverId.toServerType()
 
                 val request: ChatMessageRequest = if (ONEBLOCK_GAMEMODE_SERVERS.contains(serverType)) {
                     ChatMessageRequest(null, null, ONEBLOCK_GAMEMODE_SERVERS)

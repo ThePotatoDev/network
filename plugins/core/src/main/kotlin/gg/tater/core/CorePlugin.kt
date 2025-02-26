@@ -4,7 +4,7 @@ import gg.tater.shared.annotation.Controller
 import gg.tater.shared.findAnnotatedClasses
 import gg.tater.shared.network.Agones
 import gg.tater.shared.network.server.ServerDataService
-import gg.tater.shared.network.server.getServerTypeFromId
+import gg.tater.shared.network.server.toServerType
 import gg.tater.shared.redis.Redis
 import io.github.cdimascio.dotenv.Dotenv
 import me.lucko.helper.Helper
@@ -50,7 +50,7 @@ class CorePlugin : ExtendedJavaPlugin(), ServerDataService {
             )
         )
 
-        val serverType = getServerTypeFromId(serverId)
+        val serverType = serverId.toServerType()
 
         for (clazz in findAnnotatedClasses(Controller::class)) {
             val meta = clazz.findAnnotation<Controller>() ?: continue

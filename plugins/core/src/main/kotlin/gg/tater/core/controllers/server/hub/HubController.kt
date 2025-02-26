@@ -14,7 +14,9 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 
 @Controller(
@@ -46,12 +48,20 @@ class HubController : TerminableModule {
             .handler {
                 val player = it.player
 
+                it.joinMessage(null)
+
                 Schedulers.sync().runLater({
                     player.teleportAsync(SPAWN_LOCATION)
                     player.health = 20.0
                     player.foodLevel = 20
                     player.gameMode = GameMode.ADVENTURE
                 }, 2L)
+            }
+            .bindWith(consumer)
+
+        Events.subscribe(PlayerQuitEvent::class.java)
+            .handler {
+                it.quitMessage(null)
             }
             .bindWith(consumer)
 
