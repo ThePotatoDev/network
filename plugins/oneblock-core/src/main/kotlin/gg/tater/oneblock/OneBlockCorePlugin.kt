@@ -5,6 +5,7 @@ import gg.tater.oneblock.island.controllers.OneBlockIslandService
 import gg.tater.oneblock.planet.PlanetController
 import gg.tater.oneblock.player.OneBlockPlayerService
 import gg.tater.oneblock.spawn.OneBlockSpawnController
+import gg.tater.shared.island.cache.IslandWorldCacheController
 import gg.tater.shared.player.auction.AuctionHouseController
 import gg.tater.shared.plugin.GameServerPlugin
 import gg.tater.shared.server.ServerDataService
@@ -27,6 +28,7 @@ class OneBlockCorePlugin : GameServerPlugin() {
             useController(null, OneBlockIslandController::class)
             useController(null, OneBlockSpawnController::class)
             useController(null, PlanetController::class)
+            useController(null, IslandWorldCacheController::class)
         }
     }
 }

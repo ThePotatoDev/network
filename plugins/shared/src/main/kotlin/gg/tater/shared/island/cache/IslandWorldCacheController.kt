@@ -22,11 +22,7 @@ import java.util.concurrent.ScheduledExecutorService
 @Controller(
     id = "island-world-cache-controller"
 )
-class IslandWorldCacheController<T : Island, K : IslandPlayer>(
-    private val service: IslandService<T, K>,
-    private val api: AdvancedSlimePaperAPI
-) :
-    IslandWorldCacheService<T> {
+class IslandWorldCacheController<T : Island, K : IslandPlayer> : IslandWorldCacheService<T> {
 
     private companion object {
         val SCHEDULER: ScheduledExecutorService = Executors.newScheduledThreadPool(5)
@@ -40,6 +36,7 @@ class IslandWorldCacheController<T : Island, K : IslandPlayer>(
         .refreshAfterWrite(Duration.ofMinutes(1L))
         .build(CacheLoader.asyncReloading(object : CacheLoader<String, T>() {
             override fun load(worldName: String): T {
+                val service: IslandService<T, K> = Services.load(IslandService::class.java) as IslandService<T, K>
                 val islandId = UUID.fromString(worldName)
                 return service.getIsland(islandId).get()!!
             }
@@ -60,7 +57,11 @@ class IslandWorldCacheController<T : Island, K : IslandPlayer>(
     }
 
     override fun setup(consumer: TerminableConsumer) {
+        val api = AdvancedSlimePaperAPI.instance()
+
         Schedulers.async().runRepeating(Runnable {
+            val service: IslandService<T, K> = Services.load(IslandService::class.java) as IslandService<T, K>
+
             for (world in api.loadedWorlds) {
                 val worldName = world.name
                 val islandId = UUID.fromString(worldName)
