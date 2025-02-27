@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI
 import gg.tater.shared.UUID_REGEX
+import gg.tater.shared.annotation.Controller
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.player.IslandPlayer
@@ -18,7 +19,10 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
-class IslandWorldCacheController<T : Island, K: IslandPlayer>(
+@Controller(
+    id = "island-world-cache-controller"
+)
+class IslandWorldCacheController<T : Island, K : IslandPlayer>(
     private val service: IslandService<T, K>,
     private val api: AdvancedSlimePaperAPI
 ) :
