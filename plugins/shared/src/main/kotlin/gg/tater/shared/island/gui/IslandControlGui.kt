@@ -166,7 +166,7 @@ class IslandControlGui<T : Island, K: IslandPlayer>(
                     " "
                 )
                 .build {
-                    IslandSettingGui(player, island).open()
+                    IslandSettingGui<T, K>(player, island).open()
                 })
     }
 }

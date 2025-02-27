@@ -5,7 +5,7 @@ import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.command.IslandSubCommand
 import gg.tater.shared.island.player.IslandPlayer
 import gg.tater.shared.island.player.IslandPlayerService
-import gg.tater.shared.player.position.PlayerPositionResolver
+import gg.tater.shared.island.player.position.PositionDirector
 import gg.tater.shared.server.ServerDataService
 import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Services
@@ -14,7 +14,8 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-class IslandHomeSubCommand<T : Island, K : IslandPlayer> : IslandSubCommand<T> {
+class IslandHomeSubCommand<T : Island, K : IslandPlayer>(private val islandServerType: ServerType) :
+    IslandSubCommand<T> {
 
     override fun id(): String {
         return "home"
@@ -53,16 +54,8 @@ class IslandHomeSubCommand<T : Island, K : IslandPlayer> : IslandSubCommand<T> {
                 return@thenAcceptAsync
             }
 
-            player.setSpawn(ServerType.SERVER, island.spawn)
-
-            // If they are already set to teleport home, direct immediately
-            if (player.getCurrentPositionResolver() == PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME) {
-                islands.directToOccupiedServer(sender, island)
-                return@thenAcceptAsync
-            }
-
             players.transaction(
-                player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_ISLAND_HOME),
+                player.setNextServerSpawnPos(islandServerType, PositionDirector.ISLAND_TELEPORT_DIRECTOR, island.spawn),
                 onSuccess = {
                     islands.directToOccupiedServer(sender, island)
                 })

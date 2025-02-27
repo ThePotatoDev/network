@@ -6,16 +6,18 @@ import com.infernalsuite.aswm.api.world.SlimeWorld
 import com.infernalsuite.aswm.loaders.redis.RedisLoader
 import gg.tater.oneblock.island.OneBlockIsland
 import gg.tater.oneblock.island.subcommand.OneBlockPhasesSubCommand
+import gg.tater.oneblock.player.OneBlockPlayer
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.island.IslandController
 import gg.tater.shared.redis.Redis
+import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 
 @Controller(
     id = "oneblock-island-controller"
 )
-class OneBlockIslandController : IslandController<OneBlockIsland>() {
+class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer>() {
 
     private lateinit var loader: SlimeLoader
     private lateinit var template: SlimeWorld
@@ -24,7 +26,7 @@ class OneBlockIslandController : IslandController<OneBlockIsland>() {
         val credential = Services.load(Redis.Credential::class.java)
 
         registerSubCommand(OneBlockPhasesSubCommand())
-        registerBaseSubCommands()
+        registerBaseSubCommands(ServerType.ONEBLOCK_SERVER)
 
         registerBaseListeners(consumer)
         registerBaseFlags(consumer)

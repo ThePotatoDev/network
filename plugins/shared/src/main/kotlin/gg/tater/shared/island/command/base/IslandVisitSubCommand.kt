@@ -91,7 +91,7 @@ class IslandVisitSubCommand<T : Island, K : IslandPlayer> : IslandSubCommand<T> 
             players.transaction(
                 data.setNextServerSpawnPos(
                     ServerType.ONEBLOCK_SERVER,
-                    PositionDirector.TELEPORT_ISLAND_SPAWN,
+                    PositionDirector.ISLAND_TELEPORT_DIRECTOR,
                     island.spawn
                 ),
                 onSuccess = {

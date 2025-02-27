@@ -8,6 +8,7 @@ import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
 import gg.tater.shared.island.message.placement.IslandPlacementResponse
+import gg.tater.shared.island.player.IslandPlayer
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.server.ServerDataService
 import me.lucko.helper.Schedulers
@@ -18,7 +19,7 @@ import org.bukkit.Bukkit
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
-class IslandPlacementRequestListener<T : Island>(
+class IslandPlacementRequestListener<T : Island, K : IslandPlayer>(
     private val loader: SlimeLoader,
     private val template: SlimeWorld,
     private val properties: SlimePropertyMap,
@@ -33,7 +34,7 @@ class IslandPlacementRequestListener<T : Island>(
             // Make sure the server name matches, ignore it otherwise
             if (it.server != server) return@listen
 
-            val islands: IslandService<T> = Services.load(IslandService::class.java) as IslandService<T>
+            val islands: IslandService<T, K> = Services.load(IslandService::class.java) as IslandService<T, K>
 
             /**
              * Acquire a semaphore for this server with a

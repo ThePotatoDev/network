@@ -5,6 +5,7 @@ import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.flag.model.FlagType
 import gg.tater.shared.island.message.IslandUpdateRequest
+import gg.tater.shared.island.player.IslandPlayer
 import gg.tater.shared.island.setting.model.IslandSettingType
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Schedulers
@@ -17,11 +18,11 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 
-class IslandSettingGui<T : Island>(
+class IslandSettingGui<T : Island, K : IslandPlayer>(
     player: Player,
     private val island: T,
     private val redis: Redis = Services.load(Redis::class.java),
-    private val islands: IslandService<T> = Services.load(IslandService::class.java) as IslandService<T>
+    private val islands: IslandService<T, K> = Services.load(IslandService::class.java) as IslandService<T, K>
 ) : Gui(player, 4, "Island Settings") {
 
     companion object {

@@ -1,8 +1,9 @@
 package gg.tater.oneblock.spawn
 
+import gg.tater.oneblock.player.OneBlockPlayerService
 import gg.tater.shared.annotation.Controller
+import gg.tater.shared.island.player.position.PositionDirector
 import gg.tater.shared.player.PlayerRedirectRequest
-import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.server.ServerDataService
 import gg.tater.shared.server.model.ServerType
@@ -45,7 +46,7 @@ class OneBlockSpawnController : TerminableModule {
             .assertPlayer()
             .handler {
                 val sender = it.sender()
-                val players: PlayerService = Services.load(PlayerService::class.java)
+                val players: OneBlockPlayerService = Services.load(OneBlockPlayerService::class.java)
 
                 players.get(sender.uniqueId).thenAcceptAsync { player ->
                     if (player == null) {
@@ -54,14 +55,14 @@ class OneBlockSpawnController : TerminableModule {
                     }
 
                     it.reply("&a&oTeleporting you to spawn...")
-                    val spawn = ServerType.ONEBLOCK_SPAWN.spawn
+                    val spawn = ServerType.ONEBLOCK_SPAWN.spawn!!
 
                     // If they are already on a spawn server, just teleport them to location
                     if (serverType == ServerType.ONEBLOCK_SPAWN) {
                         it.sender().teleportAsync(
                             Location(
                                 it.sender().world,
-                                spawn!!.x,
+                                spawn.x,
                                 spawn.y,
                                 spawn.z,
                                 spawn.yaw,
@@ -71,12 +72,14 @@ class OneBlockSpawnController : TerminableModule {
                         return@thenAcceptAsync
                     }
 
-                    player.setDefaultSpawn(ServerType.ONEBLOCK_SPAWN)
-                    player.setPositionResolver(PlayerPositionResolver.Type.TELEPORT_SPAWN)
-
-                    players.transaction(player, onSuccess = {
-                        redis.publish(PlayerRedirectRequest(player.uuid, ServerType.ONEBLOCK_SPAWN))
-                    })
+                    players.transaction(
+                        player.setNextServerSpawnPos(
+                            ServerType.ONEBLOCK_SPAWN,
+                            PositionDirector.WORLD_TELEPORT_DIRECTOR,
+                            spawn
+                        ), onSuccess = {
+                            redis.publish(PlayerRedirectRequest(player.uuid, ServerType.ONEBLOCK_SPAWN))
+                        })
                 }
             }
             .registerAndBind(consumer, "spawn")

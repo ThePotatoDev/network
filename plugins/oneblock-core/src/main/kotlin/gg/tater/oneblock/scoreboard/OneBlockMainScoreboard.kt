@@ -1,6 +1,9 @@
 package gg.tater.oneblock.scoreboard
 
 import gg.tater.oneblock.island.OneBlockIsland
+import gg.tater.oneblock.island.controllers.OneBlockIslandService
+import gg.tater.oneblock.player.OneBlockPlayer
+import gg.tater.oneblock.player.OneBlockPlayerService
 import gg.tater.shared.DECIMAL_FORMAT
 import gg.tater.shared.MINI_MESSAGE
 import gg.tater.shared.getFormattedDate
@@ -30,9 +33,8 @@ class OneBlockMainScoreboard(private val library: ScoreboardLibrary) : Scoreboar
 
     override fun display(player: Player) {
         val eco = Services.load(PlayerEconomyService::class.java)
-        val islands: IslandService<OneBlockIsland> =
-            Services.load(IslandService::class.java) as IslandService<OneBlockIsland>
-        val players = Services.load(PlayerService::class.java)
+        val islands: IslandService<OneBlockIsland, OneBlockPlayer> = Services.load(OneBlockIslandService::class.java)
+        val players = Services.load(OneBlockPlayerService::class.java)
 
         val sidebar: Sidebar = library.createSidebar()
 

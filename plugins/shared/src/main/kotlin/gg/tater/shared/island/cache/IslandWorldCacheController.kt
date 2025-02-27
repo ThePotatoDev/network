@@ -6,6 +6,7 @@ import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI
 import gg.tater.shared.UUID_REGEX
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
+import gg.tater.shared.island.player.IslandPlayer
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
@@ -17,8 +18,8 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
-class IslandWorldCacheController<T : Island>(
-    private val service: IslandService<T>,
+class IslandWorldCacheController<T : Island, K: IslandPlayer>(
+    private val service: IslandService<T, K>,
     private val api: AdvancedSlimePaperAPI
 ) :
     IslandWorldCacheService<T> {

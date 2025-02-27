@@ -11,7 +11,7 @@ import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
 import org.bukkit.entity.Player
 
-class IslandCreateSubCommand<T : Island, K: IslandPlayer> : IslandSubCommand<T> {
+class IslandCreateSubCommand<T : Island, K : IslandPlayer>(val islandServerType: ServerType) : IslandSubCommand<T> {
 
     override fun id(): String {
         return "create"
@@ -33,7 +33,7 @@ class IslandCreateSubCommand<T : Island, K: IslandPlayer> : IslandSubCommand<T> 
                 return@thenAcceptAsync
             }
 
-            val server = redis.getServer(ServerType.SERVER)
+            val server = redis.getServer(islandServerType)
             if (server == null) {
                 context.reply("&cCould not find server.")
                 return@thenAcceptAsync

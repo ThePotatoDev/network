@@ -26,13 +26,7 @@ import org.bukkit.event.weather.WeatherChangeEvent
 import org.bukkit.inventory.ItemStack
 
 @Controller(
-    id = "hub-controller",
-    ignoredBinds = [
-        ServerType.SERVER,
-        ServerType.SPAWN,
-        ServerType.PVP,
-        ServerType.PLANET
-    ]
+    id = "hub-controller"
 )
 class HubController : TerminableModule {
 

@@ -49,11 +49,6 @@ class TeleportController(mode: GameModeType) : TerminableModule {
             .handler {
                 val sender = it.sender()
 
-                if (combat.isInCombat(sender.uniqueId)) {
-                    it.reply("&cYou cannot teleport while in combat!")
-                    return@handler
-                }
-
             }
             .registerAndBind(consumer, "tpaccept")
 
@@ -62,10 +57,6 @@ class TeleportController(mode: GameModeType) : TerminableModule {
             .handler {
                 val sender = it.sender()
 
-                if (combat.isInCombat(sender.uniqueId)) {
-                    it.reply("&cYou cannot teleport while in combat!")
-                    return@handler
-                }
             }
             .registerAndBind(consumer, "tpdeny")
     }

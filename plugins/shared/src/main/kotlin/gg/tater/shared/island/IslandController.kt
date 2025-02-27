@@ -11,14 +11,16 @@ import gg.tater.shared.island.gui.IslandControlGui
 import gg.tater.shared.island.message.listener.IslandDeleteRequestListener
 import gg.tater.shared.island.message.listener.IslandPlacementRequestListener
 import gg.tater.shared.island.message.listener.IslandUpdateRequestListener
+import gg.tater.shared.island.player.IslandPlayer
+import gg.tater.shared.island.player.IslandPlayerService
 import gg.tater.shared.island.setting.IslandSettingController
-import gg.tater.shared.server.ServerDataService
+import gg.tater.shared.server.model.ServerType
 import me.lucko.helper.Commands
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 import me.lucko.helper.terminable.module.TerminableModule
 
-abstract class IslandController<T : Island> : TerminableModule {
+abstract class IslandController<T : Island, K : IslandPlayer> : TerminableModule {
 
     val properties = SlimePropertyMap().apply {
         setValue(SlimeProperties.SPAWN_X, 0)
@@ -40,37 +42,37 @@ abstract class IslandController<T : Island> : TerminableModule {
     }
 
     fun registerBaseListeners(consumer: TerminableConsumer) {
-        consumer.bindModule(IslandPlacementRequestListener<T>(loader(), template(), properties))
+        consumer.bindModule(IslandPlacementRequestListener<T, K>(loader(), template(), properties))
         consumer.bindModule(IslandUpdateRequestListener<T>())
         consumer.bindModule(IslandDeleteRequestListener<T>())
     }
 
-    fun registerBaseSubCommands() {
-        registerSubCommand(IslandAddWarpSubCommand())
-        registerSubCommand(IslandCreateSubCommand())
-        registerSubCommand(IslandDeleteSubCommand())
-        registerSubCommand(IslandFlagSubCommand())
-        registerSubCommand(IslandHomeSubCommand())
-        registerSubCommand(IslandInviteSubCommand())
-        registerSubCommand(IslandJoinSubCommand())
-        registerSubCommand(IslandSettingSubCommand())
-        registerSubCommand(IslandVisitSubCommand())
+    fun registerBaseSubCommands(serverType: ServerType) {
+        registerSubCommand(IslandAddWarpSubCommand<T, K>())
+        registerSubCommand(IslandCreateSubCommand<T, K>(serverType))
+        registerSubCommand(IslandDeleteSubCommand<T, K>())
+        registerSubCommand(IslandFlagSubCommand<T, K>())
+        registerSubCommand(IslandHomeSubCommand<T, K>(serverType))
+        registerSubCommand(IslandInviteSubCommand<T, K>())
+        registerSubCommand(IslandJoinSubCommand<T, K>())
+        registerSubCommand(IslandSettingSubCommand<T, K>())
+        registerSubCommand(IslandVisitSubCommand<T, K>())
     }
 
     fun registerMainCommand(vararg aliases: String) {
         Commands.create()
             .assertPlayer()
             .handler {
-                val players: PlayerService = Services.load(PlayerService::class.java)
-                val server = Services.load(ServerDataService::class.java).id()
-                val islands: IslandService<T> = Services.load(IslandService::class.java) as IslandService<T>
+                val players: IslandPlayerService<K> =
+                    Services.load(IslandPlayerService::class.java) as IslandPlayerService<K>
+                val islands: IslandService<T, K> = Services.load(IslandService::class.java) as IslandService<T, K>
 
                 if (it.args().isEmpty()) {
                     val sender = it.sender()
 
                     players.get(sender.uniqueId).thenAcceptAsync { player ->
                         val island = islands.getIslandFor(player)?.get()
-                        IslandControlGui(sender, island, server).open()
+                        IslandControlGui<T, K>(sender, island).open()
                     }
                     return@handler
                 }

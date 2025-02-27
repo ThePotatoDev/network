@@ -16,8 +16,7 @@ import org.redisson.api.RFuture
 import java.util.*
 
 @Controller(
-    id = "economy-controller",
-    ignoredBinds = [ServerType.HUB]
+    id = "economy-controller"
 )
 class EconomyController(mode: GameModeType) : PlayerEconomyService {
 

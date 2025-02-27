@@ -118,7 +118,7 @@ class IslandWarpGui<T : Island, K : IslandPlayer>(
                             players.transaction(
                                 player.setNextServerSpawnPos(
                                     ServerType.ONEBLOCK_SERVER,
-                                    PositionDirector.TELEPORT_ISLAND_WARP,
+                                    PositionDirector.ISLAND_TELEPORT_DIRECTOR,
                                     warp
                                 ),
                                 onSuccess = {

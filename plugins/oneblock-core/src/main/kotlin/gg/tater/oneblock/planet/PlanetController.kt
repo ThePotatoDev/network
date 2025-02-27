@@ -2,7 +2,6 @@ package gg.tater.oneblock.planet
 
 import gg.tater.oneblock.planet.model.PlanetPlayerData
 import gg.tater.shared.annotation.Controller
-import gg.tater.shared.server.model.ServerType
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
@@ -10,8 +9,7 @@ import org.redisson.api.RFuture
 import java.util.*
 
 @Controller(
-    id = "planet-controller",
-    ignoredBinds = [ServerType.HUB]
+    id = "planet-controller"
 )
 class PlanetController : PlanetService {
 

@@ -29,7 +29,7 @@ class IslandSettingSubCommand<T : Island, K : IslandPlayer> : IslandSubCommand<T
                 return@thenAcceptAsync
             }
 
-            IslandSettingGui(sender, island).open()
+            IslandSettingGui<T, K>(sender, island).open()
         }
     }
 }
