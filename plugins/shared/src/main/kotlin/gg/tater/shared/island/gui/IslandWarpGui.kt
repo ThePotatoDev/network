@@ -31,7 +31,7 @@ class IslandWarpGui<T : Island, K : IslandPlayer>(
 ) :
     PaginatedGui(
         {
-            getItems(it, opener, island, islands, players)
+            getItems(it, opener, island, players, islands)
         }, opener,
         BUILDER
     ) {

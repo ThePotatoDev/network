@@ -4,12 +4,14 @@ import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.command.IslandSubCommand
 import gg.tater.shared.island.message.IslandDeleteRequest
+import gg.tater.shared.island.player.IslandPlayer
+import gg.tater.shared.island.player.IslandPlayerService
 import gg.tater.shared.redis.Redis
 import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
 import org.bukkit.entity.Player
 
-class IslandDeleteSubCommand<T : Island> : IslandSubCommand<T> {
+class IslandDeleteSubCommand<T : Island, K: IslandPlayer> : IslandSubCommand<T> {
 
     override fun id(): String {
         return "delete"
@@ -17,9 +19,9 @@ class IslandDeleteSubCommand<T : Island> : IslandSubCommand<T> {
 
     override fun handle(context: CommandContext<Player>) {
         val redis = Services.load(Redis::class.java)
-        val players: PlayerService = Services.load(PlayerService::class.java)
-        val islands: IslandService<T> =
-            Services.load(IslandService::class.java) as IslandService<T>
+        val players: IslandPlayerService<K> = Services.load(IslandPlayerService::class.java) as IslandPlayerService<K>
+        val islands: IslandService<T, K> =
+            Services.load(IslandService::class.java) as IslandService<T, K>
 
         val sender = context.sender()
         val uuid = sender.uniqueId

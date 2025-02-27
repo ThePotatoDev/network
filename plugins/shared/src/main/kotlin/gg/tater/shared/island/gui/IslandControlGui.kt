@@ -4,6 +4,7 @@ import gg.tater.shared.ARROW_TEXT
 import gg.tater.shared.fetchMojangProfile
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.flag.IslandFlagGui
+import gg.tater.shared.island.player.IslandPlayer
 import gg.tater.shared.island.setting.IslandSettingGui
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.server.ServerDataService
@@ -16,10 +17,9 @@ import me.lucko.helper.menu.scheme.StandardSchemeMappings
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-class IslandControlGui<T : Island>(
+class IslandControlGui<T : Island, K: IslandPlayer>(
     player: Player,
     private val island: T?,
-    private val server: String = Services.load(ServerDataService::class.java).id(),
     private val redis: Redis = Services.load(Redis::class.java),
 ) :
     Gui(player, 3, "Island Control") {
@@ -104,7 +104,7 @@ class IslandControlGui<T : Island>(
                     " "
                 )
                 .build {
-                    IslandWarpGui(player, island).open()
+                    IslandWarpGui<T, K>(player, island).open()
                 })
 
         setItem(
@@ -137,7 +137,7 @@ class IslandControlGui<T : Island>(
                             fetchMojangProfile(it.key).get()
                         }
                     }.thenAcceptSync {
-                        IslandMemberGui(player, island, it).open()
+                        IslandMemberGui<T, K>(player, island, it).open()
                     }
                 })
 
@@ -152,7 +152,7 @@ class IslandControlGui<T : Island>(
                     " "
                 )
                 .build {
-                    IslandFlagGui(player, island, redis).open()
+                    IslandFlagGui<T, K>(player, island, redis).open()
                 })
 
         setItem(

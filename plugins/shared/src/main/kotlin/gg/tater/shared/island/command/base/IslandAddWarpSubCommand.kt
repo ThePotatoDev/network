@@ -3,21 +3,23 @@ package gg.tater.shared.island.command.base
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.command.IslandSubCommand
+import gg.tater.shared.island.player.IslandPlayer
+import gg.tater.shared.island.player.IslandPlayerService
 import gg.tater.shared.position.WrappedPosition
 import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
 import org.bukkit.entity.Player
 
-class IslandAddWarpSubCommand<T : Island> : IslandSubCommand<T> {
+class IslandAddWarpSubCommand<T : Island, K : IslandPlayer> : IslandSubCommand<T> {
 
     override fun id(): String {
         return "addwarp"
     }
 
     override fun handle(context: CommandContext<Player>) {
-        val players: PlayerService = Services.load(PlayerService::class.java)
-        val islands: IslandService<T> =
-            Services.load(IslandService::class.java) as IslandService<T>
+        val players: IslandPlayerService<K> = Services.load(IslandPlayerService::class.java) as IslandPlayerService<K>
+        val islands: IslandService<T, K> =
+            Services.load(IslandService::class.java) as IslandService<T, K>
 
         if (context.args().size != 2) {
             context.reply("&cUsage: /is addwarp <name>")

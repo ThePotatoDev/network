@@ -4,12 +4,14 @@ import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.command.IslandSubCommand
 import gg.tater.shared.island.flag.model.FlagType
+import gg.tater.shared.island.player.IslandPlayer
+import gg.tater.shared.island.player.IslandPlayerService
 import me.lucko.helper.Services
 import me.lucko.helper.command.context.CommandContext
 import net.luckperms.api.LuckPermsProvider
 import org.bukkit.entity.Player
 
-class IslandInviteSubCommand<T : Island> :
+class IslandInviteSubCommand<T : Island, K: IslandPlayer> :
     IslandSubCommand<T> {
 
     override fun id(): String {
@@ -20,9 +22,9 @@ class IslandInviteSubCommand<T : Island> :
         val perms = LuckPermsProvider.get()
         val sender = context.sender()
 
-        val players: PlayerService = Services.load(PlayerService::class.java)
-        val islands: IslandService<T> =
-            Services.load(IslandService::class.java) as IslandService<T>
+        val players: IslandPlayerService<K> = Services.load(IslandPlayerService::class.java) as IslandPlayerService<K>
+        val islands: IslandService<T, K> =
+            Services.load(IslandService::class.java) as IslandService<T, K>
 
         players.get(sender.uniqueId).thenAcceptAsync { player ->
             val island = islands.getIslandFor(player)?.get()

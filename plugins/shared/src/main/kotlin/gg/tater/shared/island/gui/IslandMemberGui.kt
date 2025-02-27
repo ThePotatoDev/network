@@ -95,7 +95,7 @@ class IslandMemberGui<T : Island, K : IslandPlayer>(
             gui: PaginatedGui,
             island: T,
             offline: Map<UUID, Pair<String, String>>,
-            islands: IslandService<T, K> = Services.load(IslandService::class.java) as IslandService<T, K>
+            islands: IslandService<T, K>
         ): List<Item> {
             val player = gui.player
 

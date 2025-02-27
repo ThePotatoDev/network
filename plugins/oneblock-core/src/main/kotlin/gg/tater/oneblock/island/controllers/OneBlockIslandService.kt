@@ -6,6 +6,7 @@ import gg.tater.oneblock.player.OneBlockPlayerService
 import gg.tater.shared.annotation.Controller
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.message.placement.IslandPlacementRequest
+import gg.tater.shared.island.player.position.PositionDirector
 import gg.tater.shared.position.WrappedPosition
 import gg.tater.shared.redis.Redis
 import gg.tater.shared.redis.transactional
@@ -72,7 +73,7 @@ class OneBlockIslandService : IslandService<OneBlockIsland, OneBlockPlayer>(Game
         player.islandId = newIsland.id
 
         players.transaction(
-            player.setNextServerSpawnPos(ServerType.ONEBLOCK_SERVER, newIsland.spawn),
+            player.setNextServerSpawnPos(ServerType.ONEBLOCK_SERVER, PositionDirector.TELEPORT_ISLAND_SPAWN, newIsland.spawn),
             onSuccess = {
                 redis.publish(
                     IslandPlacementRequest(

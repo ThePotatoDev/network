@@ -3,6 +3,8 @@ package gg.tater.shared.island.command.base
 import gg.tater.shared.island.Island
 import gg.tater.shared.island.IslandService
 import gg.tater.shared.island.command.IslandSubCommand
+import gg.tater.shared.island.player.IslandPlayer
+import gg.tater.shared.island.player.IslandPlayerService
 import gg.tater.shared.player.position.PlayerPositionResolver
 import gg.tater.shared.server.ServerDataService
 import gg.tater.shared.server.model.ServerType
@@ -12,7 +14,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-class IslandHomeSubCommand<T : Island> : IslandSubCommand<T> {
+class IslandHomeSubCommand<T : Island, K : IslandPlayer> : IslandSubCommand<T> {
 
     override fun id(): String {
         return "home"
@@ -20,9 +22,9 @@ class IslandHomeSubCommand<T : Island> : IslandSubCommand<T> {
 
     override fun handle(context: CommandContext<Player>) {
         val sender = context.sender()
-        val players: PlayerService = Services.load(PlayerService::class.java)
-        val islands: IslandService<T> =
-            Services.load(IslandService::class.java) as IslandService<T>
+        val players: IslandPlayerService<K> = Services.load(IslandPlayerService::class.java) as IslandPlayerService<K>
+        val islands: IslandService<T, K> =
+            Services.load(IslandService::class.java) as IslandService<T, K>
         val server = Services.load(ServerDataService::class.java).id()
 
         players.get(sender.uniqueId).thenAcceptAsync { player ->
