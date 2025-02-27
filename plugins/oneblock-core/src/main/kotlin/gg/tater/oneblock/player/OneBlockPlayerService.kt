@@ -34,5 +34,6 @@ class OneBlockPlayerService : IslandPlayerService<OneBlockPlayer> {
 
     override fun setup(consumer: TerminableConsumer) {
         Services.provide(OneBlockPlayerService::class.java, this)
+        Services.provide(IslandPlayerService::class.java, this)
     }
 }

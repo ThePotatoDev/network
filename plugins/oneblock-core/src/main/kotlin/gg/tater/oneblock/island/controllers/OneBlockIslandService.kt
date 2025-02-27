@@ -130,5 +130,6 @@ class OneBlockIslandService : IslandService<OneBlockIsland, OneBlockPlayer>(Game
 
     override fun setup(consumer: TerminableConsumer) {
         Services.provide(OneBlockIslandService::class.java, this)
+        Services.provide(IslandService::class.java, this)
     }
 }
