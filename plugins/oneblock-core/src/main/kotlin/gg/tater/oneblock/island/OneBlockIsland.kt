@@ -1,9 +1,9 @@
 package gg.tater.oneblock.island
 
 import com.google.gson.*
-import gg.tater.shared.JsonAdapter
-import gg.tater.shared.island.Island
-import gg.tater.shared.position.WrappedPosition
+import gg.tater.core.JsonAdapter
+import gg.tater.core.island.Island
+import gg.tater.core.position.WrappedPosition
 import java.lang.reflect.Type
 import java.util.*
 

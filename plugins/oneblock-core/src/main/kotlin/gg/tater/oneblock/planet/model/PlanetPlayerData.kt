@@ -1,8 +1,8 @@
 package gg.tater.oneblock.planet.model
 
 import com.google.gson.*
-import gg.tater.shared.JsonAdapter
-import gg.tater.shared.annotation.Mapping
+import gg.tater.core.JsonAdapter
+import gg.tater.core.annotation.Mapping
 import java.lang.reflect.Type
 import java.util.*
 

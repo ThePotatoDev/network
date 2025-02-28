@@ -1,6 +1,6 @@
 package gg.tater.hub
 
-import gg.tater.shared.plugin.GameServerPlugin
+import gg.tater.core.plugin.GameServerPlugin
 
 class HubPlugin: GameServerPlugin() {
 

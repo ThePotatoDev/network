@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    api(project(":plugins:shared"))
+    compileOnly(project(":plugins:core"))
 
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("me.lucko:helper:5.6.14")
@@ -64,7 +64,7 @@ paper {
     foliaSupported = false
     apiVersion = "1.20"
     serverDependencies {
-        register("Core") {
+        register("core") {
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
             required = true
         }

@@ -4,8 +4,8 @@ import com.velocitypowered.api.command.SimpleCommand
 import com.velocitypowered.api.proxy.ConsoleCommandSource
 import com.velocitypowered.api.proxy.Player
 import com.velocitypowered.api.proxy.ProxyServer
-import gg.tater.shared.server.model.ServerType
-import gg.tater.shared.redis.Redis
+import gg.tater.core.server.model.ServerType
+import gg.tater.core.redis.Redis
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 

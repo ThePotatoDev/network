@@ -1,12 +1,12 @@
 package gg.tater.oneblock.spawn
 
 import gg.tater.oneblock.player.OneBlockPlayerService
-import gg.tater.shared.annotation.Controller
-import gg.tater.shared.island.player.position.PositionDirector
-import gg.tater.shared.player.PlayerRedirectRequest
-import gg.tater.shared.redis.Redis
-import gg.tater.shared.server.ServerDataService
-import gg.tater.shared.server.model.ServerType
+import gg.tater.core.annotation.Controller
+import gg.tater.core.island.player.position.PositionDirector
+import gg.tater.core.player.PlayerRedirectRequest
+import gg.tater.core.redis.Redis
+import gg.tater.core.server.ServerDataService
+import gg.tater.core.server.model.ServerType
 import me.lucko.helper.Commands
 import me.lucko.helper.Events
 import me.lucko.helper.Services

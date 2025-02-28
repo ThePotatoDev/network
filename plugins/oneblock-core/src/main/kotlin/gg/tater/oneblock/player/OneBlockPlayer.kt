@@ -1,8 +1,8 @@
 package gg.tater.oneblock.player
 
 import com.google.gson.*
-import gg.tater.shared.JsonAdapter
-import gg.tater.shared.island.player.IslandPlayer
+import gg.tater.core.JsonAdapter
+import gg.tater.core.island.player.IslandPlayer
 import java.lang.reflect.Type
 import java.util.*
 

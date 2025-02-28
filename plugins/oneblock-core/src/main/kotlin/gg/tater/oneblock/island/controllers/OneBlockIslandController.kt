@@ -7,10 +7,10 @@ import com.infernalsuite.aswm.loaders.redis.RedisLoader
 import gg.tater.oneblock.island.OneBlockIsland
 import gg.tater.oneblock.island.subcommand.OneBlockPhasesSubCommand
 import gg.tater.oneblock.player.OneBlockPlayer
-import gg.tater.shared.annotation.Controller
-import gg.tater.shared.island.IslandController
-import gg.tater.shared.redis.Redis
-import gg.tater.shared.server.model.ServerType
+import gg.tater.core.annotation.Controller
+import gg.tater.core.island.IslandController
+import gg.tater.core.redis.Redis
+import gg.tater.core.server.model.ServerType
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 

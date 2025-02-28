@@ -1,12 +1,12 @@
 package gg.tater.core
 
-import gg.tater.shared.network.Agones
-import gg.tater.shared.player.BasePlayerController
-import gg.tater.shared.player.pm.PlayerPrivateMessageController
-import gg.tater.shared.plugin.GameServerPlugin
-import gg.tater.shared.redis.Redis
-import gg.tater.shared.server.ServerDataService
-import gg.tater.shared.server.ServerStatusController
+import gg.tater.core.network.Agones
+import gg.tater.core.player.BasePlayerController
+import gg.tater.core.player.pm.PlayerPrivateMessageController
+import gg.tater.core.plugin.GameServerPlugin
+import gg.tater.core.redis.Redis
+import gg.tater.core.server.ServerDataService
+import gg.tater.core.server.ServerStatusController
 import io.github.cdimascio.dotenv.Dotenv
 import me.lucko.helper.Services
 import okhttp3.OkHttpClient

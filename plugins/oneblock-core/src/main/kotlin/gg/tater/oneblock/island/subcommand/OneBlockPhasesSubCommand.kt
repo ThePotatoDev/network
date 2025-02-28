@@ -1,7 +1,7 @@
 package gg.tater.oneblock.island.subcommand
 
 import gg.tater.oneblock.island.OneBlockIsland
-import gg.tater.shared.island.command.IslandSubCommand
+import gg.tater.core.island.command.IslandSubCommand
 import me.lucko.helper.command.context.CommandContext
 import org.bukkit.entity.Player
 

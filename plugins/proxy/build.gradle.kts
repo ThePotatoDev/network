@@ -11,7 +11,7 @@ dependencies {
     implementation("org.redisson:redisson:3.36.0")
     implementation("io.github.cdimascio:dotenv-java:3.0.0")
     implementation(kotlin("reflect"))
-    api(project(":plugins:shared"))
+    implementation(project(":plugins:core"))
 }
 
 tasks.shadowJar {

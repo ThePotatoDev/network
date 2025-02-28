@@ -5,12 +5,12 @@ import gg.tater.oneblock.island.controllers.OneBlockIslandService
 import gg.tater.oneblock.planet.PlanetController
 import gg.tater.oneblock.player.OneBlockPlayerService
 import gg.tater.oneblock.spawn.OneBlockSpawnController
-import gg.tater.shared.island.cache.IslandWorldCacheController
-import gg.tater.shared.player.auction.AuctionHouseController
-import gg.tater.shared.plugin.GameServerPlugin
-import gg.tater.shared.server.ServerDataService
-import gg.tater.shared.server.model.GameModeType
-import gg.tater.shared.server.model.ONEBLOCK_GAMEMODE_SERVERS
+import gg.tater.core.island.cache.IslandWorldCacheController
+import gg.tater.core.player.auction.AuctionHouseController
+import gg.tater.core.plugin.GameServerPlugin
+import gg.tater.core.server.ServerDataService
+import gg.tater.core.server.model.GameModeType
+import gg.tater.core.server.model.ONEBLOCK_GAMEMODE_SERVERS
 import me.lucko.helper.Services
 
 class OneBlockCorePlugin : GameServerPlugin() {

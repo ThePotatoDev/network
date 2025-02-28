@@ -1,8 +1,8 @@
 package gg.tater.oneblock.planet
 
 import gg.tater.oneblock.planet.model.PlanetPlayerData
-import gg.tater.shared.annotation.Controller
-import gg.tater.shared.redis.Redis
+import gg.tater.core.annotation.Controller
+import gg.tater.core.redis.Redis
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 import org.redisson.api.RFuture

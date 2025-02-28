@@ -2,8 +2,8 @@ package gg.tater.proxy.listener
 
 import com.velocitypowered.api.proxy.ProxyServer
 import com.velocitypowered.api.proxy.server.RegisteredServer
-import gg.tater.shared.player.PlayerRedirectRequest
-import gg.tater.shared.redis.Redis
+import gg.tater.core.player.PlayerRedirectRequest
+import gg.tater.core.redis.Redis
 
 class PlayerRedirectListener(private val proxy: ProxyServer, private val redis: Redis) {
 

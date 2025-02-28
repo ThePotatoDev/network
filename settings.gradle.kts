@@ -7,8 +7,6 @@ rootProject.name = "network"
 include("plugins")
 include("plugins:proxy")
 findProject("plugins:proxy")?.name = "proxy"
-include("plugins:shared")
-findProject("plugins:shared")?.name = "shared"
 
 include("servers:server")
 include("servers:spawn")

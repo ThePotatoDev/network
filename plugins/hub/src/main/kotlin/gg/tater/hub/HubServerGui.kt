@@ -1,6 +1,6 @@
 package gg.tater.hub
 
-import gg.tater.shared.redis.Redis
+import gg.tater.core.redis.Redis
 import me.lucko.helper.Services
 import me.lucko.helper.item.ItemStackBuilder
 import me.lucko.helper.menu.Gui

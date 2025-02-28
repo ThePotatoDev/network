@@ -1,8 +1,8 @@
 package gg.tater.proxy.listener
 
 import com.velocitypowered.api.proxy.ProxyServer
-import gg.tater.shared.island.message.placement.IslandPlacementResponse
-import gg.tater.shared.redis.Redis
+import gg.tater.core.island.message.placement.IslandPlacementResponse
+import gg.tater.core.redis.Redis
 
 class IslandPlacementListener(private val proxy: ProxyServer, private val redis: Redis) {
 
