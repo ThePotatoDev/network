@@ -13,6 +13,7 @@ dependencies {
     compileOnly("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
 
     implementation(kotlin("reflect"))
+
     implementation("org.redisson:redisson:3.36.0")
     implementation("io.github.cdimascio:dotenv-java:3.0.0")
     implementation("io.github.classgraph:classgraph:4.8.179")

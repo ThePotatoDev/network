@@ -25,6 +25,9 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
     override fun setup(consumer: TerminableConsumer) {
         val credential = Services.load(Redis.Credential::class.java)
 
+        this.loader = RedisLoader("redis://:${credential.password}@${credential.address}:${credential.port}")
+        this.template = AdvancedSlimePaperAPI.instance().readWorld(loader, "island_world_template", false, properties)
+
         registerSubCommand(OneBlockPhasesSubCommand())
         registerBaseSubCommands(ServerType.ONEBLOCK_SERVER)
 
@@ -32,9 +35,6 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
         registerBaseFlags(consumer)
         registerBaseSettings(consumer)
         registerMainCommand("island", "is", "ob", "oneblock")
-
-        this.loader = RedisLoader("redis://:${credential.password}@${credential.address}:${credential.port}")
-        this.template = AdvancedSlimePaperAPI.instance().readWorld(loader, "island_world_template", false, properties)
     }
 
     override fun loader(): SlimeLoader {

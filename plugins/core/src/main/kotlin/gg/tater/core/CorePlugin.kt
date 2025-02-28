@@ -46,9 +46,9 @@ class CorePlugin : GameServerPlugin(), ServerDataService {
             )
         )
 
-        useController(null, BasePlayerController::class)
-        useController(null, PlayerPrivateMessageController::class)
-        useController(null, ServerStatusController::class)
+        useController(BasePlayerController())
+        useController(PlayerPrivateMessageController())
+        useController(ServerStatusController())
     }
 
     override fun id(): String {

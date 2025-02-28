@@ -16,18 +16,14 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("me.lucko:helper:5.6.14")
     compileOnly("org.redisson:redisson:3.36.0")
-    compileOnly(kotlin("reflect"))
+    compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation(kotlin("reflect"))
 
     val scoreboardLibraryVersion = "2.2.1"
     implementation("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
     runtimeOnly("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
     runtimeOnly("net.megavex:scoreboard-library-modern:$scoreboardLibraryVersion:mojmap")
-}
-
-kotlin {
-    jvmToolchain(21)
 }
 
 tasks.shadowJar {
