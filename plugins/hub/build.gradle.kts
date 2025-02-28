@@ -7,7 +7,7 @@ plugins {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("me.lucko:helper:5.6.14")
-    implementation(project(":plugins:core"))
+    compileOnly(project(":plugins:core"))
 }
 
 tasks.shadowJar {
@@ -42,6 +42,11 @@ paper {
     foliaSupported = false
     apiVersion = "1.20"
     serverDependencies {
+        register("core") {
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+            required = true
+        }
+
         register("LuckPerms") {
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
             required = false

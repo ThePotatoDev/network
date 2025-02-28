@@ -2,6 +2,7 @@ package gg.tater.core
 
 import gg.tater.core.network.Agones
 import gg.tater.core.player.BasePlayerController
+import gg.tater.core.player.chat.PlayerChatController
 import gg.tater.core.player.pm.PlayerPrivateMessageController
 import gg.tater.core.plugin.GameServerPlugin
 import gg.tater.core.redis.Redis
@@ -49,6 +50,7 @@ class CorePlugin : GameServerPlugin(), ServerDataService {
         useController(BasePlayerController())
         useController(PlayerPrivateMessageController())
         useController(ServerStatusController())
+        useController(PlayerChatController())
     }
 
     override fun id(): String {
