@@ -31,7 +31,10 @@ open class IslandPlayer(
             return JsonObject().apply {
                 addProperty(UUID_FIELD, player.uuid.toString())
                 addProperty(NAME_FIELD, player.name)
-                addProperty(ISLAND_ID_FIELD, player.islandId.toString())
+
+                if (player.islandId != null) {
+                    addProperty(ISLAND_ID_FIELD, player.islandId.toString())
+                }
             }
         }
 
@@ -39,7 +42,12 @@ open class IslandPlayer(
             return (element as JsonObject).let {
                 val uuid = UUID.fromString(it.get(UUID_FIELD).asString)
                 val name = it.get(NAME_FIELD).asString
-                val islandId = UUID.fromString(it.get(ISLAND_ID_FIELD).asString)
+                var islandId: UUID? = null
+
+                if (it.has(ISLAND_ID_FIELD)) {
+                    islandId = UUID.fromString(it.get(UUID_FIELD).asString)
+                }
+
                 IslandPlayer(uuid, name, islandId)
             }
         }

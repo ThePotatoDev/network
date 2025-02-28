@@ -19,17 +19,10 @@ class OneBlockPlayer(uuid: UUID, name: String, override var islandId: UUID? = nu
 
     @JsonAdapter(OneBlockPlayer::class)
     class Adapter : JsonSerializer<OneBlockPlayer>, JsonDeserializer<OneBlockPlayer> {
-//        private val baseAdapter = IslandPlayer.Adapter()
+        private val baseAdapter = IslandPlayer.Adapter()
 
         override fun serialize(player: OneBlockPlayer, type: Type, context: JsonSerializationContext): JsonElement {
-            return JsonObject().apply {
-                addProperty(UUID_FIELD, player.uuid.toString())
-                addProperty(NAME_FIELD, player.name)
-
-                if (player.islandId != null) {
-                    addProperty(ISLAND_ID_FIELD, player.islandId.toString())
-                }
-            }
+            return baseAdapter.serialize(player, type, context)
         }
 
         override fun deserialize(
@@ -37,17 +30,8 @@ class OneBlockPlayer(uuid: UUID, name: String, override var islandId: UUID? = nu
             type: Type,
             context: JsonDeserializationContext
         ): OneBlockPlayer {
-            return (element as JsonObject).let {
-                val uuid = UUID.fromString(it.get(UUID_FIELD).asString)
-                val name = it.get(NAME_FIELD).asString
-                var islandId: UUID? = null
-
-                if (it.has(ISLAND_ID_FIELD)) {
-                    islandId = UUID.fromString(it.get(ISLAND_ID_FIELD).asString)
-                }
-
-                OneBlockPlayer(uuid, name, islandId)
-            }
+            val base = baseAdapter.deserialize(element, type, context)
+            return OneBlockPlayer(base.uuid, base.name, base.islandId)
         }
     }
 }
