@@ -38,9 +38,9 @@ class OneBlockSpawnController : TerminableModule {
         val serverType = Services.load(ServerDataService::class.java).serverType()
 
         // Set basic world settings
-        val world = Bukkit.getWorld("world")!!
-        world.setGameRule(GameRule.DO_MOB_SPAWNING, false)
-        world.difficulty = Difficulty.PEACEFUL
+        val spawnWorld = Bukkit.getWorld("world")!!
+        spawnWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false)
+        spawnWorld.difficulty = Difficulty.PEACEFUL
 
         Commands.create()
             .assertPlayer()

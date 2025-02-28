@@ -25,12 +25,12 @@ class OneBlockCorePlugin : GameServerPlugin() {
 
         // Bind non-data related controllers if on a OneBlock server
         if (ONEBLOCK_GAMEMODE_SERVERS.contains(serverType)) {
-            useController(AuctionHouseController(GameModeType.ONEBLOCK))
+            useController(IslandWorldCacheController<OneBlockIsland, OneBlockPlayer>())
 
+            useController(AuctionHouseController(GameModeType.ONEBLOCK))
             useController(OneBlockIslandController())
             useController(OneBlockSpawnController())
             useController(PlanetController())
-            useController(IslandWorldCacheController<OneBlockIsland, OneBlockPlayer>())
         }
     }
 }

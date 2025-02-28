@@ -27,6 +27,8 @@ dependencies {
 }
 
 tasks.shadowJar {
+    exclude("kotlin/**") // Prevent Kotlin from being bundled separately
+
     archiveBaseName.set("oneblock-core")
     archiveClassifier.set("")
     archiveVersion.set("")
