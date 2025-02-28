@@ -14,9 +14,11 @@ include("servers:proxy")
 include("servers")
 include("servers:hub")
 findProject(":servers:hub")?.name = "hub"
+
 include("plugins:hub")
-findProject(":plugins:hub")?.name = "hub"
 include("plugins:core")
-findProject(":plugins:core")?.name = "core"
 include("plugins:oneblock-core")
+
+findProject(":plugins:hub")?.name = "hub"
+findProject(":plugins:core")?.name = "core"
 findProject(":plugins:oneblock-core")?.name = "oneblock-core"

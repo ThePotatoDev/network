@@ -13,8 +13,12 @@ enum class ServerType(val spawn: WrappedPosition? = null) {
 }
 
 fun String.toServerType(): ServerType {
-    val split = this.split("-")[0]
-    return ServerType.valueOf(split)
+    val split = this.split("-")
+    if (split.size >= 2) {
+        return ServerType.valueOf("${split[0]}_${split[1]}".uppercase())
+    }
+
+    return ServerType.valueOf(split[0].uppercase())
 }
 
 val ONEBLOCK_GAMEMODE_SERVERS: Set<ServerType> =

@@ -1,12 +1,12 @@
 apiVersion: agones.dev/v1
 kind: Fleet
 metadata:
-  name: server
+  name: oneblock-server
 spec:
   template:
     metadata:
       labels:
-        app: server
+        app: oneblock-server
     spec:
       health:
         disabled: false
@@ -23,7 +23,7 @@ spec:
       template:
         metadata:
           labels:
-            app: server
+            app: oneblock-server
         spec:
           containers:
             - name: server
@@ -45,7 +45,7 @@ metadata:
 spec:
   # The name of the fleet to attach to and control. Must be an existing Fleet in the same namespace
   # as this FleetAutoscaler
-  fleetName: server
+  fleetName: oneblock-server
   # The autoscaling policy
   policy:
     # type of the policy. for now, only Buffer is available
