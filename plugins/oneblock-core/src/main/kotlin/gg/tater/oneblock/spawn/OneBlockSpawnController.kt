@@ -1,12 +1,13 @@
 package gg.tater.oneblock.spawn
 
-import gg.tater.oneblock.player.OneBlockPlayerService
 import gg.tater.core.annotation.Controller
+import gg.tater.core.island.player.IslandPlayerService
 import gg.tater.core.island.player.position.PositionDirector
 import gg.tater.core.player.PlayerRedirectRequest
 import gg.tater.core.redis.Redis
 import gg.tater.core.server.ServerDataService
 import gg.tater.core.server.model.ServerType
+import gg.tater.oneblock.player.OneBlockPlayerService
 import me.lucko.helper.Commands
 import me.lucko.helper.Events
 import me.lucko.helper.Services
@@ -24,6 +25,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.weather.WeatherChangeEvent
@@ -36,6 +38,7 @@ class OneBlockSpawnController : TerminableModule {
     override fun setup(consumer: TerminableConsumer) {
         val redis = Services.load(Redis::class.java)
         val serverType = Services.load(ServerDataService::class.java).serverType()
+        val players: OneBlockPlayerService = Services.load(OneBlockPlayerService::class.java)
 
         // Set basic world settings
         val spawnWorld = Bukkit.getWorld("world")!!
@@ -46,7 +49,6 @@ class OneBlockSpawnController : TerminableModule {
             .assertPlayer()
             .handler {
                 val sender = it.sender()
-                val players: OneBlockPlayerService = Services.load(OneBlockPlayerService::class.java)
 
                 players.get(sender.uniqueId).thenAcceptAsync { player ->
                     if (player == null) {
@@ -72,12 +74,14 @@ class OneBlockSpawnController : TerminableModule {
                         return@thenAcceptAsync
                     }
 
+                    player.setNextServerSpawnPos(
+                        ServerType.ONEBLOCK_SPAWN,
+                        PositionDirector.WORLD_TELEPORT_DIRECTOR,
+                        spawn
+                    )
+
                     players.transaction(
-                        player.setNextServerSpawnPos(
-                            ServerType.ONEBLOCK_SPAWN,
-                            PositionDirector.WORLD_TELEPORT_DIRECTOR,
-                            spawn
-                        ), onSuccess = {
+                        player, onSuccess = {
                             redis.publish(PlayerRedirectRequest(player.uuid, ServerType.ONEBLOCK_SPAWN))
                         })
                 }
@@ -88,6 +92,16 @@ class OneBlockSpawnController : TerminableModule {
         if (serverType != ServerType.ONEBLOCK_SPAWN) {
             return
         }
+
+        Events.subscribe(AsyncPlayerPreLoginEvent::class.java, EventPriority.HIGHEST)
+            .filter(EventFilters.ignoreDisallowedPreLogin())
+            .handler {
+                val uuid = it.uniqueId
+                val name = it.name
+                players.compute(name, uuid)
+                println("Computed")
+            }
+            .bindWith(consumer)
 
         Events.subscribe(EntityDamageEvent::class.java, EventPriority.LOWEST)
             .filter(EventFilters.ignoreCancelled())

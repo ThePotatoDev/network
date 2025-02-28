@@ -115,12 +115,14 @@ class IslandWarpGui<T : Island, K : IslandPlayer>(
 
                         val uuid = opener.uniqueId
                         players.get(uuid).thenAcceptAsync { player ->
+                            player.setNextServerSpawnPos(
+                                ServerType.ONEBLOCK_SERVER,
+                                PositionDirector.ISLAND_TELEPORT_DIRECTOR,
+                                warp
+                            )
+
                             players.transaction(
-                                player.setNextServerSpawnPos(
-                                    ServerType.ONEBLOCK_SERVER,
-                                    PositionDirector.ISLAND_TELEPORT_DIRECTOR,
-                                    warp
-                                ),
+                                player,
                                 onSuccess = {
                                     islands.directToOccupiedServer(opener, island)
                                 })

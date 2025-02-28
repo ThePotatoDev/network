@@ -10,8 +10,8 @@ import java.util.*
 open class IslandPlayer(
     val uuid: UUID,
     val name: String,
-    var islandId: UUID?,
-    val spawns: MutableMap<ServerType, WrappedPosition> = mutableMapOf()
+    open var islandId: UUID? = null,
+    private val spawns: MutableMap<ServerType, WrappedPosition> = mutableMapOf()
 ) {
 
     private companion object {

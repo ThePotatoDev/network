@@ -88,12 +88,14 @@ class IslandVisitSubCommand<T : Island, K : IslandPlayer> : IslandSubCommand<T> 
                 return@thenAcceptAsync
             }
 
+            data.setNextServerSpawnPos(
+                ServerType.ONEBLOCK_SERVER,
+                PositionDirector.ISLAND_TELEPORT_DIRECTOR,
+                island.spawn
+            )
+
             players.transaction(
-                data.setNextServerSpawnPos(
-                    ServerType.ONEBLOCK_SERVER,
-                    PositionDirector.ISLAND_TELEPORT_DIRECTOR,
-                    island.spawn
-                ),
+                data,
                 onSuccess = {
                     islands.directToOccupiedServer(sender, island)
                 })

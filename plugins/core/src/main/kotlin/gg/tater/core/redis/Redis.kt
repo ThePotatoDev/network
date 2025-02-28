@@ -3,9 +3,10 @@ package gg.tater.core.redis
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import gg.tater.core.Json
+import gg.tater.core.Mapping
+import gg.tater.core.Mappings
 import gg.tater.core.annotation.InvocationContext
 import gg.tater.core.annotation.InvocationContextType
-import gg.tater.core.annotation.Mapping
 import gg.tater.core.annotation.Message
 import gg.tater.core.findAnnotatedClasses
 import gg.tater.core.proxy.ProxyDataModel
@@ -43,31 +44,9 @@ class Redis(credential: Credential) {
             const val DATA_FIELD = "data"
         }
 
-        private val mappingsByClazz: MutableMap<KClass<*>, String> = mutableMapOf()
-        private val mappingsById: MutableMap<String, KClass<*>> = mutableMapOf()
-
-        /**
-         * Initialize the mappings for the codec
-         * Mappings are ID references to POJO's that are serialized and deserialized
-         * ID's should not change once a mapping is created and actively used in production.
-         * If a mapping is changed, the Redis map should be cleared to prevent deserialization errors.
-         *
-         * The overarching goal of the mapping system is to allow POJO classes
-         * to be relocated or renamed without breaking the serialization/deserialization process.
-         *
-         * If a mapping does not exist for an object, the class name will be used as the mapping. (This is not recommended but required for classes such as string, int, etc.)
-         */
-        init {
-            for (clazz in findAnnotatedClasses(Mapping::class)) {
-                val mapping = clazz.findAnnotation<Mapping>() ?: continue
-                mappingsById[mapping.id] = clazz
-                mappingsByClazz[clazz] = mapping.id
-            }
-        }
-
         private val encoder = Encoder { obj ->
             try {
-                val mapping = mappingsByClazz[obj::class]
+                val mapping = Mappings.getMappingByClazz(obj::class)
                     ?: obj::class.java.name // If the class mapping is not registered, use the simple name
 
                 val json = JsonObject().apply {
@@ -88,11 +67,9 @@ class Redis(credential: Credential) {
                 val mapping = json.get(MAPPING_FIELD).asString
                 val data = json.get(DATA_FIELD).asString
 
-                var clazz: KClass<*>? = mappingsById[mapping]
+                var clazz: KClass<*>? = Mappings.getMappingById(mapping)
                 if (clazz == null) {
-                    clazz = mappingsById.computeIfAbsent(mapping) {
-                        Class.forName(mapping).kotlin
-                    }
+                    clazz = Mappings.computeById(mapping)
                 }
 
                 Json.INSTANCE.fromJson(data, clazz.java)

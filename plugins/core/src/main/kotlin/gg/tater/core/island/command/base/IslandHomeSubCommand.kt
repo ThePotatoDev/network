@@ -54,8 +54,9 @@ class IslandHomeSubCommand<T : Island, K : IslandPlayer>(private val islandServe
                 return@thenAcceptAsync
             }
 
+            player.setNextServerSpawnPos(islandServerType, PositionDirector.ISLAND_TELEPORT_DIRECTOR, island.spawn)
             players.transaction(
-                player.setNextServerSpawnPos(islandServerType, PositionDirector.ISLAND_TELEPORT_DIRECTOR, island.spawn),
+                player,
                 onSuccess = {
                     islands.directToOccupiedServer(sender, island)
                 })

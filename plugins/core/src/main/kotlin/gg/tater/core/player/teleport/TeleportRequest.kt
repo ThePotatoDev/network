@@ -3,7 +3,7 @@ package gg.tater.core.player.teleport
 import com.google.gson.*
 import gg.tater.core.Json
 import gg.tater.core.JsonAdapter
-import gg.tater.core.annotation.Mapping
+import gg.tater.core.Mapping
 import gg.tater.core.position.WrappedPosition
 import java.lang.reflect.Type
 import java.util.*

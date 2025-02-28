@@ -1,5 +1,7 @@
 package gg.tater.oneblock
 
+import gg.tater.core.Json
+import gg.tater.core.Mappings
 import gg.tater.core.island.cache.IslandWorldCacheController
 import gg.tater.core.player.auction.AuctionHouseController
 import gg.tater.core.plugin.GameServerPlugin
@@ -18,6 +20,9 @@ import me.lucko.helper.Services
 class OneBlockCorePlugin : GameServerPlugin() {
 
     override fun enable() {
+        Mappings.loadMappings()
+        Json.registerAdapters()
+
         val serverType = Services.load(ServerDataService::class.java).serverType()
 
         useController(OneBlockIslandService())

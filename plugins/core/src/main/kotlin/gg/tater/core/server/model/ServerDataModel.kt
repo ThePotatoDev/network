@@ -2,7 +2,7 @@ package gg.tater.core.server.model
 
 import com.google.gson.*
 import gg.tater.core.JsonAdapter
-import gg.tater.core.annotation.Mapping
+import gg.tater.core.Mapping
 import java.lang.reflect.Type
 
 @Mapping("server_data_model")

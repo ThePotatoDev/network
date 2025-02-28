@@ -1,8 +1,9 @@
 package gg.tater.core.island.message.placement
 
 import com.google.gson.*
+import gg.tater.core.Json
 import gg.tater.core.JsonAdapter
-import gg.tater.core.annotation.Mapping
+import gg.tater.core.Mapping
 import gg.tater.core.annotation.Message
 import gg.tater.core.island.Island
 import gg.tater.core.server.model.ServerDataModel

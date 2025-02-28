@@ -1,8 +1,9 @@
 package gg.tater.core.player.kit.model
 
 import com.google.gson.*
+import gg.tater.core.Json
 import gg.tater.core.JsonAdapter
-import gg.tater.core.annotation.Mapping
+import gg.tater.core.Mapping
 import java.lang.reflect.Type
 import java.time.Instant
 

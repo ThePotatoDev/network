@@ -10,8 +10,8 @@ interface IslandPlayerService<T : IslandPlayer> : TerminableModule {
 
     fun get(uuid: UUID): RFuture<T>
 
-    fun save(data: T): RFuture<Boolean>
+    fun save(data: T): RFuture<T>
 
-    fun transaction(data: IslandPlayer, onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {})
+    fun transaction(data: T, onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {})
 
 }

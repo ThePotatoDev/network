@@ -2,11 +2,13 @@ package gg.tater.oneblock.island
 
 import com.google.gson.*
 import gg.tater.core.JsonAdapter
+import gg.tater.core.Mapping
 import gg.tater.core.island.Island
 import gg.tater.core.position.WrappedPosition
 import java.lang.reflect.Type
 import java.util.*
 
+@Mapping("oneblock_islands")
 class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String, var level: Int = 1) : Island(
     id,
     ownerId,

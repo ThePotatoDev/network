@@ -29,6 +29,9 @@ class CorePlugin : GameServerPlugin(), ServerDataService {
             return
         }
 
+        Mappings.loadMappings()
+        Json.registerAdapters()
+
         this.serverId = server
         Services.provide(ServerDataService::class.java, this)
 

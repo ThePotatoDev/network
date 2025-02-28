@@ -2,11 +2,14 @@ package gg.tater.oneblock.player
 
 import com.google.gson.*
 import gg.tater.core.JsonAdapter
+import gg.tater.core.Mapping
 import gg.tater.core.island.player.IslandPlayer
 import java.lang.reflect.Type
 import java.util.*
 
-class OneBlockPlayer(uuid: UUID, name: String, islandId: UUID?) : IslandPlayer(uuid, name, islandId) {
+@Mapping("oneblock_players")
+class OneBlockPlayer(uuid: UUID, name: String, override var islandId: UUID? = null) :
+    IslandPlayer(uuid, name, islandId) {
 
     private companion object {
         const val UUID_FIELD = "uuid"
@@ -27,7 +30,7 @@ class OneBlockPlayer(uuid: UUID, name: String, islandId: UUID?) : IslandPlayer(u
             type: Type,
             context: JsonDeserializationContext
         ): OneBlockPlayer {
-            TODO("Not yet implemented")
+            return baseAdapter.deserialize(element, type, context) as OneBlockPlayer
         }
     }
 }

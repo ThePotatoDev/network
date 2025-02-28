@@ -2,7 +2,7 @@ package gg.tater.core.position
 
 import com.google.gson.*
 import gg.tater.core.JsonAdapter
-import gg.tater.core.annotation.Mapping
+import gg.tater.core.Mapping
 import org.bukkit.Location
 import java.lang.reflect.Type
 

@@ -2,7 +2,7 @@ package gg.tater.core.player.teleport.message
 
 import com.google.gson.*
 import gg.tater.core.Json
-import gg.tater.core.annotation.Mapping
+import gg.tater.core.Mapping
 import gg.tater.core.annotation.Message
 import gg.tater.core.player.teleport.TeleportRequest
 import java.lang.reflect.Type

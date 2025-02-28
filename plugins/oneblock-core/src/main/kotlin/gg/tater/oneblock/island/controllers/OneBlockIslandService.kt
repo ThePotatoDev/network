@@ -71,12 +71,14 @@ class OneBlockIslandService : IslandService<OneBlockIsland, OneBlockPlayer>(Game
         val players = Services.load(OneBlockPlayerService::class.java)
         player.islandId = newIsland.id
 
+        player.setNextServerSpawnPos(
+            ServerType.ONEBLOCK_SERVER,
+            PositionDirector.ISLAND_TELEPORT_DIRECTOR,
+            newIsland.spawn
+        )
+
         players.transaction(
-            player.setNextServerSpawnPos(
-                ServerType.ONEBLOCK_SERVER,
-                PositionDirector.ISLAND_TELEPORT_DIRECTOR,
-                newIsland.spawn
-            ),
+            player,
             onSuccess = {
                 redis.publish(
                     IslandPlacementRequest(

@@ -1,8 +1,8 @@
 package gg.tater.oneblock.player
 
-import gg.tater.core.island.player.IslandPlayer
 import gg.tater.core.island.player.IslandPlayerService
 import gg.tater.core.redis.Redis
+import gg.tater.core.redis.transactional
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 import org.redisson.api.RFuture
@@ -17,19 +17,27 @@ class OneBlockPlayerService : IslandPlayerService<OneBlockPlayer> {
     private val redis = Services.load(Redis::class.java)
 
     override fun compute(name: String, uuid: UUID): RFuture<OneBlockPlayer> {
-        TODO("Not yet implemented")
+        return redis.client.getMap<UUID, OneBlockPlayer>(PLAYER_MAP_NAME)
+            .computeIfAbsentAsync(uuid) {
+                OneBlockPlayer(uuid, name)
+            }
     }
 
     override fun get(uuid: UUID): RFuture<OneBlockPlayer> {
-        TODO("Not yet implemented")
+        return redis.client.getMap<UUID, OneBlockPlayer>(PLAYER_MAP_NAME)
+            .getAsync(uuid)
     }
 
-    override fun transaction(data: IslandPlayer, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        TODO("Not yet implemented")
+    override fun transaction(data: OneBlockPlayer, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        redis.client.apply {
+            this.getMap<UUID, OneBlockPlayer>(PLAYER_MAP_NAME)
+                .transactional({ map -> map[data.uuid] = data }, onSuccess, onFailure)
+        }
     }
 
-    override fun save(data: OneBlockPlayer): RFuture<Boolean> {
-        TODO()
+    override fun save(data: OneBlockPlayer): RFuture<OneBlockPlayer> {
+        return redis.client.getMap<UUID, OneBlockPlayer>(PLAYER_MAP_NAME)
+            .putAsync(data.uuid, data)
     }
 
     override fun setup(consumer: TerminableConsumer) {

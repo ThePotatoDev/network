@@ -19,6 +19,7 @@ import gg.tater.core.proxy.ProxyDataModel
 import gg.tater.core.server.model.ServerDataModel
 import gg.tater.core.server.model.ServerType
 import gg.tater.core.redis.Redis
+import gg.tater.core.server.model.toServerType
 import io.github.cdimascio.dotenv.Dotenv
 import io.kubernetes.client.openapi.ApiClient
 import io.kubernetes.client.openapi.Configuration
@@ -155,7 +156,7 @@ class ProxyPlugin @Inject constructor(
                     proxy.registerServer(info)
                     logger.info("Registered $name")
 
-                    val type = ServerType.valueOf(name.split("-")[0].uppercase())
+                    val type = name.toServerType()
                     redis.servers().putIfAbsentAsync(name, ServerDataModel(name, type))
                     return@Runnable
                 }

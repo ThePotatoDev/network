@@ -1,8 +1,9 @@
 package gg.tater.core.player.auction.model
 
 import com.google.gson.*
+import gg.tater.core.Json
 import gg.tater.core.JsonAdapter
-import gg.tater.core.annotation.Mapping
+import gg.tater.core.Mapping
 import me.lucko.helper.serialize.Serializers
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack

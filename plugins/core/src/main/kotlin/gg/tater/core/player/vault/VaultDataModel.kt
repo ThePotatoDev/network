@@ -2,7 +2,7 @@ package gg.tater.core.player.vault
 
 import com.google.gson.*
 import gg.tater.core.JsonAdapter
-import gg.tater.core.annotation.Mapping
+import gg.tater.core.Mapping
 import me.lucko.helper.serialize.Serializers
 import org.bukkit.inventory.ItemStack
 import java.lang.reflect.Type
