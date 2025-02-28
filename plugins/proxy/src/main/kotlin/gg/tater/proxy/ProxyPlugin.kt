@@ -10,6 +10,8 @@ import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import com.velocitypowered.api.proxy.server.ServerInfo
+import gg.tater.core.Json
+import gg.tater.core.Mappings
 import gg.tater.proxy.command.HubCommand
 import gg.tater.proxy.listener.IslandPlacementListener
 import gg.tater.proxy.listener.PlayerRedirectListener
@@ -74,6 +76,9 @@ class ProxyPlugin @Inject constructor(
 
     @Subscribe
     private fun onProxyInit(event: ProxyInitializeEvent) {
+        Mappings.loadMappings()
+        Json.registerAdapters()
+
         val actions = Agones(http)
         val data = ProxyDataModel()
 

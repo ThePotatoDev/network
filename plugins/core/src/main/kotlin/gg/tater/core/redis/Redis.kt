@@ -3,12 +3,10 @@ package gg.tater.core.redis
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import gg.tater.core.Json
-import gg.tater.core.Mapping
 import gg.tater.core.Mappings
 import gg.tater.core.annotation.InvocationContext
 import gg.tater.core.annotation.InvocationContextType
 import gg.tater.core.annotation.Message
-import gg.tater.core.findAnnotatedClasses
 import gg.tater.core.proxy.ProxyDataModel
 import gg.tater.core.server.model.ServerDataModel
 import gg.tater.core.server.model.ServerState
@@ -28,7 +26,6 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.CompletionStage
 import kotlin.reflect.KClass
-import kotlin.reflect.full.findAnnotation
 
 class Redis(credential: Credential) {
     private companion object {
