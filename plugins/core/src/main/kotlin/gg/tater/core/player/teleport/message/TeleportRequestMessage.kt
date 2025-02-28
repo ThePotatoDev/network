@@ -22,7 +22,7 @@ class TeleportRequestMessage(val request: TeleportRequest) {
             context: JsonSerializationContext
         ): JsonElement {
             return JsonObject().apply {
-                addProperty(REQUEST_FIELD, Json.INSTANCE.toJson(message.request))
+                addProperty(REQUEST_FIELD, Json.get().toJson(message.request))
             }
         }
 
@@ -32,7 +32,7 @@ class TeleportRequestMessage(val request: TeleportRequest) {
             context: JsonDeserializationContext
         ): TeleportRequestMessage {
             return TeleportRequestMessage(
-                Json.INSTANCE.fromJson(
+                Json.get().fromJson(
                     (element as JsonObject).get(REQUEST_FIELD).asString,
                     TeleportRequest::class.java
                 )

@@ -42,16 +42,22 @@ class Redis(credential: Credential) {
         }
 
         private val encoder = Encoder { obj ->
+            println("attempting encode of ${obj.javaClass.simpleName}")
+
             try {
                 val mapping = Mappings.getMappingByClazz(obj::class)
                     ?: obj::class.java.name // If the class mapping is not registered, use the simple name
 
+                println("Mapping $mapping")
+
                 val json = JsonObject().apply {
                     addProperty(MAPPING_FIELD, mapping)
-                    addProperty(DATA_FIELD, Json.INSTANCE.toJson(obj))
+                    addProperty(DATA_FIELD, Json.get().toJson(obj))
                 }
 
-                Unpooled.wrappedBuffer(json.toString().toByteArray(StandardCharsets.UTF_8))
+                val buffer = Unpooled.wrappedBuffer(json.toString().toByteArray(StandardCharsets.UTF_8))
+                println(buffer)
+                buffer
             } catch (e: Exception) {
                 throw IOException("Error encoding object to JSON", e)
             }
@@ -69,7 +75,7 @@ class Redis(credential: Credential) {
                     clazz = Mappings.computeById(mapping)
                 }
 
-                Json.INSTANCE.fromJson(data, clazz.java)
+                Json.get().fromJson(data, clazz.java)
             } catch (e: Exception) {
                 throw IOException("Error decoding JSON to object", e)
             }

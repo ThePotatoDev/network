@@ -102,7 +102,7 @@ open class Island(
                 addProperty(OWNER_UUID_FIELD, model.ownerId.toString())
                 addProperty(OWNER_NAME_FIELD, model.ownerName)
                 addProperty(LAST_ACTIVITY_FIELD, model.lastActivity.toEpochMilli())
-                addProperty(SPAWN_FIELD, Json.INSTANCE.toJson(model.spawn))
+                addProperty(SPAWN_FIELD, Json.get().toJson(model.spawn))
 
                 model.currentServerId?.let { addProperty(CURRENT_SERVER_ID_FIELD, it) }
 
@@ -119,7 +119,7 @@ open class Island(
                     model.warps.forEach { (name, pos) ->
                         add(JsonObject().apply {
                             addProperty("name", name)
-                            addProperty("pos", Json.INSTANCE.toJson(pos))
+                            addProperty("pos", Json.get().toJson(pos))
                         })
                     }
                 })
@@ -154,7 +154,7 @@ open class Island(
                 val ownerId = UUID.fromString(get(OWNER_UUID_FIELD).asString)
                 val ownerName = get(OWNER_NAME_FIELD).asString
                 val lastActivity = Instant.ofEpochMilli(get(LAST_ACTIVITY_FIELD).asLong)
-                val spawn = Json.INSTANCE.fromJson(get(SPAWN_FIELD).asString, WrappedPosition::class.java)
+                val spawn = Json.get().fromJson(get(SPAWN_FIELD).asString, WrappedPosition::class.java)
                 val currentServer = get(CURRENT_SERVER_ID_FIELD)?.asString
 
                 val members = mutableMapOf<UUID, Role>()
@@ -186,7 +186,7 @@ open class Island(
                 get(WARPS_FIELD).asJsonArray.forEach {
                     val obj = it.asJsonObject
                     val name = obj.get("name").asString
-                    val pos = Json.INSTANCE.fromJson(obj.get("pos").asString, WrappedPosition::class.java)
+                    val pos = Json.get().fromJson(obj.get("pos").asString, WrappedPosition::class.java)
                     warps[name] = pos
                 }
 

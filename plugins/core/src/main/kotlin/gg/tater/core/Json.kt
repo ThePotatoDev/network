@@ -8,6 +8,10 @@ import kotlin.reflect.full.primaryConstructor
 
 object Json {
     private val BUILDER: GsonBuilder = GsonBuilder()
+    private val registeredAdapters = mutableSetOf<Pair<KClass<*>, Any>>()
+
+    @Volatile
+    private var instance: Gson? = null
 
     fun registerAdapters() {
         for (clazz in findAnnotatedClasses(JsonAdapter::class)) {
@@ -20,11 +24,19 @@ object Json {
                 continue
             }
 
-            BUILDER.registerTypeAdapter(meta.target.java, clazz.primaryConstructor?.call())
+            val adapterInstance = clazz.primaryConstructor?.call() ?: continue
+            if (registeredAdapters.add(meta.target to adapterInstance)) {
+                BUILDER.registerTypeAdapter(meta.target.java, adapterInstance)
+                instance = null // Invalidate instance to force recreation
+            }
         }
     }
 
-    val INSTANCE: Gson = BUILDER.create()
+    fun get(): Gson {
+        return instance ?: synchronized(this) {
+            instance ?: BUILDER.create().also { instance = it }
+        }
+    }
 }
 
 @Retention(AnnotationRetention.RUNTIME)

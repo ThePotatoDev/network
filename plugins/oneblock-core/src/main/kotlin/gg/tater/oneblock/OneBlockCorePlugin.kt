@@ -23,6 +23,8 @@ class OneBlockCorePlugin : GameServerPlugin() {
         Mappings.loadMappings()
         Json.registerAdapters()
 
+
+
         val serverType = Services.load(ServerDataService::class.java).serverType()
 
         useController(OneBlockIslandService())

@@ -47,7 +47,7 @@ data class TeleportRequest(
                 addProperty(ID_FIELD, request.id.toString())
                 addProperty(SENDER_ID_FIELD, request.senderId.toString())
                 addProperty(TARGET_ID_FIELD, request.targetId.toString())
-                addProperty(POSITION_FIELD, Json.INSTANCE.toJson(request.position))
+                addProperty(POSITION_FIELD, Json.get().toJson(request.position))
                 addProperty(SERVER_FIELD, request.server)
                 addProperty(STATE_FIELD, request.state.name)
                 addProperty(DIRECTION_FIELD, request.direction.name)
@@ -63,7 +63,7 @@ data class TeleportRequest(
                 val id = UUID.fromString(it.get(ID_FIELD).asString)
                 val senderId = UUID.fromString(it.get(SENDER_ID_FIELD).asString)
                 val targetId = UUID.fromString(it.get(TARGET_ID_FIELD).asString)
-                val position = Json.INSTANCE.fromJson(it.get(POSITION_FIELD).asString, WrappedPosition::class.java)
+                val position = Json.get().fromJson(it.get(POSITION_FIELD).asString, WrappedPosition::class.java)
                 val server = it.get(SERVER_FIELD).asString
                 val state = TeleportState.valueOf(it.get(STATE_FIELD).asString)
                 val direction = TeleportDirection.valueOf(it.get(DIRECTION_FIELD).asString)
