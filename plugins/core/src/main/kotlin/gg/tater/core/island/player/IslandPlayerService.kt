@@ -36,6 +36,7 @@ interface IslandPlayerService<T : IslandPlayer> : TerminableModule {
             .handler {
                 val quitter = it.player
                 val world = quitter.world
+                val position = WrappedPosition(quitter.location)
 
                 get(quitter.uniqueId).thenAccept { player ->
                     if (player == null) return@thenAccept
@@ -45,13 +46,19 @@ interface IslandPlayerService<T : IslandPlayer> : TerminableModule {
                         player.setServerSpawnPos(
                             serverType,
                             PositionDirector.ISLAND_TELEPORT_DIRECTOR,
-                            WrappedPosition(quitter.location),
+                            position,
                             mutableMapOf(SpawnPositionData.ISLAND_ID_META_KEY to world.toIslandId().toString())
                         )
-
-                        save(player)
-                        return@thenAccept
+                    } else {
+                        player.setServerSpawnPos(
+                            serverType,
+                            PositionDirector.RESPAWN,
+                            position,
+                            mutableMapOf(SpawnPositionData.WORLD_NAME_META_KEY to world.name)
+                        )
                     }
+
+                    save(player)
                 }
             }
             .bindWith(consumer)
