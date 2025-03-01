@@ -45,7 +45,7 @@ open class IslandPlayer(
                 var islandId: UUID? = null
 
                 if (it.has(ISLAND_ID_FIELD)) {
-                    islandId = UUID.fromString(it.get(UUID_FIELD).asString)
+                    islandId = UUID.fromString(it.get(ISLAND_ID_FIELD).asString)
                 }
 
                 IslandPlayer(uuid, name, islandId)

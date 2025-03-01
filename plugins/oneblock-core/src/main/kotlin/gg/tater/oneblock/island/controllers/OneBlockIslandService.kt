@@ -69,8 +69,8 @@ class OneBlockIslandService : IslandService<OneBlockIsland, OneBlockPlayer>(Game
         save(newIsland)
 
         val players = Services.load(OneBlockPlayerService::class.java)
-        player.islandId = newIsland.id
 
+        player.islandId = newIsland.id
         player.setNextServerSpawnPos(
             ServerType.ONEBLOCK_SERVER,
             PositionDirector.ISLAND_TELEPORT_DIRECTOR,
