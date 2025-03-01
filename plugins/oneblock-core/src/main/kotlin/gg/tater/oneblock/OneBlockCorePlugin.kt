@@ -4,6 +4,7 @@ import gg.tater.core.Json
 import gg.tater.core.Mappings
 import gg.tater.core.island.cache.IslandWorldCacheController
 import gg.tater.core.player.auction.AuctionHouseController
+import gg.tater.core.player.economy.EconomyController
 import gg.tater.core.plugin.GameServerPlugin
 import gg.tater.core.server.ServerDataService
 import gg.tater.core.server.model.GameModeType
@@ -34,7 +35,9 @@ class OneBlockCorePlugin : GameServerPlugin() {
         if (ONEBLOCK_GAMEMODE_SERVERS.contains(serverType)) {
             useController(IslandWorldCacheController<OneBlockIsland, OneBlockPlayer>())
 
+            useController(EconomyController(GameModeType.ONEBLOCK))
             useController(AuctionHouseController(GameModeType.ONEBLOCK))
+
             useController(OneBlockIslandController())
             useController(OneBlockSpawnController())
             useController(PlanetController())
