@@ -44,6 +44,11 @@ paper {
     foliaSupported = false
     apiVersion = "1.20"
     serverDependencies {
+        register("oneblock-core") {
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+            required = true
+        }
+
         register("core") {
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
             required = true
