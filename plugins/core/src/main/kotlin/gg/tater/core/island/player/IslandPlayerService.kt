@@ -117,7 +117,7 @@ interface IslandPlayerService<T : IslandPlayer> : TerminableModule {
                                 )
                             }
                         }
-                    }, 2L)
+                    }, 1L)
                 }
             }
             .bindWith(consumer)
