@@ -3,12 +3,14 @@ package gg.tater.oneblock.player
 import gg.tater.core.island.player.IslandPlayerService
 import gg.tater.core.redis.Redis
 import gg.tater.core.redis.transactional
+import gg.tater.core.server.model.ONEBLOCK_GAMEMODE_SERVERS
+import gg.tater.core.server.model.ServerType
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 import org.redisson.api.RFuture
 import java.util.*
 
-class OneBlockPlayerService : IslandPlayerService<OneBlockPlayer> {
+class OneBlockPlayerService(val serverType: ServerType) : IslandPlayerService<OneBlockPlayer> {
 
     private companion object {
         const val PLAYER_MAP_NAME = "oneblock_players"
@@ -43,6 +45,10 @@ class OneBlockPlayerService : IslandPlayerService<OneBlockPlayer> {
     override fun setup(consumer: TerminableConsumer) {
         Services.provide(OneBlockPlayerService::class.java, this)
         Services.provide(IslandPlayerService::class.java, this)
-        registerPositionListeners(consumer)
+
+        // Only register spawn handlers on OneBlock related servers
+        if (ONEBLOCK_GAMEMODE_SERVERS.contains(serverType)) {
+            registerPositionListeners(consumer)
+        }
     }
 }

@@ -27,7 +27,7 @@ class OneBlockCorePlugin : GameServerPlugin() {
         val serverType = Services.load(ServerDataService::class.java).serverType()
 
         useController(OneBlockIslandService())
-        useController(OneBlockPlayerService())
+        useController(OneBlockPlayerService(serverType))
 
         // Bind non-data related controllers if on a OneBlock server
         if (ONEBLOCK_GAMEMODE_SERVERS.contains(serverType)) {
