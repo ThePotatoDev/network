@@ -6,6 +6,7 @@ import gg.tater.core.island.player.position.PositionDirector
 import gg.tater.core.island.player.position.SpawnPositionData
 import gg.tater.core.position.WrappedPosition
 import gg.tater.core.server.ServerDataService
+import gg.tater.core.server.model.ONEBLOCK_GAMEMODE_SERVERS
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
@@ -31,6 +32,10 @@ interface IslandPlayerService<T : IslandPlayer> : TerminableModule {
 
     fun registerPositionListeners(consumer: TerminableConsumer) {
         val serverType = Services.load(ServerDataService::class.java).serverType()
+        // Only register position listeners on OneBlock related servers
+        if (!ONEBLOCK_GAMEMODE_SERVERS.contains(serverType)) {
+            return
+        }
 
         Events.subscribe(PlayerQuitEvent::class.java, EventPriority.HIGHEST)
             .handler {
