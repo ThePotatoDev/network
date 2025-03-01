@@ -1,7 +1,9 @@
 package gg.tater.core.island.player
 
 import com.google.gson.*
+import gg.tater.core.Json
 import gg.tater.core.island.player.position.PositionDirector
+import gg.tater.core.island.player.position.SpawnPositionData
 import gg.tater.core.position.WrappedPosition
 import gg.tater.core.server.model.ServerType
 import java.lang.reflect.Type
@@ -11,7 +13,7 @@ open class IslandPlayer(
     val uuid: UUID,
     val name: String,
     open var islandId: UUID? = null,
-    private val spawns: MutableMap<ServerType, WrappedPosition> = mutableMapOf()
+    val spawns: MutableMap<ServerType, SpawnPositionData> = mutableMapOf()
 ) {
 
     private companion object {
@@ -21,16 +23,43 @@ open class IslandPlayer(
         const val SPAWNS_FIELD = "spawns"
     }
 
-    fun setNextServerSpawnPos(type: ServerType, director: PositionDirector, position: WrappedPosition): IslandPlayer {
-        spawns[type] = position
+    fun setServerSpawnPos(
+        type: ServerType,
+        director: PositionDirector,
+        position: WrappedPosition,
+        meta: MutableMap<String, String>
+    ): IslandPlayer {
+        spawns[type] = SpawnPositionData(director, position, meta)
         return this
+    }
+
+    fun setServerSpawnPos(
+        type: ServerType,
+        director: PositionDirector,
+        position: WrappedPosition
+    ): IslandPlayer {
+        spawns[type] = SpawnPositionData(director, position)
+        return this
+    }
+
+    fun getServerSpawnPos(type: ServerType): SpawnPositionData? {
+        return spawns[type]
     }
 
     class Adapter : JsonSerializer<IslandPlayer>, JsonDeserializer<IslandPlayer> {
         override fun serialize(player: IslandPlayer, type: Type, context: JsonSerializationContext): JsonElement {
             return JsonObject().apply {
+                val spawns = JsonArray()
+
+                for (entry in player.spawns) {
+                    spawns.add(JsonObject().apply {
+                        addProperty(entry.key.name, Json.get().toJson(entry.value))
+                    })
+                }
+
                 addProperty(UUID_FIELD, player.uuid.toString())
                 addProperty(NAME_FIELD, player.name)
+                add(SPAWNS_FIELD, spawns)
 
                 if (player.islandId != null) {
                     addProperty(ISLAND_ID_FIELD, player.islandId.toString())
@@ -48,7 +77,19 @@ open class IslandPlayer(
                     islandId = UUID.fromString(it.get(ISLAND_ID_FIELD).asString)
                 }
 
-                IslandPlayer(uuid, name, islandId)
+                val player = IslandPlayer(uuid, name, islandId, mutableMapOf())
+
+                if (it.has(SPAWNS_FIELD)) {
+                    for (spawnData in it.get(SPAWNS_FIELD).asJsonArray.map { ele -> ele.asJsonObject }) {
+                        for (entry in spawnData.asMap()) {
+                            val serverType = ServerType.valueOf(entry.key)
+                            val data = Json.get().fromJson(entry.value.asString, SpawnPositionData::class.java)
+                            player.spawns[serverType] = data
+                        }
+                    }
+                }
+
+                player
             }
         }
     }

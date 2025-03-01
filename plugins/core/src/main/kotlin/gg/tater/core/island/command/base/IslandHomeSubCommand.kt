@@ -6,6 +6,7 @@ import gg.tater.core.island.command.IslandSubCommand
 import gg.tater.core.island.player.IslandPlayer
 import gg.tater.core.island.player.IslandPlayerService
 import gg.tater.core.island.player.position.PositionDirector
+import gg.tater.core.island.player.position.SpawnPositionData
 import gg.tater.core.server.ServerDataService
 import gg.tater.core.server.model.ServerType
 import me.lucko.helper.Services
@@ -54,7 +55,13 @@ class IslandHomeSubCommand<T : Island, K : IslandPlayer>(private val islandServe
                 return@thenAcceptAsync
             }
 
-            player.setNextServerSpawnPos(islandServerType, PositionDirector.ISLAND_TELEPORT_DIRECTOR, island.spawn)
+            player.setServerSpawnPos(
+                islandServerType,
+                PositionDirector.ISLAND_TELEPORT_DIRECTOR,
+                island.spawn,
+                mutableMapOf(SpawnPositionData.ISLAND_ID_META_KEY to island.id.toString())
+            )
+
             players.transaction(
                 player,
                 onSuccess = {

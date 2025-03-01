@@ -3,7 +3,6 @@ package gg.tater.core.island.cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI
-import gg.tater.core.UUID_REGEX
 import gg.tater.core.annotation.Controller
 import gg.tater.core.island.Island
 import gg.tater.core.island.IslandService
@@ -44,7 +43,7 @@ class IslandWorldCacheController<T : Island, K : IslandPlayer> : IslandWorldCach
 
     override fun getIsland(world: World): T? {
         val name = world.name
-        if (!name.matches(UUID_REGEX)) return null
+        if (!world.isIslandWorld()) return null
         return cache.get(name)
     }
 

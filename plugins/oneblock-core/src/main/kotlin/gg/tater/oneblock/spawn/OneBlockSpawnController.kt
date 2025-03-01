@@ -1,7 +1,6 @@
 package gg.tater.oneblock.spawn
 
 import gg.tater.core.annotation.Controller
-import gg.tater.core.island.player.IslandPlayerService
 import gg.tater.core.island.player.position.PositionDirector
 import gg.tater.core.player.PlayerRedirectRequest
 import gg.tater.core.redis.Redis
@@ -74,7 +73,7 @@ class OneBlockSpawnController : TerminableModule {
                         return@thenAcceptAsync
                     }
 
-                    player.setNextServerSpawnPos(
+                    player.setServerSpawnPos(
                         ServerType.ONEBLOCK_SPAWN,
                         PositionDirector.WORLD_TELEPORT_DIRECTOR,
                         spawn

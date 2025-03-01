@@ -1,17 +1,18 @@
 package gg.tater.oneblock.island.controllers
 
-import gg.tater.oneblock.island.OneBlockIsland
-import gg.tater.oneblock.player.OneBlockPlayer
-import gg.tater.oneblock.player.OneBlockPlayerService
 import gg.tater.core.annotation.Controller
 import gg.tater.core.island.IslandService
 import gg.tater.core.island.message.placement.IslandPlacementRequest
 import gg.tater.core.island.player.position.PositionDirector
+import gg.tater.core.island.player.position.SpawnPositionData
 import gg.tater.core.redis.Redis
 import gg.tater.core.redis.transactional
 import gg.tater.core.server.model.GameModeType
 import gg.tater.core.server.model.ServerDataModel
 import gg.tater.core.server.model.ServerType
+import gg.tater.oneblock.island.OneBlockIsland
+import gg.tater.oneblock.player.OneBlockPlayer
+import gg.tater.oneblock.player.OneBlockPlayerService
 import me.lucko.helper.Services
 import me.lucko.helper.promise.ThreadContext
 import me.lucko.helper.terminable.TerminableConsumer
@@ -71,10 +72,12 @@ class OneBlockIslandService : IslandService<OneBlockIsland, OneBlockPlayer>(Game
         val players = Services.load(OneBlockPlayerService::class.java)
 
         player.islandId = newIsland.id
-        player.setNextServerSpawnPos(
+
+        player.setServerSpawnPos(
             ServerType.ONEBLOCK_SERVER,
             PositionDirector.ISLAND_TELEPORT_DIRECTOR,
-            newIsland.spawn
+            newIsland.spawn,
+            mutableMapOf(SpawnPositionData.ISLAND_ID_META_KEY to newIsland.id.toString())
         )
 
         players.transaction(

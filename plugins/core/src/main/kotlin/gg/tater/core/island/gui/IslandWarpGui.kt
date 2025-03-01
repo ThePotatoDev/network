@@ -6,6 +6,7 @@ import gg.tater.core.island.IslandService
 import gg.tater.core.island.player.IslandPlayer
 import gg.tater.core.island.player.IslandPlayerService
 import gg.tater.core.island.player.position.PositionDirector
+import gg.tater.core.island.player.position.SpawnPositionData
 import gg.tater.core.server.ServerDataService
 import gg.tater.core.server.model.ServerType
 import me.lucko.helper.Services
@@ -115,10 +116,12 @@ class IslandWarpGui<T : Island, K : IslandPlayer>(
 
                         val uuid = opener.uniqueId
                         players.get(uuid).thenAcceptAsync { player ->
-                            player.setNextServerSpawnPos(
+
+                            player.setServerSpawnPos(
                                 ServerType.ONEBLOCK_SERVER,
                                 PositionDirector.ISLAND_TELEPORT_DIRECTOR,
-                                warp
+                                warp,
+                                mutableMapOf(SpawnPositionData.ISLAND_ID_META_KEY to island.id.toString())
                             )
 
                             players.transaction(

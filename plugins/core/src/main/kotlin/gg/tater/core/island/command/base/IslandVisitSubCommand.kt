@@ -6,6 +6,7 @@ import gg.tater.core.island.command.IslandSubCommand
 import gg.tater.core.island.player.IslandPlayer
 import gg.tater.core.island.player.IslandPlayerService
 import gg.tater.core.island.player.position.PositionDirector
+import gg.tater.core.island.player.position.SpawnPositionData
 import gg.tater.core.island.setting.model.IslandSettingType
 import gg.tater.core.server.ServerDataService
 import gg.tater.core.server.model.ServerType
@@ -88,10 +89,11 @@ class IslandVisitSubCommand<T : Island, K : IslandPlayer> : IslandSubCommand<T> 
                 return@thenAcceptAsync
             }
 
-            data.setNextServerSpawnPos(
+            data.setServerSpawnPos(
                 ServerType.ONEBLOCK_SERVER,
                 PositionDirector.ISLAND_TELEPORT_DIRECTOR,
-                island.spawn
+                island.spawn,
+                mutableMapOf(SpawnPositionData.ISLAND_ID_META_KEY to island.id.toString())
             )
 
             players.transaction(

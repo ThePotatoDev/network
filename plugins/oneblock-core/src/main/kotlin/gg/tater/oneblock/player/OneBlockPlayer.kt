@@ -11,12 +11,6 @@ import java.util.*
 class OneBlockPlayer(uuid: UUID, name: String, override var islandId: UUID? = null) :
     IslandPlayer(uuid, name, islandId) {
 
-    private companion object {
-        const val UUID_FIELD = "uuid"
-        const val NAME_FIELD = "name"
-        const val ISLAND_ID_FIELD = "island_id"
-    }
-
     @JsonAdapter(OneBlockPlayer::class)
     class Adapter : JsonSerializer<OneBlockPlayer>, JsonDeserializer<OneBlockPlayer> {
         private val baseAdapter = IslandPlayer.Adapter()
@@ -31,7 +25,9 @@ class OneBlockPlayer(uuid: UUID, name: String, override var islandId: UUID? = nu
             context: JsonDeserializationContext
         ): OneBlockPlayer {
             val base = baseAdapter.deserialize(element, type, context)
-            return OneBlockPlayer(base.uuid, base.name, base.islandId)
+            val player = OneBlockPlayer(base.uuid, base.name, base.islandId)
+            player.spawns.putAll(base.spawns)
+            return player
         }
     }
 }

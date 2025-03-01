@@ -4,8 +4,6 @@ import com.infernalsuite.aswm.api.loaders.SlimeLoader
 import com.infernalsuite.aswm.api.world.SlimeWorld
 import com.infernalsuite.aswm.api.world.properties.SlimeProperties
 import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap
-import gg.tater.core.island.command.base.IslandSettingSubCommand
-import gg.tater.core.island.command.base.IslandVisitSubCommand
 import gg.tater.core.island.command.IslandSubCommand
 import gg.tater.core.island.command.base.*
 import gg.tater.core.island.flag.IslandFlagController
@@ -25,9 +23,6 @@ import me.lucko.helper.terminable.module.TerminableModule
 abstract class IslandController<T : Island, K : IslandPlayer> : TerminableModule {
 
     val properties = SlimePropertyMap().apply {
-        setValue(SlimeProperties.SPAWN_X, 0)
-        setValue(SlimeProperties.SPAWN_Y, 101)
-        setValue(SlimeProperties.SPAWN_Z, 0)
         setValue(SlimeProperties.PVP, false)
         setValue(SlimeProperties.ALLOW_ANIMALS, true)
         setValue(SlimeProperties.ALLOW_MONSTERS, true)
