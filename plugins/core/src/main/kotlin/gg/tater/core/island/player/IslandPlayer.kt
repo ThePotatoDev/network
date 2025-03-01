@@ -12,6 +12,7 @@ import java.util.*
 open class IslandPlayer(
     val uuid: UUID,
     val name: String,
+    open var lastServerType: ServerType,
     open var islandId: UUID? = null,
     val spawns: MutableMap<ServerType, SpawnPositionData> = mutableMapOf()
 ) {
@@ -21,6 +22,7 @@ open class IslandPlayer(
         const val NAME_FIELD = "name"
         const val ISLAND_ID_FIELD = "island_id"
         const val SPAWNS_FIELD = "spawns"
+        const val LAST_SERVER_TYPE_FIELD = "last_server_type"
     }
 
     fun setServerSpawnPos(
@@ -46,6 +48,10 @@ open class IslandPlayer(
         return spawns[type]
     }
 
+    fun consumeSpawnPos(type: ServerType): SpawnPositionData? {
+        return spawns.remove(type)
+    }
+
     class Adapter : JsonSerializer<IslandPlayer>, JsonDeserializer<IslandPlayer> {
         override fun serialize(player: IslandPlayer, type: Type, context: JsonSerializationContext): JsonElement {
             return JsonObject().apply {
@@ -59,6 +65,7 @@ open class IslandPlayer(
 
                 addProperty(UUID_FIELD, player.uuid.toString())
                 addProperty(NAME_FIELD, player.name)
+                addProperty(LAST_SERVER_TYPE_FIELD, player.lastServerType.name)
                 add(SPAWNS_FIELD, spawns)
 
                 if (player.islandId != null) {
@@ -71,13 +78,14 @@ open class IslandPlayer(
             return (element as JsonObject).let {
                 val uuid = UUID.fromString(it.get(UUID_FIELD).asString)
                 val name = it.get(NAME_FIELD).asString
+                val lastServerType = ServerType.valueOf(it.get(LAST_SERVER_TYPE_FIELD).asString)
                 var islandId: UUID? = null
 
                 if (it.has(ISLAND_ID_FIELD)) {
                     islandId = UUID.fromString(it.get(ISLAND_ID_FIELD).asString)
                 }
 
-                val player = IslandPlayer(uuid, name, islandId, mutableMapOf())
+                val player = IslandPlayer(uuid, name, lastServerType, islandId, mutableMapOf())
 
                 if (it.has(SPAWNS_FIELD)) {
                     for (spawnData in it.get(SPAWNS_FIELD).asJsonArray.map { ele -> ele.asJsonObject }) {

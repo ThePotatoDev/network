@@ -7,7 +7,9 @@ plugins {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("me.lucko:helper:5.6.14")
+    compileOnly("org.redisson:redisson:3.36.0")
     compileOnly(project(":plugins:core"))
+    compileOnly(project(":plugins:oneblock-core"))
 }
 
 tasks.shadowJar {

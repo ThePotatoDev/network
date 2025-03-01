@@ -3,7 +3,6 @@ package gg.tater.oneblock.player
 import gg.tater.core.island.player.IslandPlayerService
 import gg.tater.core.redis.Redis
 import gg.tater.core.redis.transactional
-import me.lucko.helper.Events
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
 import org.redisson.api.RFuture

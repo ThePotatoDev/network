@@ -4,12 +4,18 @@ import com.google.gson.*
 import gg.tater.core.JsonAdapter
 import gg.tater.core.Mapping
 import gg.tater.core.island.player.IslandPlayer
+import gg.tater.core.server.model.ServerType
 import java.lang.reflect.Type
 import java.util.*
 
 @Mapping("oneblock_players")
-class OneBlockPlayer(uuid: UUID, name: String, override var islandId: UUID? = null) :
-    IslandPlayer(uuid, name, islandId) {
+class OneBlockPlayer(
+    uuid: UUID,
+    name: String,
+    override var lastServerType: ServerType = ServerType.ONEBLOCK_SPAWN,
+    override var islandId: UUID? = null
+) :
+    IslandPlayer(uuid, name, lastServerType, islandId) {
 
     @JsonAdapter(OneBlockPlayer::class)
     class Adapter : JsonSerializer<OneBlockPlayer>, JsonDeserializer<OneBlockPlayer> {
@@ -25,7 +31,7 @@ class OneBlockPlayer(uuid: UUID, name: String, override var islandId: UUID? = nu
             context: JsonDeserializationContext
         ): OneBlockPlayer {
             val base = baseAdapter.deserialize(element, type, context)
-            val player = OneBlockPlayer(base.uuid, base.name, base.islandId)
+            val player = OneBlockPlayer(base.uuid, base.name, base.lastServerType, base.islandId)
             player.spawns.putAll(base.spawns)
             return player
         }

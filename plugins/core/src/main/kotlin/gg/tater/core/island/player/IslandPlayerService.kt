@@ -38,8 +38,9 @@ interface IslandPlayerService<T : IslandPlayer> : TerminableModule {
                 val world = quitter.world
                 val position = WrappedPosition(quitter.location)
 
-                get(quitter.uniqueId).thenAccept { player ->
-                    if (player == null) return@thenAccept
+                get(quitter.uniqueId).thenAcceptAsync { player ->
+                    if (player == null) return@thenAcceptAsync
+                    player.lastServerType = serverType
 
                     // If player is in an island world
                     if (world.isIslandWorld()) {
@@ -52,9 +53,8 @@ interface IslandPlayerService<T : IslandPlayer> : TerminableModule {
                     } else {
                         player.setServerSpawnPos(
                             serverType,
-                            PositionDirector.RESPAWN,
-                            position,
-                            mutableMapOf(SpawnPositionData.WORLD_NAME_META_KEY to world.name)
+                            PositionDirector.WORLD_TELEPORT_DIRECTOR,
+                            position
                         )
                     }
 
@@ -67,18 +67,22 @@ interface IslandPlayerService<T : IslandPlayer> : TerminableModule {
             .handler {
                 val joiner = it.player
 
-                get(joiner.uniqueId).thenAccept { player ->
-                    if (player == null) return@thenAccept
+                get(joiner.uniqueId).thenAcceptAsync { player ->
+                    if (player == null) return@thenAcceptAsync
 
-                    val spawnData = player.getServerSpawnPos(serverType) ?: return@thenAccept
+                    val spawnData = player.getServerSpawnPos(serverType) ?: return@thenAcceptAsync
 
                     val director = spawnData.director
                     val position = spawnData.position
+
+                    player.consumeSpawnPos(serverType)
+                    save(player)
 
                     // Teleport them delayed
                     Schedulers.sync().runLater({
                         when (director) {
                             PositionDirector.WORLD_TELEPORT_DIRECTOR -> {
+                                // Regular world teleports are always in "world"
                                 val world = Bukkit.getWorld("world") ?: return@runLater
                                 joiner.teleportAsync(
                                     Location(
@@ -106,12 +110,6 @@ interface IslandPlayerService<T : IslandPlayer> : TerminableModule {
                                         position.pitch
                                     )
                                 )
-                            }
-
-                            PositionDirector.RESPAWN -> {
-                                val worldName =
-                                    spawnData.getMetaValue(SpawnPositionData.WORLD_NAME_META_KEY) ?: return@runLater
-                                // Check if the world name is of uuid type (it is an island world)
                             }
                         }
                     }, 2L)
