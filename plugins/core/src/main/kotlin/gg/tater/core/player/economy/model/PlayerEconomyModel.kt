@@ -1,14 +1,17 @@
 package gg.tater.core.player.economy.model
 
 import com.google.gson.*
-import gg.tater.core.Json
 import gg.tater.core.JsonAdapter
 import gg.tater.core.Mapping
 import java.lang.reflect.Type
 import java.util.*
 
 @Mapping("player_economy_model")
-data class PlayerEconomyModel(val uuid: UUID, val balance: MutableMap<EconomyType, Double> = mutableMapOf()) {
+data class PlayerEconomyModel(
+    val uuid: UUID, val balance: MutableMap<EconomyType, Double> = mutableMapOf(
+        EconomyType.MONEY to 0.0
+    )
+) {
 
     companion object {
         const val UUID_FIELD = "uuid"
@@ -68,15 +71,17 @@ data class PlayerEconomyModel(val uuid: UUID, val balance: MutableMap<EconomyTyp
             type: Type,
             context: JsonDeserializationContext
         ): PlayerEconomyModel {
-            val json = element as JsonObject
-            val uuid = UUID.fromString(json.get(UUID_FIELD).asString)
-            val balance = mutableMapOf<EconomyType, Double>()
-            json.getAsJsonObject(BALANCE_FIELD)
-                .entrySet()
-                .forEach { (key, value) ->
-                    balance[EconomyType.valueOf(key)] = value.asDouble
-                }
-            return PlayerEconomyModel(uuid, balance)
+            return (element as JsonObject).let {
+                val uuid = UUID.fromString(it.get(UUID_FIELD).asString)
+                val balance = mutableMapOf<EconomyType, Double>()
+
+                it.getAsJsonObject(BALANCE_FIELD)
+                    .entrySet()
+                    .forEach { (key, value) ->
+                        balance[EconomyType.valueOf(key)] = value.asDouble
+                    }
+                PlayerEconomyModel(uuid, balance)
+            }
         }
     }
 
