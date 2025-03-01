@@ -75,13 +75,7 @@ class HubServerGui(
                             }
 
                             else -> {
-                                val server = redis.getServer(lastServerType)
-                                if (server == null) {
-                                    opener.sendMessage(Component.text("Could not find server.", NamedTextColor.RED))
-                                    return@thenAcceptAsync
-                                }
-
-                                redis.publish(PlayerRedirectRequest(opener.uniqueId, lastServerType, server.id))
+                                redis.publish(PlayerRedirectRequest(player.uuid, lastServerType))
                             }
                         }
                     }

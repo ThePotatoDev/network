@@ -10,9 +10,12 @@ dependencies {
     compileOnly("org.redisson:redisson:3.36.0")
     compileOnly(project(":plugins:core"))
     compileOnly(project(":plugins:oneblock-core"))
+    implementation(kotlin("reflect"))
 }
 
 tasks.shadowJar {
+    exclude("kotlin/**") // Prevent Kotlin from being bundled separately
+
     archiveBaseName.set("hub")
     archiveClassifier.set("")
     archiveVersion.set("")
