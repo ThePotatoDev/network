@@ -5,20 +5,15 @@ plugins {
 }
 
 dependencies {
-    val scoreboardLibraryVersion = "2.2.1"
-
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("me.lucko:helper:5.6.14")
     compileOnly("net.luckperms:api:5.4")
-    compileOnly("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
 
     implementation(kotlin("reflect"))
 
     implementation("org.redisson:redisson:3.36.0")
     implementation("io.github.cdimascio:dotenv-java:3.0.0")
     implementation("io.github.classgraph:classgraph:4.8.179")
-    implementation("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
-    implementation("net.megavex:scoreboard-library-modern:$scoreboardLibraryVersion:mojmap")
 
     compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 }

@@ -1,9 +1,9 @@
 worlds:
-  island_world:
-    source: file
+  island_world_template:
+    source: redis
     loadOnStartup: true
     readOnly: true
-    spawn: 0, 101, 0
+    spawn: 0, 70, 0
     allowMonsters: false
     allowAnimals: false
     difficulty: peaceful

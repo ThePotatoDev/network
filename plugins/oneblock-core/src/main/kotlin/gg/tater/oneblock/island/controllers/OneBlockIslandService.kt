@@ -16,6 +16,7 @@ import gg.tater.oneblock.player.OneBlockPlayerService
 import me.lucko.helper.Services
 import me.lucko.helper.promise.ThreadContext
 import me.lucko.helper.terminable.TerminableConsumer
+import org.bukkit.block.Chest
 import org.bukkit.entity.Player
 import org.redisson.api.RFuture
 import org.redisson.api.RMap

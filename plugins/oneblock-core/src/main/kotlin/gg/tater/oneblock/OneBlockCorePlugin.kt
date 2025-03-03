@@ -15,6 +15,7 @@ import gg.tater.oneblock.island.controllers.OneBlockIslandService
 import gg.tater.oneblock.planet.PlanetController
 import gg.tater.oneblock.player.OneBlockPlayer
 import gg.tater.oneblock.player.OneBlockPlayerService
+import gg.tater.oneblock.scoreboard.OneBlockMainScoreboard
 import gg.tater.oneblock.spawn.OneBlockSpawnController
 import me.lucko.helper.Services
 
@@ -39,6 +40,8 @@ class OneBlockCorePlugin : GameServerPlugin() {
             useController(OneBlockIslandController())
             useController(OneBlockSpawnController())
             useController(PlanetController())
+
+            useController(OneBlockMainScoreboard(this))
         }
     }
 }

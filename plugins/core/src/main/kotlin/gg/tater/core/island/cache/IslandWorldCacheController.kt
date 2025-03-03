@@ -3,6 +3,7 @@ package gg.tater.core.island.cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.infernalsuite.aswm.api.AdvancedSlimePaperAPI
+import gg.tater.core.UUID_REGEX
 import gg.tater.core.annotation.Controller
 import gg.tater.core.island.Island
 import gg.tater.core.island.IslandService
@@ -63,6 +64,7 @@ class IslandWorldCacheController<T : Island, K : IslandPlayer> : IslandWorldCach
 
             for (world in api.loadedWorlds) {
                 val worldName = world.name
+                if (!UUID_REGEX.matches(worldName)) continue
                 val islandId = UUID.fromString(worldName)
                 val island = service.getIsland(islandId).get() ?: continue
                 val lastActive = island.lastActivity

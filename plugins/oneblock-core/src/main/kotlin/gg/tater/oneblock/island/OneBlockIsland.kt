@@ -13,7 +13,7 @@ class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String, var level: Int 
     id,
     ownerId,
     ownerName,
-    spawn = WrappedPosition(0.0, 80.0, 0.0, 0F, 0F)
+    spawn = WrappedPosition(0.0, 70.0, 0.0, 0F, 0F)
 ) {
 
     private companion object {
