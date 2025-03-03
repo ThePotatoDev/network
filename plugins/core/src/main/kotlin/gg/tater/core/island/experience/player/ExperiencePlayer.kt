@@ -1,6 +1,7 @@
 package gg.tater.core.island.experience.player
 
 import com.google.gson.*
+import gg.tater.core.JsonAdapter
 import java.lang.reflect.Type
 import java.util.*
 
@@ -24,6 +25,11 @@ data class ExperiencePlayer(
         progressMeta[key] = value
     }
 
+    fun hasMetaEqualTo(key: String, value: Any): Boolean {
+        return progressMeta[key] == value.toString()
+    }
+
+    @JsonAdapter(ExperiencePlayer::class)
     class Adapter : JsonSerializer<ExperiencePlayer>, JsonDeserializer<ExperiencePlayer> {
         override fun serialize(player: ExperiencePlayer, type: Type, context: JsonSerializationContext): JsonElement {
             return JsonObject().apply {

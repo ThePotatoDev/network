@@ -11,7 +11,7 @@ class ExperiencePlayerController(val mode: GameModeType) : ExperiencePlayerServi
 
     private val redis = Services.load(Redis::class.java)
 
-    override fun compute(uuid: UUID): RFuture<ExperiencePlayer> {
+    override fun get(uuid: UUID): RFuture<ExperiencePlayer> {
         TODO("Not yet implemented")
     }
 

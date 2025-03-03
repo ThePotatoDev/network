@@ -15,6 +15,7 @@ import gg.tater.oneblock.island.OneBlockIsland
 import gg.tater.oneblock.island.subcommand.OneBlockPhasesSubCommand
 import gg.tater.oneblock.player.OneBlockPlayer
 import me.lucko.helper.Events
+import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
@@ -62,7 +63,16 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
                     && OneBlockIsland.ONE_BLOCK_LOCATION.y == location.y
                     && OneBlockIsland.ONE_BLOCK_LOCATION.z == location.z
                 ) {
-                    Events.callSync(OneBlockMineEvent(player, island as OneBlockIsland))
+                    val event = Events.callAndReturn(OneBlockMineEvent(player, island as OneBlockIsland, block))
+
+                    Schedulers.sync().runLater({
+                        // If there is a block we are manually setting, handle it instead of their island phase blocks
+                        if (event.nextMaterialType != null) {
+                            block.type = event.nextMaterialType!!
+                        } else {
+                            //TODO: Set island phase blocks here
+                        }
+                    }, 1L)
                 }
             }
             .bindWith(consumer)
