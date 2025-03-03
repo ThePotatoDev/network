@@ -11,18 +11,20 @@ data class ExperiencePlayer(
     var progressMeta: MutableMap<String, String> = mutableMapOf()
 ) {
 
-    private companion object {
-        const val UUID_FIELD = "uuid"
-        const val CURRENT_STAGE_ID_FIELD = "current_stage_id"
-        const val PROGRESS_META_FIELD = "progress_meta"
+    companion object {
+        private const val UUID_FIELD = "uuid"
+        private const val CURRENT_STAGE_ID_FIELD = "current_stage_id"
+        private const val PROGRESS_META_FIELD = "progress_meta"
+
+        const val STAGE_PROGRESS = "stage_progress"
     }
 
     fun getMetaValue(key: String): String? {
         return progressMeta[key]
     }
 
-    fun setMeta(key: String, value: String) {
-        progressMeta[key] = value
+    fun setMeta(key: String, value: Any) {
+        progressMeta[key] = value.toString()
     }
 
     fun hasMetaEqualTo(key: String, value: Any): Boolean {

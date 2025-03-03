@@ -8,4 +8,6 @@ interface ExperiencePlayerService : TerminableModule {
 
     fun get(uuid: UUID): RFuture<ExperiencePlayer>
 
+    fun save(player: ExperiencePlayer): RFuture<Boolean>
+
 }

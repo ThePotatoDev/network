@@ -15,11 +15,7 @@ class ExperienceController<T : Island>(private val mode: GameModeType) : Experie
 
     override fun startExperience(player: Player): Boolean {
         val start = stages[0] ?: return false
-
-        for (prompt in start.startPrompts) {
-            player.sendMessage(prompt)
-        }
-
+        start.sendDisplayPrompts(player)
         return true
     }
 
