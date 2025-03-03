@@ -16,8 +16,11 @@ class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String, var level: Int 
     spawn = WrappedPosition(0.0, 70.0, 0.0, 0F, 0F)
 ) {
 
-    private companion object {
-        const val LEVEL_FIELD = "island_level"
+    companion object {
+        // Breakable block location is a block below the default spawn for OneBlock islands
+        val ONE_BLOCK_LOCATION = WrappedPosition(0.0, 69.0, 0.0, 0F, 0F)
+
+        private const val LEVEL_FIELD = "island_level"
     }
 
     @JsonAdapter(OneBlockIsland::class)
