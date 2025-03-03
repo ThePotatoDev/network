@@ -3,9 +3,11 @@ package gg.tater.core.island.player.position
 import com.google.gson.*
 import gg.tater.core.Json
 import gg.tater.core.JsonAdapter
+import gg.tater.core.Mapping
 import gg.tater.core.position.WrappedPosition
 import java.lang.reflect.Type
 
+@Mapping("spawn_position_data")
 data class SpawnPositionData(
     val director: PositionDirector,
     val position: WrappedPosition,

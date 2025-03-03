@@ -2,41 +2,49 @@ package gg.tater.core.island.experience.player
 
 import com.google.gson.*
 import gg.tater.core.JsonAdapter
+import gg.tater.core.Mapping
 import java.lang.reflect.Type
 import java.util.*
 
+@Mapping("experience_players")
 data class ExperiencePlayer(
     val uuid: UUID,
-    var currentStageId: Int,
-    var progressMeta: MutableMap<String, String> = mutableMapOf()
+    var meta: MutableMap<String, String> = mutableMapOf()
 ) {
 
     companion object {
         private const val UUID_FIELD = "uuid"
-        private const val CURRENT_STAGE_ID_FIELD = "current_stage_id"
-        private const val PROGRESS_META_FIELD = "progress_meta"
-
+        private const val META_FIELD = "meta"
         const val STAGE_PROGRESS = "stage_progress"
     }
 
     fun getMetaValue(key: String): String? {
-        return progressMeta[key]
+        return meta[key]
     }
 
     fun setMeta(key: String, value: Any) {
-        progressMeta[key] = value.toString()
+        meta[key] = value.toString()
     }
 
     fun hasMetaEqualTo(key: String, value: Any): Boolean {
-        return progressMeta[key] == value.toString()
+        return meta[key] == value.toString()
     }
 
     @JsonAdapter(ExperiencePlayer::class)
     class Adapter : JsonSerializer<ExperiencePlayer>, JsonDeserializer<ExperiencePlayer> {
         override fun serialize(player: ExperiencePlayer, type: Type, context: JsonSerializationContext): JsonElement {
             return JsonObject().apply {
+                val meta = JsonArray()
+
                 addProperty(UUID_FIELD, player.uuid.toString())
-                addProperty(CURRENT_STAGE_ID_FIELD, player.currentStageId)
+
+                for (entry in player.meta) {
+                    meta.add(JsonObject().apply {
+                        addProperty(entry.key, entry.value)
+                    })
+                }
+
+                add(META_FIELD, meta)
             }
         }
 
@@ -45,7 +53,18 @@ data class ExperiencePlayer(
             type: Type,
             context: JsonDeserializationContext
         ): ExperiencePlayer {
-            TODO("Not yet implemented")
+            return (element as JsonObject).let {
+                val uuid = UUID.fromString(it.get(UUID_FIELD).asString)
+                val meta = mutableMapOf<String, String>()
+
+                it.get(META_FIELD).asJsonArray.forEach { ele ->
+                    for (entry in ele.asJsonObject.entrySet()) {
+                        meta[entry.key] = entry.value.asString
+                    }
+                }
+
+                ExperiencePlayer(uuid, meta)
+            }
         }
     }
 }

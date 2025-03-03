@@ -1,14 +1,15 @@
 package gg.tater.core.island.experience
 
-import gg.tater.core.island.Island
-import gg.tater.core.island.experience.stage.ExperienceStage
 import me.lucko.helper.terminable.module.TerminableModule
+import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
+import java.util.concurrent.CompletionStage
 
-interface ExperienceService<T : Island> : TerminableModule {
+interface ExperienceService : TerminableModule {
 
-    fun startExperience(player: Player): Boolean
+    fun startExperience(player: Player): CompletionStage<Void>
 
-    fun addStage(stage: ExperienceStage)
-
+    fun sendExperienceMessage(message: Component, player: Player) {
+        arrayOf(Component.empty(), message, Component.empty()).forEach { player.sendMessage(it) }
+    }
 }
