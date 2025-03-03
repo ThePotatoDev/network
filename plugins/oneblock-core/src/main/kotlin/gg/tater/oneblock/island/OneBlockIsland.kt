@@ -9,7 +9,7 @@ import java.lang.reflect.Type
 import java.util.*
 
 @Mapping("oneblock_islands")
-class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String, var level: Int = 1) : Island(
+class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String, var level: Int = 1, var ftue: Boolean = true) : Island(
     id,
     ownerId,
     ownerName,
@@ -21,6 +21,7 @@ class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String, var level: Int 
         val ONE_BLOCK_LOCATION = WrappedPosition(0.0, 69.0, 0.0, 0F, 0F)
 
         private const val LEVEL_FIELD = "island_level"
+        private const val FTUE_FIELD = "ftue"
     }
 
     @JsonAdapter(OneBlockIsland::class)
@@ -30,6 +31,7 @@ class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String, var level: Int 
         override fun serialize(island: OneBlockIsland, type: Type, context: JsonSerializationContext): JsonElement {
             return (baseAdapter.serialize(island, type, context) as JsonObject).apply {
                 addProperty(LEVEL_FIELD, island.level)
+                addProperty(FTUE_FIELD, island.ftue)
             }
         }
 
@@ -39,8 +41,11 @@ class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String, var level: Int 
             context: JsonDeserializationContext
         ): OneBlockIsland {
             val island = baseAdapter.deserialize(element, type, context)
-            val level = (element as JsonObject).get(LEVEL_FIELD).asInt
-            return OneBlockIsland(island.id, island.ownerId, island.ownerName, level)
+            return (element as JsonObject).let {
+                val level = it.get(LEVEL_FIELD).asInt
+                val ftue = it.get(FTUE_FIELD).asBoolean
+                OneBlockIsland(island.id, island.ownerId, island.ownerName, level, ftue)
+            }
         }
     }
 }

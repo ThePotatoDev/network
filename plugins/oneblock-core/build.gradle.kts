@@ -16,6 +16,7 @@ dependencies {
     compileOnly("org.redisson:redisson:3.36.0")
     compileOnly(project(":plugins:core"))
     compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    compileOnly("de.oliver:FancyNpcs:2.4.2")
 
     implementation(kotlin("reflect"))
 
