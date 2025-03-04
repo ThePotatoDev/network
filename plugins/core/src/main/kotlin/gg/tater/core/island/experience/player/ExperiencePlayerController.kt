@@ -7,19 +7,25 @@ import me.lucko.helper.terminable.TerminableConsumer
 import org.redisson.api.RFuture
 import java.util.*
 
-class ExperiencePlayerController(val mode: GameModeType) : ExperiencePlayerService {
+class ExperiencePlayerController(mode: GameModeType) : ExperiencePlayerService {
+
+    private val mapName = "${mode.id}_experience_players"
 
     private val redis = Services.load(Redis::class.java)
 
     override fun get(uuid: UUID): RFuture<ExperiencePlayer> {
-        TODO("Not yet implemented")
+        return redis.client.getMap<UUID, ExperiencePlayer>(mapName)
+            .computeIfAbsentAsync(uuid) {
+                ExperiencePlayer(uuid)
+            }
     }
 
-    override fun save(player: ExperiencePlayer): RFuture<Boolean> {
-        TODO("Not yet implemented")
+    override fun save(player: ExperiencePlayer): RFuture<ExperiencePlayer> {
+        return redis.client.getMap<UUID, ExperiencePlayer>(mapName)
+            .putAsync(player.uuid, player)
     }
 
     override fun setup(consumer: TerminableConsumer) {
-        TODO("Not yet implemented")
+
     }
 }

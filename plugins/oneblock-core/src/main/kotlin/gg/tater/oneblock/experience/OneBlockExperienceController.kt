@@ -61,12 +61,12 @@ class OneBlockExperienceController : ExperienceService {
     }
 
     override fun setup(consumer: TerminableConsumer) {
+        Services.provide(ExperienceService::class.java, this)
+
         this.players = Services.provide(
             ExperiencePlayerService::class.java,
             consumer.bindModule(ExperiencePlayerController(GameModeType.ONEBLOCK))
         )
-
-        val players = Services.load(ExperiencePlayerService::class.java)
 
         Events.subscribe(NpcInteractEvent::class.java, EventPriority.HIGHEST)
             .handler {
