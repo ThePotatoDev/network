@@ -52,7 +52,8 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
         Events.subscribe(IslandPlacementEvent::class.java)
             .handler {
                 val island = it.island as OneBlockIsland
-                val world = island.getPlacementWorld() ?: return@handler
+//                val world = island.getPlacementWorld() ?: return@handler
+                println("Island placed")
             }
             .bindWith(consumer)
 

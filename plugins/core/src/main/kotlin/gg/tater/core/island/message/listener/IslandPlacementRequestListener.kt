@@ -63,10 +63,9 @@ class IslandPlacementRequestListener<T : Island, K : IslandPlayer>(
                     // Load the world if it doesn't exist
                     if (Bukkit.getWorld(worldName) == null) {
                         api.loadWorld(world, false)
+                        Events.callSync(IslandPlacementEvent(island, world))
                     }
                 }
-
-                Events.callSync(IslandPlacementEvent(island))
 
                 val player = Bukkit.getPlayer(it.playerId)
 
