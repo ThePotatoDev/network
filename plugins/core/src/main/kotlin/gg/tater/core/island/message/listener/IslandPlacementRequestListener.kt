@@ -62,8 +62,7 @@ class IslandPlacementRequestListener<T : Island, K : IslandPlayer>(
                 Schedulers.sync().run {
                     // Load the world if it doesn't exist
                     if (Bukkit.getWorld(worldName) == null) {
-                        api.loadWorld(world, false)
-                        Events.callSync(IslandPlacementEvent(island, world))
+                        Events.callSync(IslandPlacementEvent(it.playerId, island, api.loadWorld(world, false)))
                     }
                 }
 

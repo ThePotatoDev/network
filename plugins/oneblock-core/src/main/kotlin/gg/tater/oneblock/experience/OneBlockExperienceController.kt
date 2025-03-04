@@ -1,11 +1,15 @@
 package gg.tater.oneblock.experience
 
+import de.oliver.fancynpcs.api.actions.ActionTrigger
+import de.oliver.fancynpcs.api.events.NpcInteractEvent
 import gg.tater.core.island.experience.ExperienceService
 import gg.tater.core.island.experience.player.ExperiencePlayer
 import gg.tater.core.island.experience.player.ExperiencePlayerController
 import gg.tater.core.island.experience.player.ExperiencePlayerService
+import gg.tater.core.position.WrappedPosition
 import gg.tater.core.server.model.GameModeType
 import gg.tater.oneblock.event.OneBlockMineEvent
+import gg.tater.oneblock.island.OneBlockIsland
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
@@ -28,7 +32,6 @@ class OneBlockExperienceController : ExperienceService {
 
     private companion object {
         const val BLOCK_MINING_PROGRESS_KEY = "block_mining_progress"
-        const val NPC_META_KEY = "RocketShipNPC"
 
         const val MINE_GRASS_STAGE_PROGRESS = 1
         const val MINE_WOOD_STAGE_PROGRESS = 2
@@ -65,12 +68,16 @@ class OneBlockExperienceController : ExperienceService {
 
         val players = Services.load(ExperiencePlayerService::class.java)
 
-        Events.subscribe(PlayerInteractEntityEvent::class.java, EventPriority.HIGHEST)
-            .filter(EventFilters.ignoreCancelled())
+        Events.subscribe(NpcInteractEvent::class.java, EventPriority.HIGHEST)
             .handler {
+                val npc = it.npc
+                val action = it.interactionType
+                if (action != ActionTrigger.RIGHT_CLICK) return@handler
+
+                val location = npc.data.location
+                if (WrappedPosition(location) != OneBlockIsland.SPACE_SHIP_NPC_LOCATION) return@handler
+
                 val clicker = it.player
-                val clicked = it.rightClicked
-                if (!clicked.hasMetadata(NPC_META_KEY)) return@handler
 
                 players.get(clicker.uniqueId).thenAcceptAsync { player ->
                     if (!player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, INVESTIGATE_ROCKET_STAGE_PROGRESS)) {

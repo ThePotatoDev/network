@@ -4,6 +4,7 @@ import gg.tater.core.island.cache.isIslandWorld
 import gg.tater.core.island.cache.toIslandId
 import gg.tater.core.island.player.position.PositionDirector
 import gg.tater.core.island.player.position.SpawnPositionData
+import gg.tater.core.player.event.PlayerPlacementEvent
 import gg.tater.core.position.WrappedPosition
 import gg.tater.core.server.ServerDataService
 import gg.tater.core.server.model.ONEBLOCK_GAMEMODE_SERVERS
@@ -114,7 +115,9 @@ interface IslandPlayerService<T : IslandPlayer> : TerminableModule {
                                         position.yaw,
                                         position.pitch
                                     )
-                                )
+                                ).thenRun {
+                                    Events.callSync(PlayerPlacementEvent(player, UUID.fromString(islandId)))
+                                }
                             }
                         }
                     }, 1L)
