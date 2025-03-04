@@ -9,7 +9,7 @@ interface ExperienceService : TerminableModule {
 
     fun startExperience(player: Player): CompletionStage<Void>
 
-    fun sendExperienceMessage(messages: Component, player: Player) {
+    fun sendExperienceMessage(message: Component, player: Player) {
         arrayOf(Component.empty(), message, Component.empty()).forEach { player.sendMessage(it) }
     }
 }

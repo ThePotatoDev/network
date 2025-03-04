@@ -1,0 +1,61 @@
+Model-Engine:
+  Print-Script-Warnings: false
+  Use-State-Machine: false
+  Engine-Threads: 4
+  Max-Engine-Threads: 10
+  Default-Animations:
+    IDLE: idle
+    WALK: walk
+    STRAFE: strafe
+    JUMP_START: jump_start
+    JUMP: jump
+    JUMP_END: jump_end
+    HOVER: hover
+    FLY: fly
+    SPAWN: spawn
+    DEATH: death
+Model-Generator:
+  Register-Post-Server: false
+  Assets-Post-Server: false
+  Compile-Post-Server: false
+  Enable-Error: true
+  Debug-Level: 1
+  Namespace: modelengine
+  Create-Zip: false
+  Create-Atlas: false
+  Create-Shader: false
+  Create-MC-META: true
+  Item-Model: LEATHER_HORSE_ARMOR
+  Item-Models: []
+Network-Optimization:
+  Bundle-Everything: false
+  Bundle-Size: 512
+  Cull-Interval: 4
+  Culling-Threads: 4
+  Max-Culling-Threads: 10
+  Vertical-Render-Distance:
+    Enabled: true
+    Vertical-Render-Distance: 32
+    Cull-Type: CULLED
+  Skip-Models-Behind-Viewer:
+    Enabled: true
+    View-Angle: 180
+    Force-Render-Radius: 5
+    Cull-Type: MOVEMENT_ONLY
+  Skip-Blocked-Models:
+    Enabled: true
+    Force-Render-Radius: 5
+    Cull-Type: CULLED
+    Use-Paper-Clip-Method: false
+    Force-Render-Size:
+      Width: 32
+      Height: 32
+  Reduce-Update-When-Far:
+    Enabled: true
+    Active-By-Default: true
+    Falloff-Length: 8
+    Falloff-Multiplier: 0.85
+    Full-Update-Distance: 16
+    Full-Update-Distance-Multiplier-By-Size: 1
+    Max-Rate-Multiplier: 1
+    Min-Rate-Multiplier: 0.05

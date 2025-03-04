@@ -15,6 +15,10 @@ class ExperiencePlayerController(val mode: GameModeType) : ExperiencePlayerServi
         TODO("Not yet implemented")
     }
 
+    override fun save(player: ExperiencePlayer): RFuture<Boolean> {
+        TODO("Not yet implemented")
+    }
+
     override fun setup(consumer: TerminableConsumer) {
         TODO("Not yet implemented")
     }

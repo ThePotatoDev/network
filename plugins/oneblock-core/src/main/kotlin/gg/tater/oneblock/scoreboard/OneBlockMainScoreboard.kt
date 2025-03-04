@@ -44,7 +44,7 @@ class OneBlockMainScoreboard(private val plugin: JavaPlugin) : TerminableModule 
                 val player = it.player
                 val sidebar: Sidebar = library.createSidebar()
 
-                val title = SidebarComponent.staticLine(Component.text("ꑑ"))
+                val title = SidebarComponent.staticLine(Component.text("ꐒ"))
                 val lines = SidebarComponent.builder()
                     .addStaticLine(Component.text(getFormattedDate(), NamedTextColor.GRAY))
                     .addBlankLine()
@@ -55,19 +55,19 @@ class OneBlockMainScoreboard(private val plugin: JavaPlugin) : TerminableModule 
 
                         val level = island?.level ?: 0
 
-                        Component.text("ꐡ ")
+                        Component.text("ꐖ ")
                             .append(MINI_MESSAGE.deserialize("<gradient:#ECEAB0:#E0C909>Level: "))
-                            .append(Component.text("$level", NamedTextColor.WHITE))
+                            .append(Component.text("$level ꐕ", NamedTextColor.WHITE))
                     }
                     .addDynamicLine {
-                        Component.text("ꐢ ")
+                        Component.text("ꐔ ")
                             .append(MINI_MESSAGE.deserialize("<gradient:#ECEAB0:#E0C909>Progress: "))
                             .append(Component.text("None", NamedTextColor.WHITE))
                     }
                     .addBlankLine()
                     .addDynamicLine {
                         val balance = eco.getSync(player.uniqueId)?.get(EconomyType.MONEY) ?: 0
-                        Component.text("ꐛ ")
+                        Component.text("ꐓ ")
                             .append(MINI_MESSAGE.deserialize("<gradient:#ECEAB0:#E0C909>Coins: "))
                             .append(Component.text(DECIMAL_FORMAT.format(balance), NamedTextColor.WHITE))
                     }
