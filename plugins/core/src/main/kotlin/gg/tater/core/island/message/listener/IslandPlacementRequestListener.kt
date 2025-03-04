@@ -6,11 +6,13 @@ import com.infernalsuite.aswm.api.world.SlimeWorld
 import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap
 import gg.tater.core.island.Island
 import gg.tater.core.island.IslandService
+import gg.tater.core.island.event.IslandPlacementEvent
 import gg.tater.core.island.message.placement.IslandPlacementRequest
 import gg.tater.core.island.message.placement.IslandPlacementResponse
 import gg.tater.core.island.player.IslandPlayer
 import gg.tater.core.redis.Redis
 import gg.tater.core.server.ServerDataService
+import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
@@ -63,6 +65,8 @@ class IslandPlacementRequestListener<T : Island, K : IslandPlayer>(
                         api.loadWorld(world, false)
                     }
                 }
+
+                Events.callSync(IslandPlacementEvent(island))
 
                 val player = Bukkit.getPlayer(it.playerId)
 

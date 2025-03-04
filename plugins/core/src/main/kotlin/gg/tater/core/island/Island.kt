@@ -5,6 +5,8 @@ import gg.tater.core.Json
 import gg.tater.core.island.flag.model.FlagType
 import gg.tater.core.island.setting.model.IslandSettingType
 import gg.tater.core.position.WrappedPosition
+import org.bukkit.Bukkit
+import org.bukkit.World
 import java.lang.reflect.Type
 import java.time.Instant
 import java.util.*
@@ -84,6 +86,10 @@ open class Island(
 
     fun setFlagRole(flag: FlagType, role: Role) {
         flags[flag] = role
+    }
+
+    fun getPlacementWorld(): World? {
+        return Bukkit.getWorld(this.id)
     }
 
     override fun equals(other: Any?): Boolean {

@@ -7,6 +7,8 @@ import com.infernalsuite.aswm.loaders.redis.RedisLoader
 import gg.tater.core.annotation.Controller
 import gg.tater.core.island.IslandController
 import gg.tater.core.island.cache.IslandWorldCacheService
+import gg.tater.core.island.event.IslandPlacementEvent
+import gg.tater.core.island.event.IslandUnloadEvent
 import gg.tater.core.island.flag.model.FlagType
 import gg.tater.core.redis.Redis
 import gg.tater.core.server.model.ServerType
@@ -19,6 +21,7 @@ import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
+import org.bukkit.Bukkit
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 
@@ -45,6 +48,20 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
         registerBaseFlags(consumer)
         registerBaseSettings(consumer)
         registerMainCommand("island", "is", "ob", "oneblock")
+
+        Events.subscribe(IslandPlacementEvent::class.java)
+            .handler {
+                val island = it.island as OneBlockIsland
+                val world = island.getPlacementWorld() ?: return@handler
+            }
+            .bindWith(consumer)
+
+        Events.subscribe(IslandUnloadEvent::class.java)
+            .handler {
+                val island = it.island as OneBlockIsland
+                val world = island.getPlacementWorld() ?: return@handler
+            }
+            .bindWith(consumer)
 
         Events.subscribe(BlockBreakEvent::class.java, EventPriority.HIGHEST)
             .filter(EventFilters.ignoreCancelled())

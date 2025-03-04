@@ -7,7 +7,9 @@ import gg.tater.core.UUID_REGEX
 import gg.tater.core.annotation.Controller
 import gg.tater.core.island.Island
 import gg.tater.core.island.IslandService
+import gg.tater.core.island.event.IslandUnloadEvent
 import gg.tater.core.island.player.IslandPlayer
+import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
 import me.lucko.helper.terminable.TerminableConsumer
@@ -65,15 +67,24 @@ class IslandWorldCacheController<T : Island, K : IslandPlayer> : IslandWorldCach
             for (world in api.loadedWorlds) {
                 val worldName = world.name
                 if (!UUID_REGEX.matches(worldName)) continue
+
+                println("Here: $worldName")
+
                 val islandId = UUID.fromString(worldName)
                 val island = service.getIsland(islandId).get() ?: continue
                 val lastActive = island.lastActivity
 
+                println("Here 2")
+
                 // If 30 seconds of inactivity have not passed, continue to next
                 if (Instant.now().isBefore(lastActive.plusSeconds(30L))) continue
 
+                println("Here 3")
+
                 val bukkitWorld = Bukkit.getWorld(worldName) ?: continue
                 val empty = bukkitWorld.players.size <= 0
+
+                println("Here 4")
 
                 island.lastActivity = Instant.now()
                 service.save(island)
@@ -81,6 +92,9 @@ class IslandWorldCacheController<T : Island, K : IslandPlayer> : IslandWorldCach
                 // If the island still has players present on it, keep it loaded
                 if (!empty) continue
 
+                println("Here 5")
+
+                Events.call(IslandUnloadEvent(island))
                 Schedulers.sync().run { Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "swm unload $worldName") }
                 println("Unloading island $worldName due to inactivity.")
             }
