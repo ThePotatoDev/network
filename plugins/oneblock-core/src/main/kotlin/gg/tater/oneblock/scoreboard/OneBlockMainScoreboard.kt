@@ -51,7 +51,7 @@ class OneBlockMainScoreboard(private val plugin: JavaPlugin) : TerminableModule 
                     .addDynamicLine {
                         val island = players.get(player.uniqueId)
                             .get()
-                            .let { islands.getIslandFor(it)?.get() }
+                            .let { data -> islands.getIslandFor(data)?.get() }
 
                         val level = island?.level ?: 0
 
