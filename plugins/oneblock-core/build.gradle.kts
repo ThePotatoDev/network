@@ -8,6 +8,8 @@ repositories {
     flatDir {
         dirs("libs")
     }
+
+    maven(url = "https://mvn.lumine.io/repository/maven-public/")
 }
 
 dependencies {
@@ -17,6 +19,7 @@ dependencies {
     compileOnly(project(":plugins:core"))
     compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     compileOnly("de.oliver:FancyNpcs:2.4.2")
+    compileOnly("com.ticxo.modelengine:ModelEngine:R4.0.8")
 
     implementation(kotlin("reflect"))
 
@@ -65,6 +68,11 @@ paper {
         register("core") {
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
             required = true
+        }
+
+        register("ModelEngine") {
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+            required = false
         }
 
         register("LuckPerms") {

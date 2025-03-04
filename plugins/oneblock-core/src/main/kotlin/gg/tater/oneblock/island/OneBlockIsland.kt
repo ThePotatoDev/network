@@ -13,12 +13,14 @@ class OneBlockIsland(id: UUID, ownerId: UUID, ownerName: String, var level: Int 
     id,
     ownerId,
     ownerName,
-    spawn = WrappedPosition(0.0, 70.0, 0.0, 0F, 0F)
+    spawn = WrappedPosition(0.5, 70.0, 0.5, 0F, 0F)
 ) {
 
     companion object {
         // Breakable block location is a block below the default spawn for OneBlock islands
         val ONE_BLOCK_LOCATION = WrappedPosition(0.0, 69.0, 0.0, 0F, 0F)
+        val SPACE_SHIP_LOCATION = WrappedPosition(0.464, 70.0, 41.546, 156F, -0.8F)
+        val SPACE_SHIP_NPC_LOCATION = WrappedPosition(4.513, 70.0, 41.401, 156F, -0.8F)
 
         private const val LEVEL_FIELD = "island_level"
         private const val FTUE_FIELD = "ftue"

@@ -1,0 +1,20 @@
+{
+  "version": "R4.0.8",
+  "cache": {
+    "LEATHER_HORSE_ARMOR": {
+      "cachedId": {
+        "ship_broken:bone": 1,
+        "ship:engine2": 8,
+        "ship:bone": 4,
+        "ship_broken:bone/1": 3,
+        "ship:engine": 9,
+        "ship_broken:bone/2": 2,
+        "ship_broken:vent": 6,
+        "ship:vent": 7,
+        "ship:bone/1": 5
+      },
+      "unused": [],
+      "nextId": 10
+    }
+  }
+}

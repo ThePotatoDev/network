@@ -1,5 +1,6 @@
 package gg.tater.oneblock.spawn
 
+import com.ticxo.modelengine.api.ModelEngineAPI
 import gg.tater.core.annotation.Controller
 import gg.tater.core.island.player.position.PositionDirector
 import gg.tater.core.player.PlayerRedirectRequest
@@ -17,6 +18,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Difficulty
 import org.bukkit.GameRule
 import org.bukkit.Location
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
@@ -43,6 +45,21 @@ class OneBlockSpawnController : TerminableModule {
         val spawnWorld = Bukkit.getWorld("world")!!
         spawnWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false)
         spawnWorld.difficulty = Difficulty.PEACEFUL
+
+        val entity = ModelEngineAPI.createModeledEntity(
+            spawnWorld.spawn(
+                Location(spawnWorld, 0.5, 64.0, -16.0),
+                ArmorStand::class.java
+            ).apply {
+                isVisible = false
+            }
+        )
+
+        entity.addModel(ModelEngineAPI.createActiveModel("ship"), false)
+
+        consumer.bind(AutoCloseable {
+            entity.destroy()
+        })
 
         Commands.create()
             .assertPlayer()
