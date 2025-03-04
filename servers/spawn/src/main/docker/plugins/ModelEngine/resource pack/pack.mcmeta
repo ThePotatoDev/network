@@ -1,0 +1,24 @@
+{
+  "pack": {
+    "pack_format": 13,
+    "supported_formats": [13, 32767],
+    "description": "Pre-zipped Model Engine Resource Pack"
+  },
+  "overlays": {
+    "entries": [
+      {
+        "formats": {
+          "min_inclusive": 36,
+          "max_inclusive": 99
+        },
+        "directory": "1_21_2"
+      }
+    ]
+  },
+  "sodium": {
+    "ignored_shaders": [
+      "rendertype_entity_translucent.fsh",
+      "rendertype_entity_translucent.vsh"
+    ]
+  }
+}
