@@ -41,6 +41,7 @@ class OneBlockMainScoreboard(private val plugin: JavaPlugin) : TerminableModule 
 
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
+                //TODO:
                 val player = it.player
                 val sidebar: Sidebar = library.createSidebar()
 
