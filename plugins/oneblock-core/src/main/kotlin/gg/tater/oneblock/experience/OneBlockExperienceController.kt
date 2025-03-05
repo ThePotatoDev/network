@@ -1,5 +1,7 @@
 package gg.tater.oneblock.experience
 
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
 import de.oliver.fancynpcs.api.actions.ActionTrigger
 import de.oliver.fancynpcs.api.events.NpcInteractEvent
 import gg.tater.core.island.experience.ExperienceService
@@ -24,21 +26,37 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
 import org.bukkit.event.inventory.CraftItemEvent
-import org.bukkit.event.player.PlayerInteractEntityEvent
+import java.time.Duration
+import java.util.*
 import java.util.concurrent.CompletionStage
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ThreadLocalRandom
 
 class OneBlockExperienceController : ExperienceService {
 
     private companion object {
+        val SCHEDULER: ScheduledExecutorService = Executors.newScheduledThreadPool(5)
+
         const val BLOCK_MINING_PROGRESS_KEY = "block_mining_progress"
 
         const val MINE_GRASS_STAGE_PROGRESS = 1
         const val MINE_WOOD_STAGE_PROGRESS = 2
-        const val MINE_ALL_BLOCKS_STAGE_PROGRESS = 3
-        const val INVESTIGATE_ROCKET_STAGE_PROGRESS = 4
-        const val FIND_ROCKET_PARTS_STAGE_PROGRESS = 5
+        const val CRAFT_PICKAXE_STAGE_PROGRESS = 3
+        const val MINE_ALL_BLOCKS_STAGE_PROGRESS = 4
+        const val INVESTIGATE_ROCKET_STAGE_PROGRESS = 5
+        const val FIND_ROCKET_PARTS_STAGE_PROGRESS = 6
     }
+
+    private lateinit var players: ExperiencePlayerService
+
+    private val cache = CacheBuilder.newBuilder()
+        .refreshAfterWrite(Duration.ofSeconds(10L))
+        .build(CacheLoader.asyncReloading(object : CacheLoader<UUID, ExperiencePlayer>() {
+            override fun load(key: UUID): ExperiencePlayer {
+                return players.get(key).get()
+            }
+        }, SCHEDULER))
 
     private val cycleMaterials: List<Material> =
         listOf(
@@ -51,12 +69,18 @@ class OneBlockExperienceController : ExperienceService {
             Material.GRASS_BLOCK
         )
 
-    private lateinit var players: ExperiencePlayerService
-
     override fun startExperience(player: Player): CompletionStage<Void> {
         return players.get(player.uniqueId).thenAccept { data ->
             data.setMeta(ExperiencePlayer.STAGE_PROGRESS, MINE_GRASS_STAGE_PROGRESS)
             players.save(data)
+
+            sendExperienceMessage(
+                Component.text(
+                    "Welcome to the OneBlock challenge! Everything starts with a single block. Mine the grass block to begin!",
+                    NamedTextColor.GREEN
+                ),
+                player
+            )
         }
     }
 
@@ -126,21 +150,21 @@ class OneBlockExperienceController : ExperienceService {
 
                 if (result.type != Material.WOODEN_PICKAXE) return@handler
 
-                players.get(clicker.uniqueId).thenAccept { player ->
-                    if (!player.hasMetaEqualTo(
-                            ExperiencePlayer.STAGE_PROGRESS,
-                            MINE_WOOD_STAGE_PROGRESS
-                        )
-                    ) return@thenAccept
+                val player = cache.get(clicker.uniqueId)
 
-                    sendExperienceMessage(
-                        Component.text("Now, mine 10 blocks to gather resources!", NamedTextColor.GREEN), clicker
+                if (!player.hasMetaEqualTo(
+                        ExperiencePlayer.STAGE_PROGRESS,
+                        CRAFT_PICKAXE_STAGE_PROGRESS
                     )
+                ) return@handler
 
-                    player.setMeta(ExperiencePlayer.STAGE_PROGRESS, MINE_ALL_BLOCKS_STAGE_PROGRESS)
-                    player.setMeta(BLOCK_MINING_PROGRESS_KEY, 0)
-                    players.save(player)
-                }
+                sendExperienceMessage(
+                    Component.text("Now, mine 10 blocks to gather resources!", NamedTextColor.GREEN), clicker
+                )
+
+                player.setMeta(ExperiencePlayer.STAGE_PROGRESS, MINE_ALL_BLOCKS_STAGE_PROGRESS)
+                player.setMeta(BLOCK_MINING_PROGRESS_KEY, 0)
+                players.save(player)
             }
             .bindWith(consumer)
 
@@ -148,88 +172,102 @@ class OneBlockExperienceController : ExperienceService {
             .handler {
                 val miner = it.player
                 val block = it.block
+                val type = block.type
 
-                players.get(miner.uniqueId).thenAcceptAsync { player ->
+                if (!it.island.ftue) return@handler
+                val player = cache.get(miner.uniqueId)
 
-                    if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_PARTS_STAGE_PROGRESS)) {
+                // If they are supposed to craft a pickaxe, don't allow them to break block
+                if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, CRAFT_PICKAXE_STAGE_PROGRESS)) {
+                    it.isCancelled = true
+                    return@handler
+                }
 
+                if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_PARTS_STAGE_PROGRESS)) {
 
-                        return@thenAcceptAsync
-                    }
+                    return@handler
+                }
 
-                    if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, MINE_ALL_BLOCKS_STAGE_PROGRESS)) {
-                        val amountMined = player.getMetaValue(BLOCK_MINING_PROGRESS_KEY)!!.toInt()
+                if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, MINE_ALL_BLOCKS_STAGE_PROGRESS)) {
+                    val amountMined = player.getMetaValue(BLOCK_MINING_PROGRESS_KEY)!!.toInt()
 
-                        // If they are on block #10, set a chest block
-                        // that contains a rocket ship part
-                        if (amountMined + 1 == 10) {
+                    // If they are on block #10, set a chest block
+                    // that contains a rocket ship part
+                    if (amountMined + 1 == 10) {
+                        it.nextMaterialType = Material.CHEST
 
-                            Schedulers.sync().runLater({
-                                block.type = Material.CHEST
-                                val chest = block as Chest
+                        Schedulers.sync().runLater({
+                            val chest = block as Chest
 
-                                chest.inventory.setItem(
-                                    13, ItemStackBuilder.of(Material.STONE)
-                                        .name("Rocket Ship Item")
-                                        .build()
-                                )
-                            }, 1L)
-
-                            sendExperienceMessage(
-                                Component.text(
-                                    "Huh? This looks important... maybe you should investigate that crashed rocket!",
-                                    NamedTextColor.GREEN
-                                ), miner
+                            chest.inventory.setItem(
+                                13, ItemStackBuilder.of(Material.STONE)
+                                    .name("Rocket Ship Item")
+                                    .build()
                             )
-
-                            player.setMeta(ExperiencePlayer.STAGE_PROGRESS, INVESTIGATE_ROCKET_STAGE_PROGRESS)
-                            players.save(player)
-
-                            return@thenAcceptAsync
-                        }
-
-                        it.nextMaterialType =
-                            cycleMaterials[ThreadLocalRandom.current().nextInt(0, cycleMaterials.size)]
-
-                        player.setMeta(BLOCK_MINING_PROGRESS_KEY, amountMined + 1)
-                        players.save(player)
-                        return@thenAcceptAsync
-                    }
-
-                    if (block.type == Material.GRASS_BLOCK && player.hasMetaEqualTo(
-                            ExperiencePlayer.STAGE_PROGRESS,
-                            MINE_GRASS_STAGE_PROGRESS
-                        )
-                    ) {
-                        it.nextMaterialType = Material.OAK_LOG
+                        }, 1L)
 
                         sendExperienceMessage(
                             Component.text(
-                                "Great! Some blocks give different materials. Mine the wood next.",
+                                "Huh? This looks important... maybe you should investigate that crashed rocket!",
                                 NamedTextColor.GREEN
                             ), miner
                         )
 
-                        player.setMeta(ExperiencePlayer.STAGE_PROGRESS, MINE_WOOD_STAGE_PROGRESS)
+                        player.setMeta(ExperiencePlayer.STAGE_PROGRESS, INVESTIGATE_ROCKET_STAGE_PROGRESS)
                         players.save(player)
+                        cache.refresh(player.uuid)
 
-                        return@thenAcceptAsync
+                        return@handler
                     }
 
-                    if (block.type == Material.OAK_LOG && player.hasMetaEqualTo(
-                            ExperiencePlayer.STAGE_PROGRESS,
-                            MINE_WOOD_STAGE_PROGRESS
-                        )
-                    ) {
-                        it.nextMaterialType = Material.CRAFTING_TABLE
+                    it.nextMaterialType =
+                        cycleMaterials[ThreadLocalRandom.current().nextInt(0, cycleMaterials.size)]
 
-                        sendExperienceMessage(
-                            Component.text(
-                                "Now, craft a wooden pickaxe to mine faster!",
-                                NamedTextColor.GREEN
-                            ), miner
-                        )
-                    }
+                    player.setMeta(BLOCK_MINING_PROGRESS_KEY, amountMined + 1)
+                    players.save(player)
+                    cache.refresh(player.uuid)
+
+                    return@handler
+                }
+
+                if (type == Material.GRASS_BLOCK && player.hasMetaEqualTo(
+                        ExperiencePlayer.STAGE_PROGRESS,
+                        MINE_GRASS_STAGE_PROGRESS
+                    )
+                ) {
+                    it.nextMaterialType = Material.OAK_LOG
+
+                    sendExperienceMessage(
+                        Component.text(
+                            "Great! Some blocks give different materials. Mine the wood next.",
+                            NamedTextColor.GREEN
+                        ), miner
+                    )
+
+                    player.setMeta(ExperiencePlayer.STAGE_PROGRESS, MINE_WOOD_STAGE_PROGRESS)
+                    players.save(player)
+                    cache.refresh(player.uuid)
+
+                    return@handler
+                }
+
+                if (type == Material.OAK_LOG && player.hasMetaEqualTo(
+                        ExperiencePlayer.STAGE_PROGRESS,
+                        MINE_WOOD_STAGE_PROGRESS
+                    )
+                ) {
+                    it.nextMaterialType = Material.CRAFTING_TABLE
+
+                    player.setMeta(ExperiencePlayer.STAGE_PROGRESS, CRAFT_PICKAXE_STAGE_PROGRESS)
+                    players.save(player)
+                    cache.refresh(player.uuid)
+
+                    sendExperienceMessage(
+                        Component.text(
+                            "Now, craft a wooden pickaxe to mine faster!",
+                            NamedTextColor.GREEN
+                        ), miner
+                    )
                 }
             }
             .bindWith(consumer)

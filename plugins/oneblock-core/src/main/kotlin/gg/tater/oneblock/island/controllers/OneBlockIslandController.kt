@@ -79,7 +79,7 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
             }
             .bindWith(consumer)
 
-        Events.subscribe(BlockBreakEvent::class.java, EventPriority.HIGHEST)
+        Events.subscribe(BlockBreakEvent::class.java, EventPriority.MONITOR)
             .filter(EventFilters.ignoreCancelled())
             .handler {
                 val player = it.player
@@ -97,6 +97,11 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
                     && OneBlockIsland.ONE_BLOCK_LOCATION.z == location.z
                 ) {
                     val event = Events.callAndReturn(OneBlockMineEvent(player, island as OneBlockIsland, block))
+
+                    if (event.isCancelled) {
+                        it.isCancelled = true
+                        return@handler
+                    }
 
                     Schedulers.sync().runLater({
                         // If there is a block we are manually setting, handle it instead of their island phase blocks

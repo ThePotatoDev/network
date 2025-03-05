@@ -9,7 +9,7 @@ import java.util.*
 @Mapping("experience_players")
 data class ExperiencePlayer(
     val uuid: UUID,
-    var meta: MutableMap<String, String> = mutableMapOf()
+    var meta: MutableMap<String, Int> = mutableMapOf()
 ) {
 
     companion object {
@@ -18,16 +18,16 @@ data class ExperiencePlayer(
         const val STAGE_PROGRESS = "stage_progress"
     }
 
-    fun getMetaValue(key: String): String? {
+    fun getMetaValue(key: String): Int? {
         return meta[key]
     }
 
-    fun setMeta(key: String, value: Any) {
-        meta[key] = value.toString()
+    fun setMeta(key: String, value: Int) {
+        meta[key] = value
     }
 
-    fun hasMetaEqualTo(key: String, value: Any): Boolean {
-        return meta[key] == value.toString()
+    fun hasMetaEqualTo(key: String, value: Int): Boolean {
+        return meta[key] == value
     }
 
     @JsonAdapter(ExperiencePlayer::class)
@@ -55,11 +55,11 @@ data class ExperiencePlayer(
         ): ExperiencePlayer {
             return (element as JsonObject).let {
                 val uuid = UUID.fromString(it.get(UUID_FIELD).asString)
-                val meta = mutableMapOf<String, String>()
+                val meta = mutableMapOf<String, Int>()
 
                 it.get(META_FIELD).asJsonArray.forEach { ele ->
                     for (entry in ele.asJsonObject.entrySet()) {
-                        meta[entry.key] = entry.value.asString
+                        meta[entry.key] = entry.value.asInt
                     }
                 }
 
