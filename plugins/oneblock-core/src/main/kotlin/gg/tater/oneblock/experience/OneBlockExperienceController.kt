@@ -28,7 +28,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.inventory.CraftItemEvent
 import java.time.Duration
 import java.util.*
-import java.util.concurrent.CompletionStage
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ThreadLocalRandom
@@ -69,19 +68,18 @@ class OneBlockExperienceController : ExperienceService {
             Material.GRASS_BLOCK
         )
 
-    override fun startExperience(player: Player): CompletionStage<Void> {
-        return players.get(player.uniqueId).thenAccept { data ->
-            data.setMeta(ExperiencePlayer.STAGE_PROGRESS, MINE_GRASS_STAGE_PROGRESS)
-            players.save(data)
+    override fun startExperience(player: Player) {
+        val data = cache.get(player.uniqueId)
+        data.setMeta(ExperiencePlayer.STAGE_PROGRESS, MINE_GRASS_STAGE_PROGRESS)
+        players.save(data)
 
-            sendExperienceMessage(
-                Component.text(
-                    "Welcome to the OneBlock challenge! Everything starts with a single block. Mine the grass block to begin!",
-                    NamedTextColor.GREEN
-                ),
-                player
-            )
-        }
+        sendExperienceMessage(
+            Component.text(
+                "Welcome to the OneBlock challenge! Everything starts with a single block. Mine the grass block to begin!",
+                NamedTextColor.GREEN
+            ),
+            player
+        )
     }
 
     override fun setup(consumer: TerminableConsumer) {
@@ -103,41 +101,41 @@ class OneBlockExperienceController : ExperienceService {
 
                 val clicker = it.player
 
-                players.get(clicker.uniqueId).thenAcceptAsync { player ->
-                    if (!player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, INVESTIGATE_ROCKET_STAGE_PROGRESS)) {
-                        clicker.sendMessage(
-                            Component.text(
-                                "Hmm... I don't think I have a task for you yet.",
-                                NamedTextColor.GREEN
-                            )
+                val player = cache.get(clicker.uniqueId)
+
+                if (!player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, INVESTIGATE_ROCKET_STAGE_PROGRESS)) {
+                    clicker.sendMessage(
+                        Component.text(
+                            "Hmm... I don't think I have a task for you yet.",
+                            NamedTextColor.GREEN
                         )
-                        return@thenAcceptAsync
-                    }
-
-                    arrayOf(
-                        Component.empty(),
-                        Component.text(
-                            "Ah! You found a ship part! I crash-landed here and need your help to fix my rocket.",
-                            NamedTextColor.GREEN
-                        ),
-                        Component.text(
-                            "If you can recover all my ship parts, I can take you to distant planets filled with rare resources!",
-                            NamedTextColor.GREEN
-                        ),
-                        Component.text(
-                            "The OneBlock contains everything you need, but you'll have to dig and search for the remaining parts.",
-                            NamedTextColor.GREEN
-                        ),
-                        Component.text(
-                            "The OneBlock changes over time! The more you mine, the faster you rank up and unlock a new phase!",
-                            NamedTextColor.GREEN
-                        ),
-                        Component.empty()
-                    ).forEach { msg -> clicker.sendMessage(msg) }
-
-                    player.setMeta(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_PARTS_STAGE_PROGRESS)
-                    players.save(player)
+                    )
+                    return@handler
                 }
+
+                arrayOf(
+                    Component.empty(),
+                    Component.text(
+                        "Ah! You found a ship part! I crash-landed here and need your help to fix my rocket.",
+                        NamedTextColor.GREEN
+                    ),
+                    Component.text(
+                        "If you can recover all my ship parts, I can take you to distant planets filled with rare resources!",
+                        NamedTextColor.GREEN
+                    ),
+                    Component.text(
+                        "The OneBlock contains everything you need, but you'll have to dig and search for the remaining parts.",
+                        NamedTextColor.GREEN
+                    ),
+                    Component.text(
+                        "The OneBlock changes over time! The more you mine, the faster you rank up and unlock a new phase!",
+                        NamedTextColor.GREEN
+                    ),
+                    Component.empty()
+                ).forEach { msg -> clicker.sendMessage(msg) }
+
+                player.setMeta(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_PARTS_STAGE_PROGRESS)
+                players.save(player)
             }
             .bindWith(consumer)
 
