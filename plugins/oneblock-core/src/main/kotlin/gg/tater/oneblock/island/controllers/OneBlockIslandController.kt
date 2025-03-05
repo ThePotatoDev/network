@@ -16,7 +16,7 @@ import gg.tater.core.redis.Redis
 import gg.tater.core.server.model.ServerType
 import gg.tater.oneblock.event.OneBlockMineEvent
 import gg.tater.oneblock.island.OneBlockIsland
-import gg.tater.oneblock.island.subcommand.OneBlockPhasesSubCommand
+import gg.tater.oneblock.island.phase.subcommand.OneBlockPhasesSubCommand
 import gg.tater.oneblock.player.OneBlockPlayer
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers

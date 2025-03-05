@@ -9,7 +9,7 @@ import gg.tater.core.plugin.GameServerPlugin
 import gg.tater.core.server.ServerDataService
 import gg.tater.core.server.model.GameModeType
 import gg.tater.core.server.model.ONEBLOCK_GAMEMODE_SERVERS
-import gg.tater.oneblock.experience.OneBlockExperienceController
+import gg.tater.oneblock.island.controllers.OneBlockExperienceController
 import gg.tater.oneblock.island.OneBlockIsland
 import gg.tater.oneblock.island.controllers.OneBlockIslandController
 import gg.tater.oneblock.island.controllers.OneBlockIslandService
