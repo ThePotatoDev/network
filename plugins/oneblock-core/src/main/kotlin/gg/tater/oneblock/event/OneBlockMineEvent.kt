@@ -12,7 +12,8 @@ class OneBlockMineEvent(
     val player: Player,
     val island: OneBlockIsland,
     val block: Block,
-    var nextMaterialType: Material? = null
+    var nextMaterialType: Material? = null,
+    var handled: Boolean = false
 ) :
     Event(), Cancellable {
 

@@ -31,6 +31,7 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.math.min
 
 class OneBlockExperienceController : ExperienceService {
 
@@ -166,7 +167,7 @@ class OneBlockExperienceController : ExperienceService {
             }
             .bindWith(consumer)
 
-        Events.subscribe(OneBlockMineEvent::class.java)
+        Events.subscribe(OneBlockMineEvent::class.java, EventPriority.HIGH)
             .handler {
                 val miner = it.player
                 val block = it.block
@@ -174,6 +175,8 @@ class OneBlockExperienceController : ExperienceService {
 
                 if (!it.island.ftue) return@handler
                 val player = cache.get(miner.uniqueId)
+
+                it.handled = true
 
                 // If they are supposed to craft a pickaxe, don't allow them to break block
                 if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, CRAFT_PICKAXE_STAGE_PROGRESS)) {
@@ -194,15 +197,12 @@ class OneBlockExperienceController : ExperienceService {
                     if (amountMined + 1 == 10) {
                         it.nextMaterialType = Material.CHEST
 
-                        Schedulers.sync().runLater({
-                            val chest = block as Chest
-
-                            chest.inventory.setItem(
-                                13, ItemStackBuilder.of(Material.STONE)
-                                    .name("Rocket Ship Item")
-                                    .build()
-                            )
-                        }, 1L)
+                        miner.inventory.addItem(ItemStackBuilder.of(Material.PAPER)
+                            .name("&eRocket Ship Engine")
+                            .transformMeta { meta ->
+                                meta.setCustomModelData(7000)
+                            }
+                            .build())
 
                         sendExperienceMessage(
                             Component.text(
