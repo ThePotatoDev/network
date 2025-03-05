@@ -13,7 +13,6 @@ import gg.tater.core.server.model.GameModeType
 import gg.tater.oneblock.event.OneBlockMineEvent
 import gg.tater.oneblock.island.OneBlockIsland
 import me.lucko.helper.Events
-import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.item.ItemStackBuilder
@@ -21,7 +20,6 @@ import me.lucko.helper.terminable.TerminableConsumer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
-import org.bukkit.block.Chest
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
@@ -31,7 +29,6 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.math.min
 
 class OneBlockExperienceController : ExperienceService {
 
@@ -197,7 +194,8 @@ class OneBlockExperienceController : ExperienceService {
                     if (amountMined + 1 == 10) {
                         it.nextMaterialType = Material.CHEST
 
-                        miner.inventory.addItem(ItemStackBuilder.of(Material.PAPER)
+                        miner.inventory.addItem(
+                            ItemStackBuilder.of(Material.PAPER)
                             .name("&eRocket Ship Engine")
                             .transformMeta { meta ->
                                 meta.setCustomModelData(7000)

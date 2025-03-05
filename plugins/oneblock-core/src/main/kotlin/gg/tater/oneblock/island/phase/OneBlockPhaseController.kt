@@ -18,7 +18,7 @@ class OneBlockPhaseController : OneBlockPhaseSerivce {
             "Underground",
             50,
             ItemStackBuilder.of(Material.STONE),
-            listOf(Pair(Material.STONE, 10))
+            listOf(Pair(Material.STONE, 10)),
         )
     )
 

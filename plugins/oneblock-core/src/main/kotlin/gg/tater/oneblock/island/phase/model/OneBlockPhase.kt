@@ -8,5 +8,6 @@ data class OneBlockPhase(
     val friendly: String,
     val threshold: Int,
     val icon: ItemStackBuilder,
-    var blocks: List<Pair<Material, Int>>
+    val blocks: List<Pair<Material, Int>>,
+    val rewardCommands: List<String> = listOf()
 )

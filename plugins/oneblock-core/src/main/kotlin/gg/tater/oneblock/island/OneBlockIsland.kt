@@ -28,7 +28,7 @@ class OneBlockIsland(
     var level: Int = 1,
     var ftue: Boolean = true,
     private var currentPhase: Int,
-    private var blocksMinedCount: Int = 0,
+    private var blocksMinedCount: Int = 10, // We start at 10 here because the FTUE tutorial forces mining of 10 blocks
     private var completedPhases: MutableSet<Int> = mutableSetOf()
 ) : Island(
     id,
