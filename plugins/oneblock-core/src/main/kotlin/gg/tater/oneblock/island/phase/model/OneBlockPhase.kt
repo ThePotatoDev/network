@@ -9,6 +9,6 @@ data class OneBlockPhase(
     val threshold: Int,
     val icon: ItemStackBuilder,
     val blocks: List<Pair<Material, Int>>,
-    val progressiveRewardCommands: MutableMap<Int, List<String>> = mutableMapOf(),
+    val progressiveRewardCommands: Map<Int, List<String>> = mapOf(),
     val completionRewardCommands: List<String> = listOf()
 )

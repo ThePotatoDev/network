@@ -164,7 +164,7 @@ class OneBlockExperienceController : ExperienceService {
             }
             .bindWith(consumer)
 
-        Events.subscribe(OneBlockMineEvent::class.java, EventPriority.HIGH)
+        Events.subscribe(OneBlockMineEvent::class.java, EventPriority.LOW)
             .handler {
                 val miner = it.player
                 val block = it.block
@@ -173,16 +173,17 @@ class OneBlockExperienceController : ExperienceService {
                 if (!it.island.ftue) return@handler
                 val player = cache.get(miner.uniqueId)
 
-                it.handled = true
+                if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_PARTS_STAGE_PROGRESS)) {
+                    // If OneBlock is in FTUE mode, handle the OneBlock mining here
+                    it.handled = false
+                    return@handler
+                } else {
+                    it.handled = true
+                }
 
                 // If they are supposed to craft a pickaxe, don't allow them to break block
                 if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, CRAFT_PICKAXE_STAGE_PROGRESS)) {
                     it.isCancelled = true
-                    return@handler
-                }
-
-                if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_PARTS_STAGE_PROGRESS)) {
-
                     return@handler
                 }
 
@@ -196,11 +197,11 @@ class OneBlockExperienceController : ExperienceService {
 
                         miner.inventory.addItem(
                             ItemStackBuilder.of(Material.PAPER)
-                            .name("&eRocket Ship Engine")
-                            .transformMeta { meta ->
-                                meta.setCustomModelData(7000)
-                            }
-                            .build())
+                                .name("&eRocket Ship Engine")
+                                .transformMeta { meta ->
+                                    meta.setCustomModelData(7000)
+                                }
+                                .build())
 
                         sendExperienceMessage(
                             Component.text(

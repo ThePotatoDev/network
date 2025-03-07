@@ -27,7 +27,7 @@ class OneBlockIsland(
     ownerName: String,
     var level: Int = 1,
     var ftue: Boolean = true,
-    private var currentPhase: Int,
+    var currentPhase: Int,
     private var blocksMinedCount: Int = 10, // We start at 10 here because the FTUE tutorial forces mining of 10 blocks
     private var completedPhases: MutableSet<Int> = mutableSetOf()
 ) : Island(
@@ -122,14 +122,22 @@ class OneBlockIsland(
         return completedPhases.contains(phase.id)
     }
 
+    fun shouldCompletePhase(phase: OneBlockPhase): Boolean {
+        return blocksMinedCount == phase.threshold
+    }
+
     fun hasCompletedAllPhases(): Boolean {
         return completedPhases.containsAll(
             Services.load(OneBlockPhaseSerivce::class.java)
                 .all().map { it.id })
     }
 
-    fun incrementBlocksMined() {
-        blocksMinedCount++
+    fun completePhase(phase: OneBlockPhase) {
+        completedPhases.add(phase.id)
+    }
+
+    fun incrementBlocksMined(): Int {
+        return blocksMinedCount++
     }
 
     fun getCurrentPhase(): OneBlockPhase {
