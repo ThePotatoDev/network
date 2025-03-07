@@ -30,12 +30,12 @@ class OneBlockPhaseController : OneBlockPhaseSerivce {
             listOf(Pair(Material.STONE, 10), Pair(Material.GRASS_BLOCK, 10), Pair(Material.MOSS_BLOCK, 10)),
             mapOf(
                 50 to listOf(
-                    "givecustomitem {player} PAPER ${CustomItemService.ROCKET_SHIP_NAV_MODEL_ID}",
+                    "givecustomitem {player} PAPER ${CustomItemService.ROCKET_SHIP_NAV_MODEL_ID} &eRocket Ship Navigation",
                     "msgraw {player} &aAnother part! Bring it to the astronaut!"
                 ),
                 100 to listOf(
-                    "givecustomitem {player} PAPER ${CustomItemService.ROCKET_SHIP_GLASS_MODEL_ID}",
-                    "msgraw {player} &aAnother part! Bring it to the astronaut!"
+                    "givecustomitem {player} PAPER ${CustomItemService.ROCKET_SHIP_GLASS_MODEL_ID} &eRocket Ship Glass",
+                    "msgraw {player} &aAnother part! Bring it to the astronaut!",
                 )
             )
         )

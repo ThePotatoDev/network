@@ -66,8 +66,12 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
         Events.subscribe(IslandPlacementEvent::class.java)
             .handler {
                 val island = it.island as OneBlockIsland
-                island.spawnShipNPC(it.world)
-                island.spawnBrokenShip(it.world)
+
+                // Spawn with a delay
+                Schedulers.sync().runLater({
+                    island.spawnShipNPC(it.world)
+                    island.spawnBrokenShip(it.world)
+                }, 5L)
             }
             .bindWith(consumer)
 
@@ -107,8 +111,6 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
                         // If there is a block we are manually setting, handle it instead of their island phase blocks
                         if (event.nextMaterialType != null) {
                             block.type = event.nextMaterialType!!
-                        } else {
-                            //TODO: Set island phase blocks here
                         }
                     }, 1L)
                 }

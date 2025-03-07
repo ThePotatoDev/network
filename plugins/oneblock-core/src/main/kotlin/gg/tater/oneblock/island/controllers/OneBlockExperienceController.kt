@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import de.oliver.fancynpcs.api.actions.ActionTrigger
 import de.oliver.fancynpcs.api.events.NpcInteractEvent
+import gg.tater.core.island.cache.IslandWorldCacheService
 import gg.tater.core.island.experience.ExperienceService
 import gg.tater.core.island.experience.player.ExperiencePlayer
 import gg.tater.core.island.experience.player.ExperiencePlayerController
@@ -25,12 +26,14 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
 import org.bukkit.event.inventory.CraftItemEvent
+import org.bukkit.event.player.PlayerDropItemEvent
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ThreadLocalRandom
 
+@Suppress("UNCHECKED_CAST")
 class OneBlockExperienceController : ExperienceService {
 
     private companion object {
@@ -46,6 +49,8 @@ class OneBlockExperienceController : ExperienceService {
         const val FIND_ROCKET_PARTS_STAGE_PROGRESS = 6
     }
 
+    private val islands = Services.load(IslandWorldCacheService::class.java)
+            as IslandWorldCacheService<OneBlockIsland>
     private lateinit var players: ExperiencePlayerService
 
     private val cache = CacheBuilder.newBuilder()
@@ -88,6 +93,30 @@ class OneBlockExperienceController : ExperienceService {
             ExperiencePlayerService::class.java,
             consumer.bindModule(ExperiencePlayerController(GameModeType.ONEBLOCK))
         )
+
+        Events.subscribe(PlayerDropItemEvent::class.java, EventPriority.HIGHEST)
+            .filter(EventFilters.ignoreCancelled())
+            .handler {
+                val player = it.player
+                val island = islands.getIsland(player.world) ?: return@handler
+                if (!island.ftue) return@handler
+
+                val droppedStack = it.itemDrop.itemStack
+                val modelId = droppedStack.itemMeta?.customModelData ?: return@handler
+                if (modelId == CustomItemService.ROCKET_SHIP_ENGINE_MODEL_ID
+                    || modelId == CustomItemService.ROCKET_SHIP_GLASS_MODEL_ID
+                    || modelId == CustomItemService.ROCKET_SHIP_NAV_MODEL_ID
+                ) {
+                    it.isCancelled = true
+                    player.sendMessage(
+                        Component.text(
+                            "Don't drop your rocket ship parts! Take them to the astronaut.",
+                            NamedTextColor.RED
+                        )
+                    )
+                }
+            }
+            .bindWith(consumer)
 
         Events.subscribe(NpcInteractEvent::class.java, EventPriority.HIGHEST)
             .handler {
@@ -132,6 +161,11 @@ class OneBlockExperienceController : ExperienceService {
                     ),
                     Component.empty()
                 ).forEach { msg -> clicker.sendMessage(msg) }
+
+                val inventory = clicker.inventory
+                inventory.removeAll { stack ->
+                    stack.itemMeta.customModelData == CustomItemService.ROCKET_SHIP_ENGINE_MODEL_ID
+                }
 
                 player.setMeta(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_PARTS_STAGE_PROGRESS)
                 players.save(player)
