@@ -46,7 +46,23 @@ class OneBlockExperienceController : ExperienceService {
         const val CRAFT_PICKAXE_STAGE_PROGRESS = 3
         const val MINE_ALL_BLOCKS_STAGE_PROGRESS = 4
         const val INVESTIGATE_ROCKET_STAGE_PROGRESS = 5
-        const val FIND_ROCKET_PARTS_STAGE_PROGRESS = 6
+        const val FIND_ROCKET_NAV_STAGE_PROGRESS = 6
+        const val FIND_ROCKET_GLASS_STAGE_PROGRESS = 7
+
+        private val ROCKET_SHIP_ENGINE_ITEM = ItemStackBuilder.of(Material.PAPER)
+            .name("&eRocket Ship Engine")
+            .transformMeta { meta -> meta.setCustomModelData(CustomItemService.ROCKET_SHIP_ENGINE_MODEL_ID) }
+            .build()
+
+        private val ROCKET_SHIP_GLASS_ITEM = ItemStackBuilder.of(Material.PAPER)
+            .name("&eRocket Ship Glass")
+            .transformMeta { meta -> meta.setCustomModelData(CustomItemService.ROCKET_SHIP_GLASS_MODEL_ID) }
+            .build()
+
+        private val ROCKET_SHIP_NAV_ITEM = ItemStackBuilder.of(Material.PAPER)
+            .name("&eRocket Ship Navigation")
+            .transformMeta { meta -> meta.setCustomModelData(CustomItemService.ROCKET_SHIP_NAV_MODEL_ID) }
+            .build()
     }
 
     private val islands = Services.load(IslandWorldCacheService::class.java)
@@ -163,11 +179,11 @@ class OneBlockExperienceController : ExperienceService {
                 ).forEach { msg -> clicker.sendMessage(msg) }
 
                 val inventory = clicker.inventory
-                inventory.removeAll { stack ->
-                    stack.itemMeta.customModelData == CustomItemService.ROCKET_SHIP_ENGINE_MODEL_ID
-                }
+                inventory.remove(
+                    ROCKET_SHIP_ENGINE_ITEM
+                )
 
-                player.setMeta(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_PARTS_STAGE_PROGRESS)
+                player.setMeta(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_NAV_STAGE_PROGRESS)
                 players.save(player)
             }
             .bindWith(consumer)
@@ -208,7 +224,12 @@ class OneBlockExperienceController : ExperienceService {
                 if (!it.island.ftue) return@handler
                 val player = cache.get(miner.uniqueId)
 
-                if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_PARTS_STAGE_PROGRESS)) {
+                // If the player is finding rocket ship item within the phases system.
+                if (player.hasMetaEqualTo(
+                        ExperiencePlayer.STAGE_PROGRESS,
+                        FIND_ROCKET_NAV_STAGE_PROGRESS
+                    ) || player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_GLASS_STAGE_PROGRESS)
+                ) {
                     // If OneBlock is in FTUE mode, handle the OneBlock mining here
                     it.handled = false
                     return@handler
@@ -230,13 +251,7 @@ class OneBlockExperienceController : ExperienceService {
                     if (amountMined + 1 == 10) {
                         it.nextMaterialType = Material.CHEST
 
-                        miner.inventory.addItem(
-                            ItemStackBuilder.of(Material.PAPER)
-                                .name("&eRocket Ship Engine")
-                                .transformMeta { meta ->
-                                    meta.setCustomModelData(CustomItemService.ROCKET_SHIP_ENGINE_MODEL_ID)
-                                }
-                                .build())
+                        miner.inventory.addItem(ROCKET_SHIP_ENGINE_ITEM)
 
                         sendExperienceMessage(
                             Component.text(

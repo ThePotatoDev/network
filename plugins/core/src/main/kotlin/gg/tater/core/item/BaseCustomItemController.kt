@@ -19,7 +19,7 @@ class BaseCustomItemController : CustomItemService {
         Commands.create()
             .assertPermission("server.givecustomitem")
             .handler {
-                if (it.args().size != 2) {
+                if (it.args().size < 4) {
                     it.reply("&cUsage: /givecustomitem <target> <material> <id> <display>")
                     return@handler
                 }

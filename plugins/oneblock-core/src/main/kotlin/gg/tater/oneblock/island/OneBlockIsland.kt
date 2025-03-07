@@ -86,7 +86,7 @@ class OneBlockIsland(
         val world = Bukkit.getWorld(slimeWorld.name)!!
 
         val data = NpcData(
-            "Astronaut",
+            UUID.randomUUID().toString(),
             UUID.randomUUID(),
             Location(
                 world,
@@ -97,7 +97,6 @@ class OneBlockIsland(
                 SPACE_SHIP_NPC_LOCATION.pitch
             )
         )
-
         data.displayName = "<aqua>Astronaut"
 
         val npc = NPC_INSTANCE.npcAdapter.apply(data)
