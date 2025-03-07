@@ -8,6 +8,7 @@ import gg.tater.core.island.experience.ExperienceService
 import gg.tater.core.island.experience.player.ExperiencePlayer
 import gg.tater.core.island.experience.player.ExperiencePlayerController
 import gg.tater.core.island.experience.player.ExperiencePlayerService
+import gg.tater.core.item.CustomItemService
 import gg.tater.core.position.WrappedPosition
 import gg.tater.core.server.model.GameModeType
 import gg.tater.oneblock.event.OneBlockMineEvent
@@ -199,7 +200,7 @@ class OneBlockExperienceController : ExperienceService {
                             ItemStackBuilder.of(Material.PAPER)
                                 .name("&eRocket Ship Engine")
                                 .transformMeta { meta ->
-                                    meta.setCustomModelData(7000)
+                                    meta.setCustomModelData(CustomItemService.ROCKET_SHIP_ENGINE_MODEL_ID)
                                 }
                                 .build())
 

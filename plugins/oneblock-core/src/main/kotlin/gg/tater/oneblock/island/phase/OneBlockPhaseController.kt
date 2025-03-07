@@ -1,6 +1,7 @@
 package gg.tater.oneblock.island.phase
 
 import gg.tater.core.getRandomWeightedItem
+import gg.tater.core.item.CustomItemService
 import gg.tater.oneblock.event.OneBlockMineEvent
 import gg.tater.oneblock.event.OneBlockPhaseCompleteEvent
 import gg.tater.oneblock.island.controllers.OneBlockIslandService
@@ -28,8 +29,14 @@ class OneBlockPhaseController : OneBlockPhaseSerivce {
             ItemStackBuilder.of(Material.STONE),
             listOf(Pair(Material.STONE, 10), Pair(Material.GRASS_BLOCK, 10), Pair(Material.MOSS_BLOCK, 10)),
             mapOf(
-                50 to listOf("give {player} paper[minecraft:custom_model_data=7002]"),
-                100 to listOf()
+                50 to listOf(
+                    "givecustomitem {player} PAPER ${CustomItemService.ROCKET_SHIP_NAV_MODEL_ID}",
+                    "msgraw {player} &aAnother part! Bring it to the astronaut!"
+                ),
+                100 to listOf(
+                    "givecustomitem {player} PAPER ${CustomItemService.ROCKET_SHIP_GLASS_MODEL_ID}",
+                    "msgraw {player} &aAnother part! Bring it to the astronaut!"
+                )
             )
         )
     )
