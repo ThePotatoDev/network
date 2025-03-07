@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import de.oliver.fancynpcs.api.actions.ActionTrigger
 import de.oliver.fancynpcs.api.events.NpcInteractEvent
+import gg.tater.core.island.IslandService
 import gg.tater.core.island.cache.IslandWorldCacheService
 import gg.tater.core.island.experience.ExperienceService
 import gg.tater.core.island.experience.player.ExperiencePlayer
@@ -65,8 +66,11 @@ class OneBlockExperienceController : ExperienceService {
             .build()
     }
 
-    private val islands = Services.load(IslandWorldCacheService::class.java)
+    private val islandCache = Services.load(IslandWorldCacheService::class.java)
             as IslandWorldCacheService<OneBlockIsland>
+
+    private val islands = Services.load(OneBlockIslandService::class.java)
+
     private lateinit var players: ExperiencePlayerService
 
     private val cache = CacheBuilder.newBuilder()
@@ -114,7 +118,7 @@ class OneBlockExperienceController : ExperienceService {
             .filter(EventFilters.ignoreCancelled())
             .handler {
                 val player = it.player
-                val island = islands.getIsland(player.world) ?: return@handler
+                val island = islandCache.getIsland(player.world) ?: return@handler
                 if (!island.ftue) return@handler
 
                 val droppedStack = it.itemDrop.itemStack
@@ -144,8 +148,15 @@ class OneBlockExperienceController : ExperienceService {
                 if (WrappedPosition(location) != OneBlockIsland.SPACE_SHIP_NPC_LOCATION) return@handler
 
                 val clicker = it.player
-
                 val player = cache.get(clicker.uniqueId)
+
+                val island = islandCache.getIsland(clicker.world) ?: return@handler
+
+                // If the island is not in FTUE mode, direct player to planets.
+                if (!island.ftue) {
+                    clicker.performCommand("planets")
+                    return@handler
+                }
 
                 if (!player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, INVESTIGATE_ROCKET_STAGE_PROGRESS)) {
                     clicker.sendMessage(
@@ -179,12 +190,65 @@ class OneBlockExperienceController : ExperienceService {
                 ).forEach { msg -> clicker.sendMessage(msg) }
 
                 val inventory = clicker.inventory
+
+                // Remove the first rocket ship item they gain through FTUE
                 inventory.remove(
                     ROCKET_SHIP_ENGINE_ITEM
                 )
 
+                if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_NAV_STAGE_PROGRESS)) {
+                    if (!inventory.contains(ROCKET_SHIP_NAV_ITEM)) {
+                        clicker.sendMessage(
+                            Component.text(
+                                "I'm looking for my navigation system... Mine the OneBlock and see if you can find it.",
+                                NamedTextColor.GREEN
+                            )
+                        )
+                        return@handler
+                    }
+
+                    inventory.remove(ROCKET_SHIP_NAV_ITEM)
+                    clicker.sendMessage(
+                        Component.text(
+                            "Great! You found my navigation system. Keep mining the OneBlock to find my rocket ship glass!",
+                            NamedTextColor.GREEN
+                        )
+                    )
+
+                    player.setMeta(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_GLASS_STAGE_PROGRESS)
+                    players.save(player)
+                    cache.refresh(player.uuid)
+                    return@handler
+                }
+
+                if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_GLASS_STAGE_PROGRESS)) {
+                    if (!inventory.contains(ROCKET_SHIP_GLASS_ITEM)) {
+                        clicker.sendMessage(
+                            Component.text(
+                                "I'm looking for my glass... Mine the OneBlock and see if you can find it.",
+                                NamedTextColor.GREEN
+                            )
+                        )
+                        return@handler
+                    }
+
+                    inventory.remove(ROCKET_SHIP_GLASS_ITEM)
+                    clicker.sendMessage(
+                        Component.text(
+                            "Incredible work! The rocket is repaired, and now we can explore the universe! " +
+                                    "Step inside and choose a destination.",
+                            NamedTextColor.GREEN
+                        )
+                    )
+
+                    island.ftue = false
+                    islands.save(island)
+                    return@handler
+                }
+
                 player.setMeta(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_NAV_STAGE_PROGRESS)
                 players.save(player)
+                cache.refresh(player.uuid)
             }
             .bindWith(consumer)
 
