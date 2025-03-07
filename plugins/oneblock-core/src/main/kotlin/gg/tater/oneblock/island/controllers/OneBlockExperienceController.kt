@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import de.oliver.fancynpcs.api.actions.ActionTrigger
 import de.oliver.fancynpcs.api.events.NpcInteractEvent
-import gg.tater.core.island.IslandService
 import gg.tater.core.island.cache.IslandWorldCacheService
 import gg.tater.core.island.experience.ExperienceService
 import gg.tater.core.island.experience.player.ExperiencePlayer
@@ -156,43 +155,41 @@ class OneBlockExperienceController : ExperienceService {
                     return@handler
                 }
 
-                if (!player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, INVESTIGATE_ROCKET_STAGE_PROGRESS)) {
-                    clicker.sendMessage(
-                        Component.text(
-                            "Hmm... I don't think I have a task for you yet.",
-                            NamedTextColor.GREEN
-                        )
-                    )
-                    return@handler
-                }
-
-                arrayOf(
-                    Component.empty(),
-                    Component.text(
-                        "Ah! You found a ship part! I crash-landed here and need your help to fix my rocket.",
-                        NamedTextColor.GREEN
-                    ),
-                    Component.text(
-                        "If you can recover all my ship parts, I can take you to distant planets filled with rare resources!",
-                        NamedTextColor.GREEN
-                    ),
-                    Component.text(
-                        "The OneBlock contains everything you need, but you'll have to dig and search for the remaining parts.",
-                        NamedTextColor.GREEN
-                    ),
-                    Component.text(
-                        "The OneBlock changes over time! The more you mine, the faster you rank up and unlock a new phase!",
-                        NamedTextColor.GREEN
-                    ),
-                    Component.empty()
-                ).forEach { msg -> clicker.sendMessage(msg) }
-
                 val inventory = clicker.inventory
 
-                // Remove the first rocket ship item they gain through FTUE
-                inventory.remove(
-                    ROCKET_SHIP_ENGINE_ITEM
-                )
+                if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, INVESTIGATE_ROCKET_STAGE_PROGRESS)) {
+                    arrayOf(
+                        Component.empty(),
+                        Component.text(
+                            "Ah! You found a ship part! I crash-landed here and need your help to fix my rocket.",
+                            NamedTextColor.GREEN
+                        ),
+                        Component.text(
+                            "If you can recover all my ship parts, I can take you to distant planets filled with rare resources!",
+                            NamedTextColor.GREEN
+                        ),
+                        Component.text(
+                            "The OneBlock contains everything you need, but you'll have to dig and search for the remaining parts.",
+                            NamedTextColor.GREEN
+                        ),
+                        Component.text(
+                            "The OneBlock changes over time! The more you mine, the faster you rank up and unlock a new phase!",
+                            NamedTextColor.GREEN
+                        ),
+                        Component.empty()
+                    ).forEach { msg -> clicker.sendMessage(msg) }
+
+                    // Remove the first rocket ship item they gain through FTUE
+                    inventory.remove(
+                        ROCKET_SHIP_ENGINE_ITEM
+                    )
+
+                    player.setMeta(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_NAV_STAGE_PROGRESS)
+                    players.save(player)
+                    cache.refresh(player.uuid)
+
+                    return@handler
+                }
 
                 if (player.hasMetaEqualTo(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_NAV_STAGE_PROGRESS)) {
                     if (!inventory.contains(ROCKET_SHIP_NAV_ITEM)) {
@@ -241,12 +238,7 @@ class OneBlockExperienceController : ExperienceService {
 
                     island.ftue = false
                     islands.save(island)
-                    return@handler
                 }
-
-                player.setMeta(ExperiencePlayer.STAGE_PROGRESS, FIND_ROCKET_NAV_STAGE_PROGRESS)
-                players.save(player)
-                cache.refresh(player.uuid)
             }
             .bindWith(consumer)
 

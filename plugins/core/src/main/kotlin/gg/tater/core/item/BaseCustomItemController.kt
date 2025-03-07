@@ -27,7 +27,7 @@ class BaseCustomItemController : CustomItemService {
                 val target = it.arg(0).parseOrFail(Player::class.java)
                 val material = Material.valueOf(it.arg(1).parseOrFail(String::class.java))
                 val id = it.arg(2).parseOrFail(String::class.java).toInt()
-                val display = it.arg(3).parseOrFail(String::class.java)
+                val display = it.args().drop(3).joinToString(" ")
 
                 val stack = ItemStackBuilder.of(material)
                     .name(display)
