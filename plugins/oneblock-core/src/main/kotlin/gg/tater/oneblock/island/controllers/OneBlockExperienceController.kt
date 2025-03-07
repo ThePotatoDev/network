@@ -68,9 +68,7 @@ class OneBlockExperienceController : ExperienceService {
 
     private val islandCache = Services.load(IslandWorldCacheService::class.java)
             as IslandWorldCacheService<OneBlockIsland>
-
     private val islands = Services.load(OneBlockIslandService::class.java)
-
     private lateinit var players: ExperiencePlayerService
 
     private val cache = CacheBuilder.newBuilder()
@@ -259,10 +257,13 @@ class OneBlockExperienceController : ExperienceService {
                 val result = it.recipe.result
                 val clicker = it.whoClicked as Player
 
+                // If they are not in FTUE on their island, ignore
+                val island = islandCache.getIsland(clicker.world) ?: return@handler
+                if (!island.ftue) return@handler
+
                 if (result.type != Material.WOODEN_PICKAXE) return@handler
 
                 val player = cache.get(clicker.uniqueId)
-
                 if (!player.hasMetaEqualTo(
                         ExperiencePlayer.STAGE_PROGRESS,
                         CRAFT_PICKAXE_STAGE_PROGRESS
