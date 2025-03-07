@@ -28,6 +28,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
 import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.inventory.ItemStack
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
@@ -41,7 +42,6 @@ class OneBlockExperienceController : ExperienceService {
         val SCHEDULER: ScheduledExecutorService = Executors.newScheduledThreadPool(5)
 
         const val BLOCK_MINING_PROGRESS_KEY = "block_mining_progress"
-
         const val MINE_GRASS_STAGE_PROGRESS = 1
         const val MINE_WOOD_STAGE_PROGRESS = 2
         const val CRAFT_PICKAXE_STAGE_PROGRESS = 3
@@ -50,17 +50,17 @@ class OneBlockExperienceController : ExperienceService {
         const val FIND_ROCKET_NAV_STAGE_PROGRESS = 6
         const val FIND_ROCKET_GLASS_STAGE_PROGRESS = 7
 
-        private val ROCKET_SHIP_ENGINE_ITEM = ItemStackBuilder.of(Material.PAPER)
+        val ROCKET_SHIP_ENGINE_ITEM: ItemStack = ItemStackBuilder.of(Material.PAPER)
             .name("&eRocket Ship Engine")
             .transformMeta { meta -> meta.setCustomModelData(CustomItemService.ROCKET_SHIP_ENGINE_MODEL_ID) }
             .build()
 
-        private val ROCKET_SHIP_GLASS_ITEM = ItemStackBuilder.of(Material.PAPER)
+        val ROCKET_SHIP_GLASS_ITEM: ItemStack = ItemStackBuilder.of(Material.PAPER)
             .name("&eRocket Ship Glass")
             .transformMeta { meta -> meta.setCustomModelData(CustomItemService.ROCKET_SHIP_GLASS_MODEL_ID) }
             .build()
 
-        private val ROCKET_SHIP_NAV_ITEM = ItemStackBuilder.of(Material.PAPER)
+        val ROCKET_SHIP_NAV_ITEM: ItemStack = ItemStackBuilder.of(Material.PAPER)
             .name("&eRocket Ship Navigation")
             .transformMeta { meta -> meta.setCustomModelData(CustomItemService.ROCKET_SHIP_NAV_MODEL_ID) }
             .build()
