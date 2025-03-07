@@ -27,7 +27,10 @@ class OneBlockPhaseController : OneBlockPhaseSerivce {
             100,
             ItemStackBuilder.of(Material.STONE),
             listOf(Pair(Material.STONE, 10), Pair(Material.GRASS_BLOCK, 10), Pair(Material.MOSS_BLOCK, 10)),
-            mapOf(50 to listOf(""))
+            mapOf(
+                50 to listOf("give {player} paper[minecraft:custom_model_data=7002]"),
+                100 to listOf()
+            )
         )
     )
 

@@ -1,5 +1,6 @@
 package gg.tater.core
 
+import gg.tater.core.item.BaseItemController
 import gg.tater.core.network.Agones
 import gg.tater.core.player.BasePlayerController
 import gg.tater.core.player.chat.PlayerChatController
@@ -50,6 +51,7 @@ class CorePlugin : GameServerPlugin(), ServerDataService {
             )
         )
 
+        useController(BaseItemController())
         useController(BasePlayerController())
         useController(PlayerPrivateMessageController())
         useController(ServerStatusController())
