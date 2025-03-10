@@ -12,20 +12,20 @@ import com.velocitypowered.api.proxy.ProxyServer
 import com.velocitypowered.api.proxy.server.ServerInfo
 import gg.tater.core.Json
 import gg.tater.core.Mappings
-import gg.tater.proxy.command.HubCommand
-import gg.tater.proxy.listener.IslandPlacementListener
-import gg.tater.proxy.listener.PlayerRedirectListener
 import gg.tater.core.hexToBytes
 import gg.tater.core.network.Agones
 import gg.tater.core.proxy.ProxyDataModel
+import gg.tater.core.redis.Redis
 import gg.tater.core.server.model.ServerDataModel
 import gg.tater.core.server.model.ServerType
-import gg.tater.core.redis.Redis
 import gg.tater.core.server.model.toServerType
+import gg.tater.proxy.command.HubCommand
+import gg.tater.proxy.listener.IslandPlacementListener
+import gg.tater.proxy.listener.PlayerRedirectListener
 import io.github.cdimascio.dotenv.Dotenv
 import io.kubernetes.client.openapi.ApiClient
 import io.kubernetes.client.openapi.Configuration
-import io.kubernetes.client.openapi.apis.CustomObjectsApi
+import io.kubernetes.client.openapi.apis.CoreV1Api
 import io.kubernetes.client.util.Config
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
@@ -62,10 +62,6 @@ class ProxyPlugin @Inject constructor(
 
         const val TEXTURE_PACK_HEX_REQUEST_URL = "https://tp.oneblock.is/request/hash/{key}"
         const val TEXTURE_PACK_DATA_REQUEST_URL = "https://tp.oneblock.is/request/pack/{playerId}/{key}"
-        const val GROUP = "agones.dev"
-        const val VERSION = "v1"
-        const val NAMESPACE = "default"
-        const val PLURAL = "gameservers"
     }
 
     private lateinit var redis: Redis
@@ -103,7 +99,7 @@ class ProxyPlugin @Inject constructor(
         val client: ApiClient =
             Config.fromConfig(if (env.get("ENV").equals("dev")) "$dir/config_dev" else "$dir/config_local")
         Configuration.setDefaultApiClient(client)
-        val api = CustomObjectsApi()
+        val api = CoreV1Api()
 
         proxy.scheduler.buildTask(this, Runnable {
             actions.health()
@@ -120,43 +116,23 @@ class ProxyPlugin @Inject constructor(
 
             // K8's api to find active nodes & register them to the proxy
             // List all game servers in the default namespace
-            val servers = api.listNamespacedCustomObject(
-                GROUP,
-                VERSION,
-                NAMESPACE,
-                PLURAL,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            ) as Map<*, *>
+            val pods = api.listNamespacedPod("gameserver").execute()
+            for (pod in pods.items) {
+                val container = pod.status.containerStatuses[0]
+                val ready = container.ready
+                val name = container.name
 
-            // Extract and print the game server details
-            val items = servers["items"] as List<Map<*, *>>
-            for (item in items) {
-                val metadata = item["metadata"] as Map<*, *>
-                val status = item["status"] as Map<*, *>
-                val address = status["address"] as String?
-                val ports = status["ports"] as List<Map<*, *>>? ?: continue
-                val state = status["state"] as String? ?: continue
-                val name = metadata["name"] as String? ?: continue
+                val port = pod.spec.containers[0]
+                    .ports[0]
+                    .containerPort
 
-                // Do not register proxy servers
+                val address = InetSocketAddress(pod.status.hostIP, port.toInt())
+
+                // Don't register proxy services
                 if (name.contains("proxy")) continue
 
-                if (state == "Ready" && proxy.getServer(name).isEmpty && !removals.contains(name)) {
-                    val info = ServerInfo(
-                        name, InetSocketAddress(
-                            address, ports.firstOrNull()?.get("port")
-                                .toString()
-                                .split(".")[0]
-                                .toInt()
-                        )
-                    )
+                if (ready && proxy.getServer(name).isEmpty && !removals.contains(name)) {
+                    val info = ServerInfo(name, address)
 
                     proxy.registerServer(info)
                     logger.info("Registered $name")

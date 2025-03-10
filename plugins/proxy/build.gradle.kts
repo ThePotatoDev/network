@@ -5,8 +5,8 @@ plugins {
 dependencies {
     compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
     kapt("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
-    implementation("io.kubernetes:client-java:13.0.0")
-    implementation("io.kubernetes:client-java-api:13.0.0")
+    implementation("io.kubernetes:client-java:23.0.0")
+    implementation("io.kubernetes:client-java-api:23.0.0")
     implementation("net.jodah:expiringmap:0.5.11")
     implementation("org.redisson:redisson:3.36.0")
     implementation("io.github.cdimascio:dotenv-java:3.0.0")
