@@ -116,22 +116,20 @@ class ProxyPlugin @Inject constructor(
 
             // K8's api to find active nodes & register them to the proxy
             // List all game servers in the default namespace
-            val pods = api.listNamespacedPod("gameserver").execute()
+            val pods = api.listNamespacedPod("default").execute()
+
             for (pod in pods.items) {
-                val container = pod.status.containerStatuses[0]
-                val ready = container.ready
-                val name = container.name
+                val name = pod.metadata.name
+                val hostIp = pod.status?.hostIP
+                val status = pod.status?.phase
+                val port = pod.spec.containers?.firstOrNull()?.ports?.firstOrNull()?.containerPort
 
-                val port = pod.spec.containers[0]
-                    .ports[0]
-                    .containerPort
-
-                val address = InetSocketAddress(pod.status.hostIP, port.toInt())
+                val address = port?.let { InetSocketAddress(hostIp, it) }
 
                 // Don't register proxy services
                 if (name.contains("proxy")) continue
 
-                if (ready && proxy.getServer(name).isEmpty && !removals.contains(name)) {
+                if (status == "Ready" && proxy.getServer(name).isEmpty && !removals.contains(name)) {
                     val info = ServerInfo(name, address)
 
                     proxy.registerServer(info)
