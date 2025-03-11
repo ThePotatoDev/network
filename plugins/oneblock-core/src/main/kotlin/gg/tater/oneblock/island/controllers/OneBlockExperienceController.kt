@@ -365,7 +365,7 @@ class OneBlockExperienceController : ExperienceService {
                     it.dropOldDrops = false
                     // Add extra log to drops so that they can make a pickaxe
                     val stack = ItemStackBuilder.of(Material.OAK_LOG).build()
-                    for (i in 0..2) {
+                    for (i in 0..1) {
                         it.extraDrops.add(stack)
                     }
 
