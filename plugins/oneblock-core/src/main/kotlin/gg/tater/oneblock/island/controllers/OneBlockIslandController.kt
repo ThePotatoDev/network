@@ -114,7 +114,7 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
                     val relative = block.getRelative(BlockFace.UP)
 
                     for (drop in oldDrops) {
-                        world.dropItem(relative.location, drop)
+                        world.dropItem(relative.location.add(0.5, 0.0, 0.5), drop)
                     }
 
                     Schedulers.sync().runLater({
