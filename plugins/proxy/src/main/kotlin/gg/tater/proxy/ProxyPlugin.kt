@@ -18,7 +18,6 @@ import gg.tater.core.proxy.ProxyDataModel
 import gg.tater.core.redis.Redis
 import gg.tater.core.server.model.ServerDataModel
 import gg.tater.core.server.model.ServerType
-import gg.tater.core.server.model.getPort
 import gg.tater.core.server.model.toServerType
 import gg.tater.proxy.command.HubCommand
 import gg.tater.proxy.listener.IslandPlacementListener
@@ -26,7 +25,7 @@ import gg.tater.proxy.listener.PlayerRedirectListener
 import io.github.cdimascio.dotenv.Dotenv
 import io.kubernetes.client.openapi.ApiClient
 import io.kubernetes.client.openapi.Configuration
-import io.kubernetes.client.openapi.apis.CoreV1Api
+import io.kubernetes.client.openapi.apis.CustomObjectsApi
 import io.kubernetes.client.util.Config
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
@@ -63,6 +62,10 @@ class ProxyPlugin @Inject constructor(
 
         const val TEXTURE_PACK_HEX_REQUEST_URL = "https://tp.oneblock.is/request/hash/{key}"
         const val TEXTURE_PACK_DATA_REQUEST_URL = "https://tp.oneblock.is/request/pack/{playerId}/{key}"
+        const val GROUP = "agones.dev"
+        const val VERSION = "v1"
+        const val NAMESPACE = "default"
+        const val PLURAL = "gameservers"
     }
 
     private lateinit var redis: Redis
@@ -100,7 +103,7 @@ class ProxyPlugin @Inject constructor(
         val client: ApiClient =
             Config.fromConfig(if (env.get("ENV").equals("dev")) "$dir/config_dev" else "$dir/config_local")
         Configuration.setDefaultApiClient(client)
-        val api = CoreV1Api()
+        val api = CustomObjectsApi()
 
         proxy.scheduler.buildTask(this, Runnable {
             actions.health()
@@ -117,26 +120,43 @@ class ProxyPlugin @Inject constructor(
 
             // K8's api to find active nodes & register them to the proxy
             // List all game servers in the default namespace
-            val pods = api.listNamespacedPod("default").execute()
+            val servers = api.listNamespacedCustomObject(
+                GROUP,
+                VERSION,
+                NAMESPACE,
+                PLURAL,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            ) as Map<*, *>
 
-            for (pod in pods.items) {
-                val name = pod.metadata.name
-                val hostIp = pod.status.hostIP
-                val ready = pod.status.containerStatuses[0].ready
-                val port = name.toServerType().getPort()
+            // Extract and print the game server details
+            val items = servers["items"] as List<Map<*, *>>
+            for (item in items) {
+                val metadata = item["metadata"] as Map<*, *>
+                val status = item["status"] as Map<*, *>
+                val address = status["address"] as String?
+                val ports = status["ports"] as List<Map<*, *>>? ?: continue
+                val state = status["state"] as String? ?: continue
+                val name = metadata["name"] as String? ?: continue
 
-                if (port == null) {
-                    println("Could not get port for $name. Make sure to register it")
-                    return@Runnable
-                }
-
-                val address = InetSocketAddress(hostIp, port)
-
-                // Don't register proxy servers
+                // Do not register proxy servers
                 if (name.contains("proxy")) continue
 
-                if (ready && proxy.getServer(name).isEmpty && !removals.contains(name)) {
-                    val info = ServerInfo(name, address)
+                if (state == "Ready" && proxy.getServer(name).isEmpty && !removals.contains(name)) {
+                    val info = ServerInfo(
+                        name, InetSocketAddress(
+                            address, ports.firstOrNull()?.get("port")
+                                .toString()
+                                .split(".")[0]
+                                .toInt()
+                        )
+                    )
 
                     proxy.registerServer(info)
                     logger.info("Registered $name")
