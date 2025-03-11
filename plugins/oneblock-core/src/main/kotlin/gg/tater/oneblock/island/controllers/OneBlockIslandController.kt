@@ -24,6 +24,7 @@ import me.lucko.helper.Services
 import me.lucko.helper.event.filter.EventFilters
 import me.lucko.helper.terminable.TerminableConsumer
 import org.bukkit.Bukkit
+import org.bukkit.block.BlockFace
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 
@@ -88,7 +89,8 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
             .handler {
                 val player = it.player
                 val block = it.block
-                val island = cache.getIsland(block.world) ?: return@handler
+                val world = block.world
+                val island = cache.getIsland(world) ?: return@handler
 
                 if (!island.canInteract(player.uniqueId, FlagType.BREAK_BLOCKS)) return@handler
 
@@ -105,6 +107,14 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
                     if (event.isCancelled) {
                         it.isCancelled = true
                         return@handler
+                    }
+
+                    val oldDrops = block.drops
+                    block.drops.clear()
+                    val relative = block.getRelative(BlockFace.UP)
+
+                    for (drop in oldDrops) {
+                        world.dropItem(relative.location, drop)
                     }
 
                     Schedulers.sync().runLater({

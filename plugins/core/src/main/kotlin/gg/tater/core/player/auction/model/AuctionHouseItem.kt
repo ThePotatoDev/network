@@ -43,6 +43,10 @@ class AuctionHouseItem(
         return other is AuctionHouseItem && other.id == this.id
     }
 
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
+
     @JsonAdapter(AuctionHouseItem::class)
     class Adapter : JsonSerializer<AuctionHouseItem>, JsonDeserializer<AuctionHouseItem> {
         override fun serialize(item: AuctionHouseItem, type: Type, context: JsonSerializationContext): JsonElement {
