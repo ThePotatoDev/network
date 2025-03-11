@@ -27,6 +27,7 @@ import org.bukkit.Bukkit
 import org.bukkit.block.BlockFace
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.inventory.ItemStack
 
 @Controller(
     id = "oneblock-island-controller"
@@ -111,13 +112,23 @@ class OneBlockIslandController : IslandController<OneBlockIsland, OneBlockPlayer
 
                     val oldDrops = block.drops
                     block.drops.clear()
-                    val relative = block.getRelative(BlockFace.UP)
 
-                    for (drop in oldDrops) {
-                        world.dropItem(relative.location.add(0.5, 0.0, 0.5), drop)
+                    val drops: MutableList<ItemStack> = mutableListOf()
+                    if (event.dropOldDrops) {
+                        drops.addAll(oldDrops)
                     }
+                    drops.addAll(event.extraDrops)
 
                     Schedulers.sync().runLater({
+                        // Loop through the drops and spawn them at a better location
+                        for (drop in drops) {
+                            world.dropItem(
+                                block.getRelative(BlockFace.UP)
+                                    .location
+                                    .add(0.5, 0.0, 0.5), drop
+                            )
+                        }
+
                         // If there is a block we are manually setting, handle it instead of their island phase blocks
                         if (event.nextMaterialType != null) {
                             block.type = event.nextMaterialType!!
