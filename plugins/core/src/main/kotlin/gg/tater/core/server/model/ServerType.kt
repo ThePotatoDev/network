@@ -2,6 +2,12 @@ package gg.tater.core.server.model
 
 import gg.tater.core.position.WrappedPosition
 
+private val PORT_MAP: Map<ServerType, Int> = mapOf(
+    ServerType.ONEBLOCK_SERVER to 25566,
+    ServerType.ONEBLOCK_SPAWN to 25567,
+    ServerType.HUB to 25568,
+)
+
 enum class ServerType(val spawn: WrappedPosition? = null) {
 
     ONEBLOCK_SERVER(WrappedPosition(0.0, 101.0, 0.0, 45F, -1.7F)),
@@ -21,6 +27,10 @@ fun String.toServerType(): ServerType {
     } catch (e: IllegalArgumentException) {
         ServerType.valueOf("${split[0]}_${split[1]}".uppercase())
     }
+}
+
+fun ServerType.getPort(): Int? {
+    return PORT_MAP[this]
 }
 
 val ONEBLOCK_GAMEMODE_SERVERS: Set<ServerType> =

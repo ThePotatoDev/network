@@ -18,6 +18,7 @@ import gg.tater.core.proxy.ProxyDataModel
 import gg.tater.core.redis.Redis
 import gg.tater.core.server.model.ServerDataModel
 import gg.tater.core.server.model.ServerType
+import gg.tater.core.server.model.getPort
 import gg.tater.core.server.model.toServerType
 import gg.tater.proxy.command.HubCommand
 import gg.tater.proxy.listener.IslandPlacementListener
@@ -120,16 +121,21 @@ class ProxyPlugin @Inject constructor(
 
             for (pod in pods.items) {
                 val name = pod.metadata.name
-                val hostIp = pod.status?.hostIP
-                val status = pod.status?.phase
-                val port = pod.spec.containers?.firstOrNull()?.ports?.firstOrNull()?.containerPort
+                val hostIp = pod.status.hostIP
+                val ready = pod.status.containerStatuses[0].ready
+                val port = name.toServerType().getPort()
 
-                val address = port?.let { InetSocketAddress(hostIp, it) }
+                if (port == null) {
+                    println("Could not get port for $name. Make sure to register it")
+                    return@Runnable
+                }
 
-                // Don't register proxy services
+                val address = InetSocketAddress(hostIp, port)
+
+                // Don't register proxy servers
                 if (name.contains("proxy")) continue
 
-                if (status == "Ready" && proxy.getServer(name).isEmpty && !removals.contains(name)) {
+                if (ready && proxy.getServer(name).isEmpty && !removals.contains(name)) {
                     val info = ServerInfo(name, address)
 
                     proxy.registerServer(info)
